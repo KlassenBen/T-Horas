@@ -104,6 +104,7 @@ body {
   width: 55px;
   height: 55px;
   flex-shrink: 0;
+  border-radius: 30px;
 }
 
 .app-name-only {

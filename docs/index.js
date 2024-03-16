@@ -82,6 +82,8 @@ const sr23AccountSearch = document.querySelector("#sr23-search-account");
 const sr21TimePickerInOutText = document.querySelector(
   "#sr21-time-picker-header span"
 );
+const headerTeamImg = document.querySelector("#team-image");
+const headerTeamName = document.querySelector("#team-name");
 
 // <-- Screens
 const srsGetStarted = document.querySelector("#srs-get-started");
@@ -468,18 +470,18 @@ class App {
           this._onSnapshot("accounts", this.#curData.teamCode);
         }
         if (this.#curData.level === "asistente") {
-          const unsub = onSnapshot(doc(db, name, listen), (doc) => {
-            this._saveToLocal("curData", doc.data());
+          // const unsub = onSnapshot(doc(db, name, listen), (doc) => {
+          //   this._saveToLocal("curData", doc.data());
 
-            getDoc(collection(db, path, id)).then((docSnap) => {
-              if (docSnap.exists()) {
-                const data = docSnap.data();
-                console.log(data.pro);
-              } else {
-                console.log("no luck");
-              }
-            });
-          });
+          //   getDoc(collection(db, path, id)).then((docSnap) => {
+          //     if (docSnap.exists()) {
+          //       const data = docSnap.data();
+          //       console.log(data.pro);
+          //     } else {
+          //       console.log("no luck");
+          //     }
+          //   });
+          // });
 
           this._onSnapshot(
             `accounts/${this.#curData.teamCode}/team`,
@@ -494,6 +496,10 @@ class App {
           sr20AppAdmin.style.display = "block";
           sr20AppAdminNorm.style.display = "block";
           this._onSnapshot("accounts", this.#curData.teamCode);
+          // console.log(this.#curData.teamImg);
+          // headerTeamImg.src = this.#curData.teamImg;
+          // headerTeamName.textContent = this.#curData.teamName;
+          // console.log(headerTeamImg.src);
           // this._topAdminDisplay();
         }
         console.log(this.#curData.level);
@@ -567,6 +573,26 @@ class App {
           });
         });
         this._readWeeks();
+
+        const q5 = query(
+          collection(db, `accounts`),
+          where("teamCode", "==", this.#curData.teamCode)
+        );
+        getDocs(q5).then((docSnap) => {
+          if (docSnap.empty === true) {
+            console.error(`no luck this time!!!!!!`);
+          } else {
+            docSnap.forEach((doc) => {
+              const val = doc.data();
+              this.#curData.teamImg = val.teamImg;
+              this.#curData.teamName = val.teamName;
+              this._saveToLocal("curData", this.#curData);
+              this._getFromLocal("curData");
+              headerTeamImg.src = this.#curData.teamImg;
+              headerTeamName.textContent = this.#curData.teamName;
+            });
+          }
+        });
       }
     );
   }
@@ -608,6 +634,7 @@ class App {
   }
 
   _joinAsMember() {
+    console.log("Using this");
     const inpTeamCode = document.querySelector("#sr15-inp-team-code");
     const inpTeamMemberName = document.querySelector("#sr15-inp-member-name");
     const inpTeamMemberPassword = document.querySelector(
@@ -1565,6 +1592,8 @@ class App {
         conMemberDisplay.insertAdjacentHTML("beforeend", HTML);
       }
       docSnap.forEach((doc) => {
+        headerTeamImg.src = this.#curData.teamImg;
+        headerTeamName.textContent = this.#curData.teamName;
         let val;
         let salary;
         let totalPay;
