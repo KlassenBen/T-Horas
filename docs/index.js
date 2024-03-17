@@ -361,6 +361,7 @@ class App {
           this._displayMembers("sr22");
           this._onSnapshot("accounts", this.#curData.teamCode);
           this._accountProCheck();
+          btnBackTbSr11.style.display = "flex";
         }
         if (this.#curData.level === "asistente") {
           this._onSnapshot(
@@ -368,6 +369,7 @@ class App {
             this.#curMemberInfo.memberId
           );
           this._displayMembers("sr22");
+          btnBackTbSr11.style.display = "flex";
         }
         if (this.#curData.level === this.#adminLevel) {
           console.log("admin is top");
@@ -377,6 +379,7 @@ class App {
           sr20AppAdminNorm.style.display = "block";
           this._onSnapshot("accounts", this.#curData.teamCode);
           this._accountProCheck();
+          btnBackTbSr11.style.display = "flex";
         }
         console.log(this.#curData.level);
         if (this.#curData.level === "miembro") {
