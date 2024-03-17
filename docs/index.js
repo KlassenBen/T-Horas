@@ -84,6 +84,7 @@ const sr21TimePickerInOutText = document.querySelector(
 );
 const headerTeamImg = document.querySelector("#team-image");
 const headerTeamName = document.querySelector("#team-name");
+const sr24TryAppCon = document.querySelector("#sr24-cont-con-4");
 
 // <-- Screens
 const srsGetStarted = document.querySelector("#srs-get-started");
@@ -143,6 +144,8 @@ const btnsr19SaveAccountChanges = document.querySelector(
   "#sr19-contbx-btn-save-changes"
 );
 const btnsr24BuyPlan = document.querySelector("#sr24-btn-buy-plan");
+const btnsr24TryApp = document.querySelector("#sr24-btn-try-app-now");
+const btnsr7GoPro = document.querySelector("#sr7-go-pro");
 
 // <-- Join Team
 const btnJoinTeamSr1 = document.querySelector("#sr1-btn-join-team");
@@ -310,6 +313,83 @@ class App {
     // this._srGetStartedDispChoose("sr24", "sr1", "left");
   }
 
+  _accountProCheck() {
+    if (this.#curData.pro === "trail" || this.#curData.pro === "pro") {
+      const porEnd = this.#curData.proStartTimeStamp + this.#curData.proTime;
+      if (porEnd < this._getTimeStamp()) {
+        this._updateData(`accounts`, this.#curData.teamCode, {
+          pro: "false",
+        });
+
+        btnsr7GoPro.style.display = "flex";
+
+        if (this.#curData.pro === "pro") {
+          this._disdSuccessErrorMessage(
+            "Tu plan premium terminó. Contratalo de nuevo",
+            "er",
+            7000
+          );
+        }
+        if (this.#curData.pro === "trail") {
+          this._disdSuccessErrorMessage(
+            "Tu tiempo de brueba terminó. Si te era útil esta aplicación, contrata un plan premium ahora.",
+            "ex",
+            7000
+          );
+        }
+      } else {
+        console.log("Pro Go");
+      }
+    } else {
+      console.log("only a starter");
+    }
+  }
+
+  // TODO: INIT STARTS HERE
+  _init(srHide) {
+    this._srGetStartedDispChoose("sr22", srHide, "left");
+    console.log("Your App is initializing");
+    this.#curData = this._getFromLocal("curData");
+
+    setTimeout(() => {
+      if (this.#curData !== undefined) {
+        // TODO: if user is logedIn, all validations come under here
+        console.log("Your App has initialized");
+
+        if (this.#curData.level === "admin") {
+          this._displayMembers("sr22");
+          this._onSnapshot("accounts", this.#curData.teamCode);
+          this._accountProCheck();
+        }
+        if (this.#curData.level === "asistente") {
+          this._onSnapshot(
+            `accounts/${this.#curData.teamCode}/team`,
+            this.#curMemberInfo.memberId
+          );
+          this._displayMembers("sr22");
+        }
+        if (this.#curData.level === this.#adminLevel) {
+          console.log("admin is top");
+          this.#curAccountData = this.#curData;
+          this._displayMembers("sr22");
+          sr20AppAdmin.style.display = "block";
+          sr20AppAdminNorm.style.display = "block";
+          this._onSnapshot("accounts", this.#curData.teamCode);
+          this._accountProCheck();
+        }
+        console.log(this.#curData.level);
+        if (this.#curData.level === "miembro") {
+          console.log("member now");
+          this._displayMemberOnly();
+        }
+      } else {
+        console.log("Log in or create an account");
+        this._srGetStartedDispChoose("sr1", "sr22", "left");
+      }
+    }, 100);
+  }
+  // TODO: INIT ENDS HERE
+
   _onSnapshot(name, listen) {
     //line 1726 for try
     // TODO: REAL TIME update on data
@@ -459,99 +539,6 @@ class App {
       console.log("Updated data: ", doc.data());
     });
   }
-
-  // TODO: INIT STARTS HERE
-  _init(srHide) {
-    this._srGetStartedDispChoose("sr22", srHide, "left");
-    console.log("Your App is initializing");
-    this.#curData = this._getFromLocal("curData");
-
-    setTimeout(() => {
-      if (this.#curData !== undefined) {
-        // TODO: if user is logedIn, all validations come under here
-        console.log("Your App has initialized");
-
-        if (this.#curData.level === "admin") {
-          this._displayMembers("sr22");
-          this._onSnapshot("accounts", this.#curData.teamCode);
-        }
-        if (this.#curData.level === "asistente") {
-          // const unsub = onSnapshot(doc(db, name, listen), (doc) => {
-          //   this._saveToLocal("curData", doc.data());
-
-          //   getDoc(collection(db, path, id)).then((docSnap) => {
-          //     if (docSnap.exists()) {
-          //       const data = docSnap.data();
-          //       console.log(data.pro);
-          //     } else {
-          //       console.log("no luck");
-          //     }
-          //   });
-          // });
-
-          this._onSnapshot(
-            `accounts/${this.#curData.teamCode}/team`,
-            this.#curMemberInfo.memberId
-          );
-          this._displayMembers("sr22");
-        }
-        if (this.#curData.level === this.#adminLevel) {
-          console.log("admin is top");
-          this.#curAccountData = this.#curData;
-          this._displayMembers("sr22");
-          sr20AppAdmin.style.display = "block";
-          sr20AppAdminNorm.style.display = "block";
-          this._onSnapshot("accounts", this.#curData.teamCode);
-          // console.log(this.#curData.teamImg);
-          // headerTeamImg.src = this.#curData.teamImg;
-          // headerTeamName.textContent = this.#curData.teamName;
-          // console.log(headerTeamImg.src);
-          // this._topAdminDisplay();
-        }
-        console.log(this.#curData.level);
-        if (this.#curData.level === "miembro") {
-          console.log("member now");
-          this._displayMemberOnly();
-
-          // const unsub = onSnapshot(
-          //   doc(
-          //     db,
-          //     `accounts/${this.#curData.teamCode}/team`,
-          //     this.#curMemberInfo.memberId
-          //   ),
-          //   (doc) => {
-          //     this._saveToLocal("curData", doc.data());
-          //     console.log("error here");
-          //     console.log("1", this.#curData);
-
-          //     const q = query(
-          //       collection(db, `accounts`),
-          //       where("teamCode", "==", this.#curData.teamCode)
-          //     );
-          //     getDocs(q).then((docSnap) => {
-          //       docSnap.forEach((doc) => {
-          //         // this.#curData.pro = true;
-          //         this.#curData.pro = doc.data().pro;
-          //         console.log(this.#curData.pro);
-          //       });
-          //     });
-          //     console.log("2", this.#curData);
-          //     this._saveToLocal("curData", this.#curData);
-          //   }
-          // );
-
-          // this._onSnapshot(
-          //   `accounts/${this.#curData.teamCode}/team`,
-          //   this.#curMemberInfo.memberId
-          // );
-        }
-      } else {
-        console.log("Log in or create an account");
-        this._srGetStartedDispChoose("sr1", "sr22", "left");
-      }
-    }, 100);
-  }
-  // TODO: INIT ENDS HERE
 
   _displayMemberOnly() {
     btnBackTbSr11.style.display = "none";
@@ -973,6 +960,8 @@ class App {
 
   // TODO: srHide only works if = to sr active
   _srGetStartedDispChoose(srDisp, srHide, whereTo) {
+    window.scrollTo(0, 0);
+
     let perdisp;
     let perhide;
     let srdisp;
@@ -1585,6 +1574,9 @@ class App {
       curDataLocal = this.#curAccountData;
     } else {
       curDataLocal = this.#curData;
+    }
+    if (curDataLocal.pro === "pro") {
+      btnsr7GoPro.style.display = "none";
     }
     console.log("curacc", this.#curAccountData);
     console.log("curda", this.#curData);
@@ -2650,21 +2642,34 @@ class App {
     );
   }
 
-  _checkPro() {
+  _getProScreen() {
+    this.#curData = this._getFromLocal("curData");
     let curDataLocal;
     if (this.#curData.level === this.#adminLevel) {
       curDataLocal = this.#curAccountData;
     } else {
       curDataLocal = this.#curData;
     }
+    if (curDataLocal.trialDone === true) {
+      sr24TryAppCon.style.display = "none";
+    }
+    this._srGetStartedDispChoose("sr24", "sr7", "left");
+  }
+
+  _checkPro() {
+    this.#curData = this._getFromLocal("curData");
+    let curDataLocal;
+    if (this.#curData.level === this.#adminLevel) {
+      curDataLocal = this.#curAccountData;
+    } else {
+      curDataLocal = this.#curData;
+    }
+    console.log(this.#curData);
+    console.log(curDataLocal);
     const addMemberAproved = () => {
       this._srGetStartedDispChoose("sr8", "sr7", "left");
       console.log("Can create member");
       console.log(this.#curData.pro);
-    };
-    const getProScreen = () => {
-      console.log("nothing here");
-      this._srGetStartedDispChoose("sr24", "sr7", "left");
     };
     let membersCheckpro = [];
 
@@ -2679,18 +2684,20 @@ class App {
       }
       console.log(membersCheckpro.length);
       console.log(membersCheckpro);
-      //  &&
       if (this.#curData.pro === "false") {
-        getProScreen();
+        this._getProScreen();
       }
       if (this.#curData.pro === "pro") {
+        addMemberAproved();
+      }
+      if (this.#curData.pro === "trail") {
         addMemberAproved();
       }
       if (this.#curData.pro === "starter") {
         if (membersCheckpro.length < 1) {
           addMemberAproved();
         } else {
-          getProScreen();
+          this._getProScreen();
         }
       }
     });
@@ -2698,6 +2705,29 @@ class App {
 
   _buyPlan(whatPlan) {
     this._srGetStartedDispChoose("sr25", "sr24", "left");
+  }
+
+  _startTryApp() {
+    this.#curData = this._getFromLocal("curData");
+    let curDataLocal;
+    if (this.#curData.level === this.#adminLevel) {
+      curDataLocal = this.#curAccountData;
+    } else {
+      curDataLocal = this.#curData;
+    }
+    this._updateData("accounts", curDataLocal.teamCode, {
+      pro: "trail",
+      trialDone: true,
+      proStartTimeStamp: this._getTimeStamp(),
+      proTime: 30 * 86400000,
+    });
+    sr24TryAppCon.style.display = "none";
+    this._displayMembers("sr24");
+    this._disdSuccessErrorMessage(
+      "Exito. Iniciaste el tiempo de brueba gratis",
+      "ex",
+      5000
+    );
   }
 
   //Start Up End
@@ -2724,6 +2754,12 @@ class App {
       this._adminSearchAccount(sr23AccountSearch.value);
     });
     // <-- OTHER
+    btnsr7GoPro.addEventListener("click", () => {
+      this._getProScreen();
+    });
+    btnsr24TryApp.addEventListener("click", () => {
+      this._startTryApp();
+    });
     btnsr12SaveInfoChanges.addEventListener("click", () => {
       this._teamSaveInfoChanges();
     });
