@@ -108,6 +108,9 @@ const sr19 = document.querySelector("#sr19");
 const sr20 = document.querySelector("#sr20");
 const sr21 = document.querySelector("#sr21");
 const sr22 = document.querySelector("#sr22");
+const sr23 = document.querySelector("#sr23");
+const sr24 = document.querySelector("#sr24");
+const sr25 = document.querySelector("#sr25");
 
 // <-- Buttons
 const btnWeekSelectForward = document.querySelector(
@@ -139,6 +142,7 @@ const btnsr12SaveSettingsChanges = document.querySelector(
 const btnsr19SaveAccountChanges = document.querySelector(
   "#sr19-contbx-btn-save-changes"
 );
+const btnsr24BuyPlan = document.querySelector("#sr24-btn-buy-plan");
 
 // <-- Join Team
 const btnJoinTeamSr1 = document.querySelector("#sr1-btn-join-team");
@@ -190,6 +194,8 @@ const btnBackSr17 = document.querySelector("#sr17-tb-btn-back");
 const btnBackSr21 = document.querySelector("#sr21-btn-time-picker-cancel");
 const btnClearSr21 = document.querySelector("#sr21-btn-time-picker-clear");
 const btnSaveSr21 = document.querySelector("#sr21-btn-time-picker-save");
+const btnsr24Back = document.querySelector("#sr24-tb-btn-back");
+const btnsr25Back = document.querySelector("#sr25-tb-btn-back");
 
 const firebaseConfig = {
   apiKey: "AIzaSyA30VKmZDuM0Xv0z-CuG5o6C-4lU4Z-u64",
@@ -295,13 +301,13 @@ class App {
 
   constructor() {
     this._events();
-    // this._srGetStartedDispChoose("sr23", "sr1", "left");
 
     // TODO: ALSO NEED IN INIT, CHECK IF THE LOCAL STORED ACCOUNT STILL EXISTS IN THE CLOUD
     // this._removeFromLocal("curData");
     this._init("sr1");
     // this._onSnapshot("accounts", "cn25uwg629tb9143");
     // console.log(sr21TimePickerInOutText.textContent);
+    // this._srGetStartedDispChoose("sr24", "sr1", "left");
   }
 
   _onSnapshot(name, listen) {
@@ -1060,6 +1066,14 @@ class App {
       srdisp = sr23;
       perdisp = 390 * 21;
     }
+    if (srDisp === "sr24") {
+      srdisp = sr24;
+      perdisp = 390 * 22;
+    }
+    if (srDisp === "sr25") {
+      srdisp = sr25;
+      perdisp = 390 * 23;
+    }
 
     // <-- Hide
     if (srHide === "sr1") {
@@ -1127,6 +1141,12 @@ class App {
     }
     if (srHide === "sr23") {
       srhide = sr23;
+    }
+    if (srHide === "sr24") {
+      srhide = sr24;
+    }
+    if (srHide === "sr25") {
+      srhide = sr25;
     }
 
     const style = window.getComputedStyle(srhide);
@@ -2243,7 +2263,7 @@ class App {
           email: this.#email,
           accountPassword: this.#password,
           level: "admin",
-          pro: "false", //trial, pro
+          pro: "starter", //trial, pro
           proTime: 0,
           trialDone: false,
           proStartTimeStamp: 0,
@@ -2271,7 +2291,7 @@ class App {
         this._uploadData("accounts", this.#curUseId, acc);
         // TODO: function to continue creating an account ghoes here it waits till the id is available
         this._saveToLocal("curData", acc);
-        this._eventTeamCodeDisp();
+        // this._eventTeamCodeDisp();
         this._srGetStartedDispChoose("sr5", "sr22", "left");
       } else {
         console.log("still not");
@@ -2630,6 +2650,56 @@ class App {
     );
   }
 
+  _checkPro() {
+    let curDataLocal;
+    if (this.#curData.level === this.#adminLevel) {
+      curDataLocal = this.#curAccountData;
+    } else {
+      curDataLocal = this.#curData;
+    }
+    const addMemberAproved = () => {
+      this._srGetStartedDispChoose("sr8", "sr7", "left");
+      console.log("Can create member");
+      console.log(this.#curData.pro);
+    };
+    const getProScreen = () => {
+      console.log("nothing here");
+      this._srGetStartedDispChoose("sr24", "sr7", "left");
+    };
+    let membersCheckpro = [];
+
+    const q = query(collection(db, `accounts/${curDataLocal.teamCode}/team`));
+    getDocs(q).then((docSnap) => {
+      if (docSnap.empty === true) {
+        addMemberAproved();
+      } else {
+        docSnap.forEach((doc) => {
+          membersCheckpro.push(doc.data());
+        });
+      }
+      console.log(membersCheckpro.length);
+      console.log(membersCheckpro);
+      //  &&
+      if (this.#curData.pro === "false") {
+        getProScreen();
+      }
+      if (this.#curData.pro === "pro") {
+        addMemberAproved();
+      }
+      if (this.#curData.pro === "starter") {
+        if (membersCheckpro.length < 1) {
+          addMemberAproved();
+        } else {
+          getProScreen();
+        }
+      }
+    });
+  }
+
+  _buyPlan(whatPlan) {
+    this._srGetStartedDispChoose("sr25", "sr24", "left");
+  }
+
   //Start Up End
 
   _events() {
@@ -2719,7 +2789,9 @@ class App {
       this._createTeamStep2();
     });
     btnAddMemberSr7.addEventListener("click", () => {
-      this._srGetStartedDispChoose("sr8", "sr7", "left");
+      this._checkPro();
+
+      // this._srGetStartedDispChoose("sr8", "sr7", "left");
     });
     btnAheadSr8.addEventListener("click", () => {
       this._createMemberStep1();
@@ -2834,6 +2906,15 @@ class App {
     });
     btnsr11NewTimeTable.addEventListener("click", (e) => {
       this._newWeek();
+    });
+    btnsr24Back.addEventListener("click", (e) => {
+      this._displayMembers("sr24");
+    });
+    btnsr25Back.addEventListener("click", (e) => {
+      this._srGetStartedDispChoose("sr24", "sr25", "right");
+    });
+    btnsr24BuyPlan.addEventListener("click", (e) => {
+      this._buyPlan();
     });
 
     // --> EVENT DELEGATION
