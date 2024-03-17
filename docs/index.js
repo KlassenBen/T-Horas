@@ -609,6 +609,11 @@ class App {
       getDocs(q).then((docSnap) => {
         if (docSnap.empty === true) {
           console.error("no such account found");
+          this._disdSuccessErrorMessage(
+            `No hay cuenta con este correo. Crea una cuenta primero`,
+            "er",
+            3500
+          );
         } else {
           docSnap.forEach((doc) => {
             const val = doc.data();
@@ -620,14 +625,20 @@ class App {
               this._saveToLocal("curData", this.#curData);
               this._init("sr22");
             } else {
-              console.error("incorect password");
+              document.querySelector(
+                "#sr18-inp-password-errmess"
+              ).style.display = "block";
             }
-            console.log(val);
           });
         }
       });
+    } else {
+      this._disdSuccessErrorMessage(
+        `La información no es suficiente para iniciar sesión.`,
+        "er",
+        3000
+      );
     }
-    // this._srGetStartedDispChoose("sr5", "sr18", "left");
   }
 
   _joinAsMember() {
@@ -2248,7 +2259,8 @@ class App {
     const inpVerificationCode = document.querySelector(
       "#sr3-inp-verification-code"
     );
-    // if (inpVerificationCode.value === this.#otp) { TODO: activate
+    // if (inpVerificationCode.value === this.#otp) {// TODO: activate;
+    this._disdSuccessErrorMessage(`Correo confirmado`, "ex", 2000);
     this._srGetStartedDispChoose("sr22", "sr4", "left");
     this._idGenerator(this.#idLenght, this.#idTakeArrLenght);
     const intv = setInterval(() => {
@@ -2283,20 +2295,17 @@ class App {
           teamTotalPay: "",
           categories: ["Todos"],
         };
-        console.log("done already");
         this._uploadData("accounts", this.#curUseId, acc);
         // TODO: function to continue creating an account ghoes here it waits till the id is available
         this._saveToLocal("curData", acc);
         // this._eventTeamCodeDisp();
         this._srGetStartedDispChoose("sr5", "sr22", "left");
       } else {
-        console.log("still not");
       }
     }, 1000);
-    console.log(inpVerificationCode.value);
-    // } else {  TODO: activate
-    // console.error("Codes do not match", inpVerificationCode.value, this.#otp);  TODO: activate
-    // }  TODO: activate
+    // } else {// TODO: activate;
+    // this._disdSuccessErrorMessage("Código incorrecto", "er", 2000);// TODO: activate;
+    // }// TODO: activate;
   }
 
   _createAccountStep1() {
@@ -2307,31 +2316,51 @@ class App {
       "#sr3-inp-confpass-errmess"
     );
 
-    if (
-      inpEmail.value != "" &&
-      inpPassword.value != "" &&
-      inpPasswordConf.value != ""
-    ) {
-      if (inpPassword.value === inpPasswordConf.value) {
-        this.#email = inpEmail.value;
-        this.#password = inpPassword.value;
-        this.#otp = this._OTPGenerator(6);
-        // this._sendEmail(    TODO: activate
-        //   inpEmail.value,    TODO: activate
-        //   "thorastrack@gmail.com",    TODO: activate
-        //   this.#otp,    TODO: activate
-        //   "Este es su codigo de verificación para THoras",    TODO: activate
-        //   "Hola",    TODO: activate
-        //   "benklassen19@icloud.com",    TODO: activate
-        //   "+52 996 730 6118"    TODO: activate
-        // );    TODO: activate
-        this._srGetStartedDispChoose("sr4", "sr3", "left");
+    const q = query(
+      collection(db, "accounts"),
+      where("email", "==", inpEmail.value)
+    );
+    getDocs(q).then((docSnap) => {
+      if (docSnap.empty === true) {
+        if (
+          inpEmail.value != "" &&
+          inpPassword.value != "" &&
+          inpPasswordConf.value != ""
+        ) {
+          if (inpPassword.value.length > 5) {
+            if (inpPassword.value === inpPasswordConf.value) {
+              this.#email = inpEmail.value;
+              this.#password = inpPassword.value;
+              this.#otp = this._OTPGenerator(6);
+              // this._sendEmail(    TODO: activate
+              //   inpEmail.value,    TODO: activate
+              //   "thorastrack@gmail.com",    TODO: activate
+              //   this.#otp,    TODO: activate
+              //   "Este es su codigo de verificación para THoras",    TODO: activate
+              //   "Hola",    TODO: activate
+              //   "benklassen19@icloud.com",    TODO: activate
+              //   "+52 996 730 6118"    TODO: activate
+              // );    TODO: activate
+              this._srGetStartedDispChoose("sr4", "sr3", "left");
+            } else {
+              inpPasswordConfErrmess.style.display = "block";
+            }
+          } else {
+            this._disdSuccessErrorMessage(
+              `Tu contraseña tiene que tener por lo menios 6 carácteres`,
+              "er",
+              2500
+            );
+          }
+        }
       } else {
-        console.error("not same");
-        inpPasswordConfErrmess.style.display = "block";
+        this._disdSuccessErrorMessage(
+          `Ya hay una cuenta con el correo ${inpEmail.value}. Inicia sesión o intenta usar un correo diferente.`,
+          "er",
+          8000
+        );
       }
-    }
-    // console.log(inpEmail.value, inpPassword.value, inpPasswordConf.value);
+    });
   }
 
   _setSwiChangeMemberInfo(write, level) {
