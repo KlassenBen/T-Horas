@@ -131,6 +131,7 @@ const btnsr16SettingsCancel = document.querySelector(
   "#sr16-contbx1-btn-cancel"
 );
 const btnsr16DeleteMember = document.querySelector("#sr16-delete-member");
+const btnsr17LeaveTeam = document.querySelector("#sr17-leave-team");
 const btnsr11NewTimeTable = document.querySelector(
   "#sr11-tb-btn-new-time-table"
 );
@@ -2448,18 +2449,20 @@ class App {
     }
 
     const logoutPassword = prompt(
-      `Logout. \n To logout you have to put your account password in here`
+      `¿Cerrar sesión? \n Para confirmar, introduce tu contraseñ aqui.`
     );
     if (logoutPassword === curDataLocal.accountPassword) {
       console.log("good");
       this._removeFromLocal("curData");
       this._init("sr20");
+      // this._disdSuccessErrorMessage(`Cerraste sesión`, "ex", 5000);
     } else {
-      console.log("bad");
+      this._disdSuccessErrorMessage(`Contraseña incorecta`, "er", 3000);
     }
   }
 
   _deleteMember() {
+    const name = this.#curMemberInfo.name;
     let curDataLocal;
     if (this.#curData.level === this.#adminLevel) {
       curDataLocal = this.#curAccountData;
@@ -2468,9 +2471,9 @@ class App {
     }
 
     const password = prompt(
-      `Delete member. \n To delete this member you have to put the member's password in here`
+      `¿Quieres eliminar a ${name} de tu equipo? \n Para comfirmar introduce su contraseña de ${name} aqui.`
     );
-    if (password === password) {
+    if (this.#curMemberInfo.password === password) {
       deleteDoc(
         doc(
           db,
@@ -2479,6 +2482,26 @@ class App {
         )
       );
       this._displayMembers("sr16");
+      this._disdSuccessErrorMessage(
+        `${name} eliminado fue de tu equipo`,
+        "ex",
+        3000
+      );
+    } else {
+      this._disdSuccessErrorMessage(`Contraseña incorecta`, "er", 3000);
+    }
+  }
+  _leaveTeam() {
+    const name = this.#curMemberInfo.name;
+
+    const password = prompt(
+      `¿Quieres dejar este equipo? \n Para comfirmar introduce tu contraseña aqui.`
+    );
+    if (this.#curMemberInfo.password === password) {
+      this._removeFromLocal("curData");
+      this._init("sr17");
+    } else {
+      this._disdSuccessErrorMessage(`Contraseña incorecta`, "er", 3000);
     }
   }
 
@@ -2936,6 +2959,9 @@ class App {
     });
     btnsr16DeleteMember.addEventListener("click", (e) => {
       this._deleteMember();
+    });
+    btnsr17LeaveTeam.addEventListener("click", (e) => {
+      this._leaveTeam();
     });
     btnJoinNowSr15.addEventListener("click", (e) => {
       this._joinAsMember();
