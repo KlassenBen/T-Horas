@@ -817,8 +817,15 @@ class App {
     localStorage.setItem(itemName, JSON.stringify(content));
   }
   _getFromLocal(itemName) {
-    const data = JSON.parse(localStorage.getItem(itemName));
+    let data;
+    console.log(localStorage.getItem(itemName));
+    if (localStorage.getItem(itemName) === "undefined") {
+      console.log("no data");
+    } else {
+      data = JSON.parse(localStorage.getItem(itemName));
+    }
     if (data === null) return;
+    if (data === "undefined") return;
     return data;
   }
   _removeFromLocal(itemName) {
