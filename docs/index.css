@@ -34,20 +34,20 @@ body {
   display: flex;
   justify-content: center;
   align-items: center;
-  overflow: hidden;
-  overflow-y: scroll;
+  /* overflow: hidden; */
+  /* overflow-y: scroll; */
 }
 
 #app {
   width: 390px;
   background: var(--color-gray-9);
-  overflow: inherit;
+  overflow: hidden;
 }
 #srs-get-started {
   display: inline-flex;
   align-items: flex-start;
-  overflow: hidden;
-  overflow-y: scroll;
+  /* overflow: hidden; */
+  /* overflow-y: scroll; */
   padding-bottom: 51px;
 }
 .sr {

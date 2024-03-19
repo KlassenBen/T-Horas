@@ -315,7 +315,7 @@ class App {
   }
 
   _accountProCheck() {
-    if (this.#curData.pro === "trail" || this.#curData.pro === "pro") {
+    if (this.#curData.pro === "trial" || this.#curData.pro === "pro") {
       const porEnd = this.#curData.proStartTimeStamp + this.#curData.proTime;
       if (porEnd < this._getTimeStamp()) {
         this._updateData(`accounts`, this.#curData.teamCode, {
@@ -331,7 +331,7 @@ class App {
             7000
           );
         }
-        if (this.#curData.pro === "trail") {
+        if (this.#curData.pro === "trial") {
           this._disdSuccessErrorMessage(
             "Tu tiempo de brueba terminó. Si te era útil esta aplicación, contrata un plan premium ahora.",
             "ex",
@@ -2752,7 +2752,7 @@ class App {
       if (this.#curData.pro === "pro") {
         addMemberAproved();
       }
-      if (this.#curData.pro === "trail") {
+      if (this.#curData.pro === "trial") {
         addMemberAproved();
       }
       if (this.#curData.pro === "starter") {
@@ -2778,7 +2778,7 @@ class App {
       curDataLocal = this.#curData;
     }
     this._updateData("accounts", curDataLocal.teamCode, {
-      pro: "trail",
+      pro: "trial",
       trialDone: true,
       proStartTimeStamp: this._getTimeStamp(),
       proTime: 30 * 86400000,
