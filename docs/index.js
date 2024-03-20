@@ -85,6 +85,10 @@ const sr21TimePickerInOutText = document.querySelector(
 const headerTeamImg = document.querySelector("#team-image");
 const headerTeamName = document.querySelector("#team-name");
 const sr24TryAppCon = document.querySelector("#sr24-cont-con-4");
+const sr12UploadImgCon = document.querySelector("#sr12-img-upload-con");
+// const sr12ImgCon = document.querySelector("#sr12-img--con");
+const sr5UploadImgCon = document.querySelector("#sr5-img-upload-con");
+// const sr5ImgCon = document.querySelector("#sr5-img--con");
 
 // <-- Screens
 const srsGetStarted = document.querySelector("#srs-get-started");
@@ -112,6 +116,7 @@ const sr22 = document.querySelector("#sr22");
 const sr23 = document.querySelector("#sr23");
 const sr24 = document.querySelector("#sr24");
 const sr25 = document.querySelector("#sr25");
+const sr26 = document.querySelector("#sr26");
 
 // <-- Buttons
 const btnWeekSelectForward = document.querySelector(
@@ -147,6 +152,10 @@ const btnsr19SaveAccountChanges = document.querySelector(
 const btnsr24BuyPlan = document.querySelector("#sr24-btn-buy-plan");
 const btnsr24TryApp = document.querySelector("#sr24-btn-try-app-now");
 const btnsr7GoPro = document.querySelector("#sr7-go-pro");
+const sr26btnSetPlan = document.querySelector("#sr26-btn-set-plan");
+const sr26btnSetAdminLevel = document.querySelector(
+  "#sr26-btn-set-admin-level"
+);
 
 // <-- Join Team
 const btnJoinTeamSr1 = document.querySelector("#sr1-btn-join-team");
@@ -200,6 +209,7 @@ const btnClearSr21 = document.querySelector("#sr21-btn-time-picker-clear");
 const btnSaveSr21 = document.querySelector("#sr21-btn-time-picker-save");
 const btnsr24Back = document.querySelector("#sr24-tb-btn-back");
 const btnsr25Back = document.querySelector("#sr25-tb-btn-back");
+const btnsr26EditAccount = document.querySelector("#sr26-tb-btn-back");
 
 const firebaseConfig = {
   apiKey: "AIzaSyA30VKmZDuM0Xv0z-CuG5o6C-4lU4Z-u64",
@@ -263,6 +273,10 @@ class App {
     "1",
     "0",
   ];
+
+  #mycloudNameForImgUpload = "dkvsxpnp6";
+  #myuploadPresetForImgUpload = "THoras";
+  #teamImgUrl = [];
   #timePickerUpdateDay;
   #timePickerUpdatetype;
   #timePickerUpdatestnd;
@@ -270,6 +284,7 @@ class App {
   #otp;
   #email;
   #password;
+  #oneDayInMillSec = 86400000;
 
   #curTeamName;
   #curTeam;
@@ -314,6 +329,35 @@ class App {
     // this._srGetStartedDispChoose("sr24", "sr1", "left");
   }
 
+  // TODO: start here with team image upload
+
+  _openImgUpload(sr) {
+    const teamImgdisCh = document.querySelector(`#${sr}-img-con`);
+    this.#teamImgUrl = [];
+    cloudinary
+      .createUploadWidget(
+        {
+          cloudName: this.#mycloudNameForImgUpload,
+          uploadPreset: this.#myuploadPresetForImgUpload,
+        },
+        (error, result) => {
+          if (!error && result && result.event === "success") {
+            this.#teamImgUrl.push(result.info.secure_url);
+          }
+          if (!error && result && result.event === "success") {
+            this._deleteAllChildren(`${sr}-img-con`);
+            let html = "";
+            this.#teamImgUrl.forEach(function (mov, i, arr) {
+              html += `<img class="img-upload" src="${mov}" alt="" />`;
+            });
+
+            teamImgdisCh.insertAdjacentHTML("beforeend", html);
+          }
+        }
+      )
+      .open();
+  }
+
   _accountProCheck() {
     if (this.#curData.pro === "trial" || this.#curData.pro === "pro") {
       const porEnd = this.#curData.proStartTimeStamp + this.#curData.proTime;
@@ -341,8 +385,6 @@ class App {
       } else {
         console.log("Pro Go");
       }
-    } else {
-      console.log("only a starter");
     }
   }
 
@@ -818,7 +860,6 @@ class App {
   }
   _getFromLocal(itemName) {
     let data;
-    console.log(localStorage.getItem(itemName));
     if (localStorage.getItem(itemName) === "undefined") {
       console.log("no data");
     } else {
@@ -1085,6 +1126,10 @@ class App {
       srdisp = sr25;
       perdisp = 390 * 23;
     }
+    if (srDisp === "sr26") {
+      srdisp = sr26;
+      perdisp = 390 * 24;
+    }
 
     // <-- Hide
     if (srHide === "sr1") {
@@ -1158,6 +1203,9 @@ class App {
     }
     if (srHide === "sr25") {
       srhide = sr25;
+    }
+    if (srHide === "sr26") {
+      srhide = sr26;
     }
 
     const style = window.getComputedStyle(srhide);
@@ -1625,9 +1673,9 @@ class App {
         </div>`;
         conMemberDisplay.insertAdjacentHTML("beforeend", HTML);
       }
+      headerTeamImg.src = this.#curData.teamImg;
+      headerTeamName.textContent = this.#curData.teamName;
       docSnap.forEach((doc) => {
-        headerTeamImg.src = this.#curData.teamImg;
-        headerTeamName.textContent = this.#curData.teamName;
         let val;
         let salary;
         let totalPay;
@@ -2120,75 +2168,92 @@ class App {
       }
       inpPayPerHour.value = curDataLocal.salary;
 
-      if (inpMemberName.value.length > 2 && inpMemberName.value.length < 21) {
-        if (
-          inpPassword.value === inpVerPassword.value &&
-          inpPassword.value.length > 5
-        ) {
-          this._srGetStartedDispChoose("sr22", "sr8", "right");
-          this._idGenerator(this.#idLenght, this.#idTakeArrLenght);
-          const intv = setInterval(() => {
-            if (this.#curUseId !== undefined) {
-              clearInterval(intv);
-              console.log("done already");
-              this.#curMemberId = this.#curUseId;
-              this._uploadData(
-                `accounts/${curDataLocal.teamCode}/team`,
-                this.#curUseId,
-                {
-                  name: inpMemberName.value,
-                  memberId: this.#curUseId,
-                  teamCode: curDataLocal.teamCode,
-                  password: inpPassword.value,
-                  salary: curDataLocal.salary,
-                  totalHoras: "",
-                  totalPay: "",
-                  level: "miembro", //assistant
-                  lastModified: this._getTimeStamp(),
-                  writePermision: true, //false
-                  extraHours: curDataLocal.extraHours, //false
-                  extraHoursRequiredPer: curDataLocal.extraHoursRequiredPer, //week
-                  extraHoursRequired: curDataLocal.extraHoursRequired,
-                  mode: curDataLocal.mode, //maquinaria
-                  totalTime: "",
-                  curWeekTotalTime: "",
-                  totalNormalTime: "",
-                  curWeekTotalNormalTime: "",
-                  totalExtraTime: "",
-                  curWeekTotalExtraTime: "",
-                  totalMaqTime: "",
-                  curWeekTotalMaqTime: "",
-                  totalNormalPay: "",
-                  curWeekTotalNormalPay: "",
-                  totalExtraPay: "",
-                  curWeekTotalExtraPay: "",
-                  totalMaqPay: "",
-                  curWeekTotalMaqPay: "",
-                  totalPay: "",
-                  curWeekTotalPay: "",
-                  curWeekId: "",
-                  category: "Todos", // ...more., seperate mulitple caytegorry with "/"
+      const q = query(
+        collection(db, `accounts/${curDataLocal.teamCode}/team`),
+        where("name", "==", inpMemberName.value)
+      );
+      getDocs(q).then((docSnap) => {
+        if (docSnap.empty === true) {
+          if (
+            inpMemberName.value.length > 2 &&
+            inpMemberName.value.length < 21
+          ) {
+            if (
+              inpPassword.value === inpVerPassword.value &&
+              inpPassword.value.length > 5
+            ) {
+              this._srGetStartedDispChoose("sr22", "sr8", "right");
+              this._idGenerator(this.#idLenght, this.#idTakeArrLenght);
+              const intv = setInterval(() => {
+                if (this.#curUseId !== undefined) {
+                  clearInterval(intv);
+                  console.log("done already");
+                  this.#curMemberId = this.#curUseId;
+                  this._uploadData(
+                    `accounts/${curDataLocal.teamCode}/team`,
+                    this.#curUseId,
+                    {
+                      name: inpMemberName.value,
+                      memberId: this.#curUseId,
+                      teamCode: curDataLocal.teamCode,
+                      password: inpPassword.value,
+                      salary: curDataLocal.salary,
+                      totalHoras: "",
+                      totalPay: "",
+                      level: "miembro", //assistant
+                      lastModified: this._getTimeStamp(),
+                      writePermision: true, //false
+                      extraHours: curDataLocal.extraHours, //false
+                      extraHoursRequiredPer: curDataLocal.extraHoursRequiredPer, //week
+                      extraHoursRequired: curDataLocal.extraHoursRequired,
+                      mode: curDataLocal.mode, //maquinaria
+                      totalTime: "",
+                      curWeekTotalTime: "",
+                      totalNormalTime: "",
+                      curWeekTotalNormalTime: "",
+                      totalExtraTime: "",
+                      curWeekTotalExtraTime: "",
+                      totalMaqTime: "",
+                      curWeekTotalMaqTime: "",
+                      totalNormalPay: "",
+                      curWeekTotalNormalPay: "",
+                      totalExtraPay: "",
+                      curWeekTotalExtraPay: "",
+                      totalMaqPay: "",
+                      curWeekTotalMaqPay: "",
+                      totalPay: "",
+                      curWeekTotalPay: "",
+                      curWeekId: "",
+                      category: "Todos", // ...more., seperate mulitple caytegorry with "/"
+                    }
+                  );
+
+                  // TODO: function to continue creating an account ghoes here it waits till the id is available
+                  // this._displayMembers("sr22");
+
+                  inpPayPerHour.addEventListener("focus", () => {
+                    inpPayPerHour.value = "";
+                  });
+
+                  this._srGetStartedDispChoose("sr9", "sr22", "left");
+                } else {
+                  console.log("still not");
                 }
-              );
-
-              // TODO: function to continue creating an account ghoes here it waits till the id is available
-              // this._displayMembers("sr22");
-
-              inpPayPerHour.addEventListener("focus", () => {
-                inpPayPerHour.value = "";
-              });
-
-              this._srGetStartedDispChoose("sr9", "sr22", "left");
+              }, 1000);
             } else {
-              console.log("still not");
+              console.error("no match passwords");
             }
-          }, 1000);
+          } else {
+            console.error("name length is not correct");
+          }
         } else {
-          console.error("no match passwords");
+          this._disdSuccessErrorMessage(
+            `No puedes tener 2 miembros con nombres idénticos`,
+            "er",
+            2500
+          );
         }
-      } else {
-        console.error("name length is not correct");
-      }
+      });
     } else {
       this._disdSuccessErrorMessage(
         "Pareceque no tienes conexión a internet. Verifique tu conexión y vuelve a intentarlo.",
@@ -2214,6 +2279,8 @@ class App {
         salary: inpTeamPay.value,
       });
       this._displayMembers("sr6");
+      headerTeamImg.src = curDataLocal.teamImg;
+      headerTeamName.textContent = curDataLocal.teamName;
     } else {
       console.error("not right length", inpTeamPay.value.length);
     }
@@ -2245,10 +2312,17 @@ class App {
     } else {
       curDataLocal = this.#curData;
     }
+    let imgUrl;
+    if (this.#teamImgUrl.length !== 0) {
+      imgUrl = this.#teamImgUrl[0];
+    } else {
+      imgUrl = "";
+    }
 
-    if (inpTeamName.value.length > 4 && inpTeamName.value.length < 31) {
+    if (inpTeamName.value.length > 4 && inpTeamName.value.length < 16) {
       this._updateData("accounts", curDataLocal.teamCode, {
         teamName: inpTeamName.value,
+        teamImg: imgUrl,
       });
 
       console.log("right length", inpTeamName.value.length);
@@ -2300,6 +2374,8 @@ class App {
           teamTotalExtraPay: "",
           teamTotalMaqPay: "",
           teamTotalPay: "",
+          lastPayment: "",
+          totalPayment: "",
           categories: ["Todos"],
         };
         this._uploadData("accounts", this.#curUseId, acc);
@@ -2586,12 +2662,23 @@ class App {
       curDataLocal = this.#curData;
     }
 
-    if (inpTeamName.value.length > 2) {
+    if (inpTeamName.value.length > 2 && inpTeamName.value.length < 16) {
       this._srGetStartedDispChoose("sr22", "sr12", "right");
       setTimeout(() => {
+        let imgUrl;
+        if (this.#teamImgUrl.length !== 0) {
+          imgUrl = this.#teamImgUrl[0];
+        } else {
+          imgUrl = curDataLocal.teamImg;
+        }
+
         this._updateData(`accounts`, curDataLocal.teamCode, {
           teamName: inpTeamName.value,
+          teamImg: imgUrl,
         });
+        // this._updateData("accounts", curDataLocal.teamCode, {
+        //   teamImg: mov,
+        // });
         setTimeout(() => {
           this._displayMembers("sr22");
         }, 1000);
@@ -2653,6 +2740,7 @@ class App {
 
   _accountSaveInfoChanges() {
     const inpPassword = document.querySelector("#sr19-inp-password");
+    const inpEmail = document.querySelector("#sr19-inp-email");
     let curDataLocal;
     if (this.#curData.level === this.#adminLevel) {
       curDataLocal = this.#curAccountData;
@@ -2674,13 +2762,29 @@ class App {
     } else {
       console.error("not valid data");
     }
+    if (inpEmail.value !== curDataLocal.email) {
+      this._disdSuccessErrorMessage(
+        "Aún no puedes cambiar tu correo. Estamos trabajando en esta función",
+        "er",
+        4500
+      );
+    }
   }
 
   _openAccountInfo() {
     const inpEmail = document.querySelector("#sr19-inp-email");
-
     const inpPassword = document.querySelector("#sr19-inp-password");
-
+    const email = document.querySelector("#sr19-info-email span");
+    const teamName = document.querySelector("#sr19-info-team-name span");
+    const adminLevel = document.querySelector("#sr19-info-level span");
+    const proStatus = document.querySelector("#sr19-info-pro span");
+    const proStart = document.querySelector("#sr19-info-pro-start span");
+    const proEnd = document.querySelector("#sr19-info-pro-end span");
+    const accountCreated = document.querySelector(
+      "#sr19-info-account-created span"
+    );
+    const lastPayment = document.querySelector("#sr19-info-last-payment span");
+    const totalPayment = document.querySelector("#sr19-info-total-paid span");
     this.#curData = this._getFromLocal("curData");
 
     let curDataLocal;
@@ -2689,6 +2793,29 @@ class App {
     } else {
       curDataLocal = this.#curData;
     }
+
+    const dateAccountCreated = new Date(curDataLocal.accountMadeTimeStamp);
+    const dateProStart = new Date(curDataLocal.proStartTimeStamp);
+    let dateFianlProEnd;
+
+    if (curDataLocal.proTime === "ever") {
+      dateFianlProEnd = "nunca";
+    } else {
+      const dateProEnd = new Date(
+        curDataLocal.proStartTimeStamp + curDataLocal.proTime
+      );
+      dateFianlProEnd = dateProEnd.toLocaleDateString();
+    }
+
+    email.textContent = curDataLocal.email;
+    teamName.textContent = curDataLocal.teamName;
+    adminLevel.textContent = curDataLocal.level;
+    proStatus.textContent = curDataLocal.pro;
+    proStart.textContent = dateProStart.toLocaleDateString();
+    proEnd.textContent = dateFianlProEnd;
+    accountCreated.textContent = dateAccountCreated.toLocaleDateString();
+    lastPayment.textContent = curDataLocal.lastPayment;
+    totalPayment.textContent = curDataLocal.totalPayment;
 
     inpEmail.value = curDataLocal.email;
     inpPassword.value = curDataLocal.accountPassword;
@@ -2781,7 +2908,7 @@ class App {
       pro: "trial",
       trialDone: true,
       proStartTimeStamp: this._getTimeStamp(),
-      proTime: 30 * 86400000,
+      proTime: 30 * this.#oneDayInMillSec,
     });
     sr24TryAppCon.style.display = "none";
     this._displayMembers("sr24");
@@ -2790,6 +2917,137 @@ class App {
       "ex",
       5000
     );
+  }
+
+  _adminSetPlan() {
+    if (navigator.onLine) {
+      console.log("online this time");
+
+      const inpNumberOf = document.querySelector("#sr26-inp-number-of");
+      const choTimeVar = document.querySelector("#sr26-select-time-var");
+      const inpPrice = document.querySelector("#sr26-inp-price");
+      if (
+        choTimeVar.value === "ever" &&
+        inpPrice.value > -1 &&
+        inpPrice.value.length > 0
+      ) {
+        this._updateData("accounts", this.#curAccountData.teamCode, {
+          pro: "pro",
+          proStartTimeStamp: this._getTimeStamp(),
+          proTime: "ever",
+          lastPayment: inpPrice.value,
+          totalPayment:
+            Number(this.#curAccountData.totalPayment) + Number(inpPrice.value),
+        });
+        this._disdSuccessErrorMessage(
+          `Plan updated successfully for ${this.#curAccountData.email}`,
+          "ex",
+          3500
+        );
+      } else if (
+        choTimeVar.value === "days" &&
+        inpPrice.value > -1 &&
+        inpPrice.value.length > 0 &&
+        inpNumberOf.value > 0
+      ) {
+        this._updateData("accounts", this.#curAccountData.teamCode, {
+          pro: "pro",
+          proStartTimeStamp: this._getTimeStamp(),
+          proTime: inpNumberOf.value * this.#oneDayInMillSec,
+          lastPayment: inpPrice.value,
+          totalPayment:
+            Number(this.#curAccountData.totalPayment) + Number(inpPrice.value),
+        });
+        this._disdSuccessErrorMessage(
+          `Plan updated successfully for ${this.#curAccountData.email}`,
+          "ex",
+          3500
+        );
+      } else if (
+        choTimeVar.value === "months" &&
+        inpPrice.value > -1 &&
+        inpPrice.value.length > 0 &&
+        inpNumberOf.value > 0
+      ) {
+        this._updateData("accounts", this.#curAccountData.teamCode, {
+          pro: "pro",
+          proStartTimeStamp: this._getTimeStamp(),
+          proTime: inpNumberOf.value * (this.#oneDayInMillSec * 30),
+          lastPayment: inpPrice.value,
+          totalPayment:
+            Number(this.#curAccountData.totalPayment) + Number(inpPrice.value),
+        });
+        this._disdSuccessErrorMessage(
+          `Plan updated successfully for ${this.#curAccountData.email}`,
+          "ex",
+          3500
+        );
+      } else if (
+        choTimeVar.value === "years" &&
+        inpPrice.value > -1 &&
+        inpPrice.value.length > 0 &&
+        inpNumberOf.value > 0
+      ) {
+        this._updateData("accounts", this.#curAccountData.teamCode, {
+          pro: "pro",
+          proStartTimeStamp: this._getTimeStamp(),
+          proTime: inpNumberOf.value * (this.#oneDayInMillSec * 365),
+          lastPayment: inpPrice.value,
+          totalPayment:
+            Number(this.#curAccountData.totalPayment) + Number(inpPrice.value),
+        });
+        this._disdSuccessErrorMessage(
+          `Plan updated successfully for ${this.#curAccountData.email}`,
+          "ex",
+          3500
+        );
+      } else {
+        this._disdSuccessErrorMessage(
+          "Some fields are not filled out correctly",
+          "er",
+          2500
+        );
+      }
+    } else {
+      this._disdSuccessErrorMessage(
+        "You need to be online to make these changes",
+        "er",
+        2500
+      );
+    }
+  }
+  _adminSetAdminLevel() {
+    if (navigator.onLine) {
+      const choAdminLevel = document.querySelector("#sr26-select-Admin-level");
+
+      if (choAdminLevel.value !== this.#curAccountData.level) {
+        this._updateData("accounts", this.#curAccountData.teamCode, {
+          level: choAdminLevel.value,
+        });
+        this.#curAccountData.level = choAdminLevel.value;
+        this._disdSuccessErrorMessage(
+          `You made ${this.#curAccountData.email} a/an '${
+            choAdminLevel.value
+          }' successfully`,
+          "ex",
+          3500
+        );
+      } else {
+        this._disdSuccessErrorMessage(
+          `${this.#curAccountData.email} is already a/an '${
+            choAdminLevel.value
+          }'`,
+          "ex",
+          3000
+        );
+      }
+    } else {
+      this._disdSuccessErrorMessage(
+        "You need to be online to make these changes",
+        "er",
+        2500
+      );
+    }
   }
 
   //Start Up End
@@ -2815,7 +3073,16 @@ class App {
     sr23AccountSearch.addEventListener("keyup", () => {
       this._adminSearchAccount(sr23AccountSearch.value);
     });
+
     // <-- OTHER
+
+    sr26btnSetPlan.addEventListener("click", () => {
+      this._adminSetPlan();
+    });
+    sr26btnSetAdminLevel.addEventListener("click", () => {
+      this._adminSetAdminLevel();
+    });
+
     btnsr7GoPro.addEventListener("click", () => {
       this._getProScreen();
     });
@@ -2834,6 +3101,13 @@ class App {
     sr20DeleteAccount.addEventListener("click", () => {
       this._deleteAccount();
     });
+    sr12UploadImgCon.addEventListener("click", () => {
+      this._openImgUpload("sr12");
+    });
+    sr5UploadImgCon.addEventListener("click", () => {
+      this._openImgUpload("sr5");
+    });
+
     // <-- JOIN TEAM
     btnJoinTeamSr1.addEventListener("click", () => {
       this._srGetStartedDispChoose("sr13", "sr1", "left");
@@ -3017,6 +3291,9 @@ class App {
     btnsr24BuyPlan.addEventListener("click", (e) => {
       this._buyPlan();
     });
+    btnsr26EditAccount.addEventListener("click", (e) => {
+      this._srGetStartedDispChoose("sr23", "sr26", "right");
+    });
 
     // --> EVENT DELEGATION
 
@@ -3070,6 +3347,21 @@ class App {
     // <-- admin screen
 
     sr23.addEventListener("click", (e) => {
+      const email = document.querySelector("#sr26-info-email span");
+      const teamName = document.querySelector("#sr26-info-team-name span");
+      const password = document.querySelector("#sr26-info-password span");
+      const adminLevel = document.querySelector("#sr26-info-level span");
+      const proStatus = document.querySelector("#sr26-info-pro span");
+      const proStart = document.querySelector("#sr26-info-pro-start span");
+      const proEnd = document.querySelector("#sr26-info-pro-end span");
+      const accountCreated = document.querySelector(
+        "#sr26-info-account-created span"
+      );
+      const lastPayment = document.querySelector(
+        "#sr26-info-last-payment span"
+      );
+      const totalPayment = document.querySelector("#sr26-info-total-paid span");
+
       const teamCode = e.target.dataset.teamcode;
       const btn = e.target.dataset.btn;
 
@@ -3079,6 +3371,47 @@ class App {
 
         this.#curAccountData = found;
         this._displayMembers("sr23");
+      } else {
+        console.log("undefined");
+      }
+      if (teamCode && btn === "edit") {
+        const found = this.#accountsArray.find((el) => el.teamCode == teamCode);
+        console.log(this.#accountsArray);
+        this.#curAccountData = found;
+        console.log(this.#curAccountData);
+
+        const dateAccountCreated = new Date(
+          this.#curAccountData.accountMadeTimeStamp
+        );
+        const dateProStart = new Date(this.#curAccountData.proStartTimeStamp);
+        let dateFianlProEnd;
+
+        if (this.#curAccountData.proTime === "ever") {
+          dateFianlProEnd = this.#curAccountData.proTime;
+        } else {
+          const dateProEnd = new Date(
+            this.#curAccountData.proStartTimeStamp +
+              this.#curAccountData.proTime
+          );
+          dateFianlProEnd = dateProEnd.toLocaleDateString();
+        }
+
+        email.textContent = this.#curAccountData.email;
+        teamName.textContent = this.#curAccountData.teamName;
+        password.textContent = this.#curAccountData.accountPassword;
+        adminLevel.textContent = this.#curAccountData.level;
+        proStatus.textContent = this.#curAccountData.pro;
+        proStart.textContent = dateProStart.toLocaleDateString();
+        proEnd.textContent = dateFianlProEnd;
+        accountCreated.textContent = dateAccountCreated.toLocaleDateString();
+        lastPayment.textContent = this.#curAccountData.lastPayment;
+        totalPayment.textContent = this.#curAccountData.totalPayment;
+
+        // console.log(dateAccountCreated.toLocaleDateString());
+        // console.log(dateProStart.toDateString());
+        // console.log(dateProEnd.toDateString());
+
+        this._srGetStartedDispChoose("sr26", "sr23", "left");
       } else {
         console.log("undefined");
       }
