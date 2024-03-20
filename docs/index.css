@@ -768,6 +768,65 @@ body {
   line-height: normal;
   text-decoration-line: underline;
 }
+.sr11-rePer-con {
+  display: flex;
+  padding: 4px 0px;
+  flex-direction: column;
+  align-items: center;
+  gap: 6px;
+  align-self: stretch;
+  background: var(--color-orange-0);
+  border: solid 1px var(--color-green-10);
+  border-bottom: solid 1px var(--color-orange-100);
+}
+.sr11-rePer-con-text {
+  color: var(--color-blue-100);
+  text-align: center;
+  font-family: Inter;
+  font-size: 12px;
+  font-style: normal;
+  font-weight: 400;
+  line-height: normal;
+}
+.sr11-rePer-btn-con {
+  display: flex;
+  justify-content: center;
+  align-items: flex-start;
+  gap: 32px;
+  align-self: stretch;
+}
+.sr11-btn-deny {
+  display: flex;
+  padding: 4px 8px;
+  justify-content: center;
+  align-items: flex-start;
+  gap: 10px;
+  border-radius: 5px;
+  border: 1px solid var(--color-blue-100);
+
+  color: var(--color-blue-100);
+  font-family: Inter;
+  font-size: 12px;
+  font-style: normal;
+  font-weight: 400;
+  line-height: normal;
+}
+.sr11-btn-grant {
+  display: flex;
+  padding: 4px 8px;
+  justify-content: center;
+  align-items: flex-start;
+  gap: 10px;
+  border-radius: 5px;
+  background: var(--color-blue-100);
+
+  color: var(--color-white);
+  font-family: Inter;
+  font-size: 12px;
+  font-style: normal;
+  font-weight: 400;
+  line-height: normal;
+}
 /* sr11 end */
 
 /* sr12 start */

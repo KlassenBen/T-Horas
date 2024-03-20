@@ -1726,179 +1726,190 @@ class App {
 
         if (val.writePermisionRequest === "pending") {
           btnPermision = `          
-          <button class="sr23-btn-permision-grant"
-          data-where="permision-grant"
-          id="sr7-btn-meminfo"
-          class="btn-member-info" data-memberId="${val.memberId}">
-          Concerder
-          </button>
-          <button class="sr23-permision-deny"
-          data-where="permision-deny"
-          id="sr7-btn-meminfo"
-          class="btn-member-info" data-memberId="${val.memberId}">
-          negar
-          </button>
+          <div class="sr11-rePer-con">
+          <p class="sr11-rePer-con-text">
+            ${val.name} pide permiso para hacer cambios en sus horas. ¿Que deseas hacer?
+          </p>
+          <div class="sr11-rePer-btn-con">
+            <button
+              class="sr11-btn-deny"
+              data-where="permision-deny"
+              data-memberId="${val.memberId}"
+            >
+              Negar
+            </button>
+            <button
+              class="sr11-btn-grant"
+              data-where="permision-grant"
+              data-memberId="${val.memberId}"
+            >
+              Conceder por 5 min
+            </button>
+          </div>
+        </div>
           `;
         }
 
         const dispNow = function () {
           const HTML = `
-        <div
-        data-where="open"
-        data-memberId="${val.memberId}"
-        id="sr7-mem-con-2"
-        class="member-con-2"
-      >
-        <div
+          <div
           data-where="open"
           data-memberId="${val.memberId}"
-          id="sr7-mem-info-con"
-          class="member-info-con"
+          id="sr7-mem-con-2"
+          class="member-con-2"
         >
           <div
             data-where="open"
             data-memberId="${val.memberId}"
-            id="sr7-mem-info-con-2"
-            class="member-info-con-2"
+            id="sr7-mem-info-con"
+            class="member-info-con"
           >
-            <p
-              data-where="open"
-              data-memberId="${val.memberId}"
-              id="sr7-mem-name"
-              class="member-name"
-            >
-              ${val.name}
-            </p>
-
             <div
               data-where="open"
               data-memberId="${val.memberId}"
-              id="sr7-mem-info-con-3"
-              class="member-info-con-3"
+              id="sr7-mem-info-con-2"
+              class="member-info-con-2"
             >
               <p
                 data-where="open"
                 data-memberId="${val.memberId}"
-                id="sr7-mem-level"
-                class="member-level"
+                id="sr7-mem-name"
+                class="member-name"
               >
-                ${val.level}
+                ${val.name}
+              </p>
+    
+              <div
+                data-where="open"
+                data-memberId="${val.memberId}"
+                id="sr7-mem-info-con-3"
+                class="member-info-con-3"
+              >
+                <p
+                  data-where="open"
+                  data-memberId="${val.memberId}"
+                  id="sr7-mem-level"
+                  class="member-level"
+                >
+                  ${val.level}
+                </p>
+              </div>
+            </div>
+    
+            <button
+              class="sr23-btn-vedit"
+              data-where="info"
+              id="sr7-btn-meminfo"
+              class="btn-member-info"
+              data-memberId="${val.memberId}"
+            >
+              Info
+            </button>
+          </div>
+    
+          <div
+            data-where="open"
+            data-memberId="${val.memberId}"
+            id="sr7-mem-week-data-con"
+            class="member-week-data-con"
+          >
+            <div
+              data-where="open"
+              data-memberId="${val.memberId}"
+              id="sr7-mem-week-data-con-2"
+              class="member-week-data-con-2"
+            >
+              <p
+                data-where="open"
+                data-memberId="${val.memberId}"
+                id="sr7-mem-week-number"
+                class="member-week-number"
+              >
+                Información de la última semana
               </p>
             </div>
+            <div
+              data-where="open"
+              data-memberId="${val.memberId}"
+              id="sr7-mem-week-data-con-3"
+              class="member-week-data-con-3"
+            >
+              <div
+                data-where="open"
+                data-memberId="${val.memberId}"
+                id="sr7-mem-data-time"
+                class="member-data-time"
+              >
+                <p
+                  data-where="open"
+                  data-memberId="${val.memberId}"
+                  id="sr7-mem-data-time-text"
+                  class="member-data-time-text"
+                >
+                  Horas
+                </p>
+                <p
+                  data-where="open"
+                  data-memberId="${val.memberId}"
+                  id="sr7-mem-data-time-time"
+                  class="member-data-time-time"
+                >
+                  ${totalTime}
+                </p>
+              </div>
+    
+              <div
+                data-where="open"
+                data-memberId="${val.memberId}"
+                id="sr7-mem-data-pay"
+                class="member-data-pay"
+              >
+                <p
+                  data-where="open"
+                  data-memberId="${val.memberId}"
+                  id="sr7-mem-data-pay-text"
+                  class="member-data-pay-text"
+                >
+                  Salario
+                </p>
+                <p
+                  data
+                  -where="open"
+                  data-memberId="${val.memberId}"
+                  id="sr7-mem-data-pay-pay"
+                  class="member-data-pay-pay"
+                >
+                  ${salary}
+                </p>
+              </div>
+    
+              <div
+                data-where="open"
+                data-memberId="${val.memberId}"
+                id="sr7-mem-data-total-pay"
+                class="member-data-total-pay"
+              >
+                <p
+                  data-where="open"
+                  data-memberId="${val.memberId}"
+                  id="sr7-mem-data-total-pay-text"
+                  class="member-data-total-pay-text"
+                >
+                  Pago
+                </p>
+                <p
+                  data-where="open"
+                  data-memberId="${val.memberId}"
+                  id="sr7-mem-data-total-pay-pay"
+                  class="member-data-total-pay-pay"
+                >
+                  ${totalPay}
+                </p>
+              </div>
+            </div>
           </div>
-
           ${btnPermision}
-
-          <button class="sr23-btn-vedit"
-          data-where="info"
-          id="sr7-btn-meminfo"
-          class="btn-member-info" data-memberId="${val.memberId}">
-          Info
-          </button>
         </div>
-
-        <div
-          data-where="open"
-          data-memberId="${val.memberId}"
-          id="sr7-mem-week-data-con"
-          class="member-week-data-con"
-        >
-          <div
-            data-where="open"
-            data-memberId="${val.memberId}"
-            id="sr7-mem-week-data-con-2"
-            class="member-week-data-con-2"
-          >
-            <p
-              data-where="open"
-              data-memberId="${val.memberId}"
-              id="sr7-mem-week-number"
-              class="member-week-number"
-            >
-              Información de la última semana
-            </p>
-          </div>
-          <div
-            data-where="open"
-            data-memberId="${val.memberId}"
-            id="sr7-mem-week-data-con-3"
-            class="member-week-data-con-3"
-          >
-            <div
-              data-where="open"
-              data-memberId="${val.memberId}"
-              id="sr7-mem-data-time"
-              class="member-data-time"
-            >
-              <p
-                data-where="open"
-                data-memberId="${val.memberId}"
-                id="sr7-mem-data-time-text"
-                class="member-data-time-text"
-              >
-                Horas
-              </p>
-              <p
-                data-where="open"
-                data-memberId="${val.memberId}"
-                id="sr7-mem-data-time-time"
-                class="member-data-time-time"
-              >
-                ${totalTime}
-              </p>
-            </div>
-
-            <div
-              data-where="open"
-              data-memberId="${val.memberId}"
-              id="sr7-mem-data-pay"
-              class="member-data-pay"
-            >
-              <p
-                data-where="open"
-                data-memberId="${val.memberId}"
-                id="sr7-mem-data-pay-text"
-                class="member-data-pay-text"
-              >
-                Salario
-              </p>
-              <p
-                data
-                -where="open"
-                data-memberId="${val.memberId}"
-                id="sr7-mem-data-pay-pay"
-                class="member-data-pay-pay"
-              >
-                ${salary}
-              </p>
-            </div>
-
-            <div
-              data-where="open"
-              data-memberId="${val.memberId}"
-              id="sr7-mem-data-total-pay"
-              class="member-data-total-pay"
-            >
-              <p
-                data-where="open"
-                data-memberId="${val.memberId}"
-                id="sr7-mem-data-total-pay-text"
-                class="member-data-total-pay-text"
-              >
-                Pago
-              </p>
-              <p
-                data-where="open"
-                data-memberId="${val.memberId}"
-                id="sr7-mem-data-total-pay-pay"
-                class="member-data-total-pay-pay"
-              >
-                ${totalPay}
-              </p>
-            </div>
-          </div>
-        </div>
-      </div>
           `;
 
           conMemberDisplay.insertAdjacentHTML("afterBegin", HTML);
