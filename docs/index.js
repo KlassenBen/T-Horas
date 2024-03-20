@@ -117,6 +117,7 @@ const sr23 = document.querySelector("#sr23");
 const sr24 = document.querySelector("#sr24");
 const sr25 = document.querySelector("#sr25");
 const sr26 = document.querySelector("#sr26");
+const sr27 = document.querySelector("#sr27");
 
 // <-- Buttons
 const btnWeekSelectForward = document.querySelector(
@@ -155,6 +156,9 @@ const btnsr7GoPro = document.querySelector("#sr7-go-pro");
 const sr26btnSetPlan = document.querySelector("#sr26-btn-set-plan");
 const sr26btnSetAdminLevel = document.querySelector(
   "#sr26-btn-set-admin-level"
+);
+const sr27btnAskWritePermisio = document.querySelector(
+  "#sr27-btn-ask-permision"
 );
 
 // <-- Join Team
@@ -210,6 +214,7 @@ const btnSaveSr21 = document.querySelector("#sr21-btn-time-picker-save");
 const btnsr24Back = document.querySelector("#sr24-tb-btn-back");
 const btnsr25Back = document.querySelector("#sr25-tb-btn-back");
 const btnsr26EditAccount = document.querySelector("#sr26-tb-btn-back");
+const btnsr27Cancel = document.querySelector("#sr27-btn-cancel");
 
 const firebaseConfig = {
   apiKey: "AIzaSyA30VKmZDuM0Xv0z-CuG5o6C-4lU4Z-u64",
@@ -423,6 +428,7 @@ class App {
           this._onSnapshot("accounts", this.#curData.teamCode);
           this._accountProCheck();
           btnBackTbSr11.style.display = "flex";
+          this._onSnapshotCollectoion();
         }
         console.log(this.#curData.level);
         if (this.#curData.level === "miembro") {
@@ -436,6 +442,30 @@ class App {
     }, 100);
   }
   // TODO: INIT ENDS HERE
+
+  _onSnapshotCollectoion(name, listen) {
+    // TODO: REAL TIME listen on a collection
+    const q = query(collection(db, `accounts/${this.#curData.teamCode}/team`));
+    console.log(q);
+    onSnapshot(
+      collection(db, `accounts/${this.#curData.teamCode}/team`),
+      () => {
+        Notification.requestPermission().then((perm) => {
+          console.log(perm);
+          if (perm == "granted") {
+            console.log("all good noti");
+
+            // {
+            //   body: "there were changes on your team",
+            //   icon: "images/THoras App logo 2.png",
+            // }
+            const notifi = new Notification("THoras");
+          }
+        });
+        console.log("new stuff");
+      }
+    );
+  }
 
   _onSnapshot(name, listen) {
     //line 1726 for try
@@ -578,14 +608,14 @@ class App {
     });
   }
 
-  _onSnapshot(name, listen) {
-    //line 1726 for try
-    // TODO: REAL TIME update on data
-    const unsub = onSnapshot(doc(db, name, listen), (doc) => {
-      this._saveToLocal("curData", doc.data());
-      console.log("Updated data: ", doc.data());
-    });
-  }
+  // _onSnapshot(name, listen) {
+  //   //line 1726 for try
+  //   // TODO: REAL TIME update on data
+  //   const unsub = onSnapshot(doc(db, name, listen), (doc) => {
+  //     this._saveToLocal("curData", doc.data());
+  //     console.log("Updated data: ", doc.data());
+  //   });
+  // }
 
   _displayMemberOnly() {
     btnBackTbSr11.style.display = "none";
@@ -1131,6 +1161,10 @@ class App {
       srdisp = sr26;
       perdisp = 390 * 24;
     }
+    if (srDisp === "sr27") {
+      srdisp = sr27;
+      perdisp = 390 * 25;
+    }
 
     // <-- Hide
     if (srHide === "sr1") {
@@ -1207,6 +1241,9 @@ class App {
     }
     if (srHide === "sr26") {
       srhide = sr26;
+    }
+    if (srHide === "sr27") {
+      srhide = sr27;
     }
 
     const style = window.getComputedStyle(srhide);
@@ -1677,12 +1714,32 @@ class App {
       headerTeamImg.src = this.#curData.teamImg;
       headerTeamName.textContent = this.#curData.teamName;
       docSnap.forEach((doc) => {
+        let btnPermision = ``;
         let val;
         let salary;
         let totalPay;
         let totalTime;
 
         val = doc.data();
+
+        // TODO:start here wtih granting or denying permision Already designed in figma
+
+        if (val.writePermisionRequest === "pending") {
+          btnPermision = `          
+          <button class="sr23-btn-permision-grant"
+          data-where="permision-grant"
+          id="sr7-btn-meminfo"
+          class="btn-member-info" data-memberId="${val.memberId}">
+          Concerder
+          </button>
+          <button class="sr23-permision-deny"
+          data-where="permision-deny"
+          id="sr7-btn-meminfo"
+          class="btn-member-info" data-memberId="${val.memberId}">
+          negar
+          </button>
+          `;
+        }
 
         const dispNow = function () {
           const HTML = `
@@ -1729,12 +1786,15 @@ class App {
               </p>
             </div>
           </div>
+
+          ${btnPermision}
+
           <button class="sr23-btn-vedit"
           data-where="info"
           id="sr7-btn-meminfo"
           class="btn-member-info" data-memberId="${val.memberId}">
           Info
-        </button>
+          </button>
         </div>
 
         <div
@@ -3040,6 +3100,25 @@ class App {
     }
   }
 
+  _askWritePermision() {
+    console.log("Can I write my hours down?");
+
+    this._updateData(
+      `accounts/${this.#curData.teamCode}/team`,
+      this.#curData.memberId,
+      {
+        writePermisionRequest: "pending",
+      }
+    );
+    this._srGetStartedDispChoose("sr11", "sr27", "right");
+
+    this._disdSuccessErrorMessage(
+      "Solisitaste permiso para hacer cambios en tus horas",
+      "ex",
+      3300
+    );
+  }
+
   //Start Up End
 
   _events() {
@@ -3066,6 +3145,9 @@ class App {
 
     // <-- OTHER
 
+    sr27btnAskWritePermisio.addEventListener("click", () => {
+      this._askWritePermision();
+    });
     sr26btnSetPlan.addEventListener("click", () => {
       this._adminSetPlan();
     });
@@ -3096,6 +3178,9 @@ class App {
     });
     sr5UploadImgCon.addEventListener("click", () => {
       this._openImgUpload("sr5");
+    });
+    btnsr27Cancel.addEventListener("click", () => {
+      this._srGetStartedDispChoose("sr11", "sr27", "right");
     });
 
     // <-- JOIN TEAM
@@ -3410,16 +3495,43 @@ class App {
     // <-- hour screen
     sr11.addEventListener("click", (e) => {
       if (e.target.dataset.do === "open-time-picker") {
-        if (e.target.dataset.stnd === "start") {
-          sr21TimePickerInOutText.textContent = "entrada";
+        console.log(this.#curData.writePermision);
+        if (this.#curData.writePermision !== "false") {
+          if (e.target.dataset.stnd === "start") {
+            sr21TimePickerInOutText.textContent = "entrada";
+          }
+          if (e.target.dataset.stnd === "end") {
+            sr21TimePickerInOutText.textContent = "salida";
+          }
+          this.#timePickerUpdateDay = e.target.dataset.day;
+          this.#timePickerUpdatestnd = e.target.dataset.stnd;
+          this.#timePickerUpdatetype = e.target.dataset.type;
+          this._srGetStartedDispChoose("sr21", "sr11", "none");
+        } else {
+          if (
+            this.#curData.writeTimePermisionStart +
+              this.#curData.writeTimePermisionEnd >=
+            this._getTimeStamp()
+          ) {
+            if (e.target.dataset.stnd === "start") {
+              sr21TimePickerInOutText.textContent = "entrada";
+            }
+            if (e.target.dataset.stnd === "end") {
+              sr21TimePickerInOutText.textContent = "salida";
+            }
+            this.#timePickerUpdateDay = e.target.dataset.day;
+            this.#timePickerUpdatestnd = e.target.dataset.stnd;
+            this.#timePickerUpdatetype = e.target.dataset.type;
+            this._srGetStartedDispChoose("sr21", "sr11", "none");
+          } else {
+            this._srGetStartedDispChoose("sr27", "sr11", "none");
+            this._disdSuccessErrorMessage(
+              "No tienes permiso de apountar tus propias horas",
+              "er",
+              3000
+            );
+          }
         }
-        if (e.target.dataset.stnd === "end") {
-          sr21TimePickerInOutText.textContent = "salida";
-        }
-        this.#timePickerUpdateDay = e.target.dataset.day;
-        this.#timePickerUpdatestnd = e.target.dataset.stnd;
-        this.#timePickerUpdatetype = e.target.dataset.type;
-        this._srGetStartedDispChoose("sr21", "sr11", "none");
       }
     });
 
