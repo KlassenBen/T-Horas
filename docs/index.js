@@ -405,10 +405,11 @@ class App {
           this._accountProCheck();
           btnBackTbSr11.style.display = "flex";
         }
+        console.log(this.#curData);
         if (this.#curData.level === "asistente") {
           this._onSnapshot(
             `accounts/${this.#curData.teamCode}/team`,
-            this.#curMemberInfo.memberId
+            this.#curData.memberId
           );
           this._displayMembers("sr22");
           btnBackTbSr11.style.display = "flex";
@@ -1728,23 +1729,12 @@ class App {
               </p>
             </div>
           </div>
-
-          <svg
-            data-where="info"
-            data-memberId="${val.memberId}"
-            id="sr7-btn-meminfo"
-            class="btn-member-info"
-            xmlns="http://www.w3.org/2000/svg"
-            width="32"
-            height="34"
-            viewBox="0 0 32 34"
-            fill="none"
-          >
-            <path
-              d="M0 0.551147H32V6.0341H0V0.551147ZM0 14.2585H32V19.7415H0V14.2585ZM0 27.9659H32V33.4488H0V27.9659Z"
-              fill="#0085FF"
-            />
-          </svg>
+          <button class="sr23-btn-vedit"
+          data-where="info"
+          id="sr7-btn-meminfo"
+          class="btn-member-info" data-memberId="${val.memberId}">
+          Info
+        </button>
         </div>
 
         <div
