@@ -160,6 +160,7 @@ const sr26btnSetAdminLevel = document.querySelector(
 const sr27btnAskWritePermisio = document.querySelector(
   "#sr27-btn-ask-permision"
 );
+const srtInstallApp = document.querySelector("#sr7-btn-install-app");
 
 // <-- Join Team
 const btnJoinTeamSr1 = document.querySelector("#sr1-btn-join-team");
@@ -3156,6 +3157,11 @@ class App {
 
     // <-- OTHER
 
+    srtInstallApp.addEventListener("click", () => {
+      console.log("install");
+      pwaless.showWidget("install-this-app-on-your-phone");
+      // this._askWritePermision();
+    });
     sr27btnAskWritePermisio.addEventListener("click", () => {
       this._askWritePermision();
     });
@@ -3407,6 +3413,17 @@ class App {
             this._readWeeks();
           });
         });
+      }
+
+      // TODO: start here
+      if (e.target.dataset.where === "permision-deny") {
+        const curMemberIdHere = e.target.dataset.memberid;
+
+        this._updateData(
+          `accounts/${curDataLocal.teamCode}/team`,
+          curMemberIdHere,
+          { writePermisionRequest: "denied" }
+        );
       }
       if (e.target.dataset.where === "info") {
         const curMemberIdHere = e.target.dataset.memberid;

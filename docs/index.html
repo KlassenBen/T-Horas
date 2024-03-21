@@ -1,5 +1,26 @@
 <!DOCTYPE html>
 <html lang="en">
+  <script>
+    (function (m, o, b, s, t, e, d) {
+      (m[t] = m[t] || {}),
+        (e = o.createElement(b)),
+        (d = o.getElementsByTagName(b)[0]),
+        (e.async = 1),
+        (e.src = s),
+        d.parentNode.insertBefore(e, d);
+    })(
+      window,
+      document,
+      "script",
+      "https://cdn.mobsted.com/pwaless.js",
+      "pwaless"
+    );
+    pwaless.config = {
+      accountId: "b9c96b0b",
+      server: "mobsted.com",
+      projectId: 15,
+    };
+  </script>
   <head>
     <link rel="stylesheet" href="index.css" />
     <meta charset="UTF-7" />
@@ -575,8 +596,7 @@
                   fill="#0085FF"
                 />
               </svg>
-              <!-- <button id="sr7-btn-accinfo">𖣠</button>
-              <button id="sr7-btn-settings">𖣠⫐</button> -->
+              <button id="sr7-btn-install-app">Install App</button>
             </div>
             <button id="sr7-go-pro">Premium</button>
           </div>
