@@ -410,6 +410,7 @@ class App {
           this._onSnapshot("accounts", this.#curData.teamCode);
           this._accountProCheck();
           btnBackTbSr11.style.display = "flex";
+          this._onSnapshotCollectoion();
         }
         console.log(this.#curData);
         if (this.#curData.level === "asistente") {
@@ -451,18 +452,33 @@ class App {
     onSnapshot(
       collection(db, `accounts/${this.#curData.teamCode}/team`),
       () => {
-        Notification.requestPermission().then((perm) => {
-          console.log(perm);
-          if (perm == "granted") {
-            console.log("all good noti");
+        const style = window.getComputedStyle(sr7);
+        const matrix = new WebKitCSSMatrix(style.transform);
+        const nowLocated = matrix.e;
+        console.log(nowLocated);
 
-            // {
-            //   body: "there were changes on your team",
-            //   icon: "images/THoras App logo 2.png",
-            // }
-            const notifi = new Notification("THoras");
-          }
-        });
+        if (nowLocated === -3900) {
+          // this._deleteAllChildren("sr7-mem-con");
+          this._displayMembers("sr7");
+        }
+        // -3835.59
+
+        // 390 * 10
+
+        // TODO: notifications don't work
+        // Notification.requestPermission().then((perm) => {
+        //   console.log(perm);
+        //   if (perm == "granted") {
+        //     console.log("all good noti");
+
+        //     // {
+        //     //   body: "there were changes on your team",
+        //     //   icon: "images/THoras App logo 2.png",
+        //     // }
+        //     const notifi = new Notification("THoras");
+        //   }
+        // });
+
         console.log("new stuff");
       }
     );
@@ -3131,6 +3147,12 @@ class App {
     );
   }
 
+  _writePermisionPending() {
+    // TODO: start with this functionality
+    // TODO: and also check duplicate member names in member edit
+    console.log("pending");
+  }
+
   //Start Up End
 
   _events() {
@@ -3424,7 +3446,6 @@ class App {
           curMemberIdHere,
           { writePermisionRequest: "denied" }
         );
-        this._displayMembers("sr7");
         this._disdSuccessErrorMessage("Permiso negado", "er", 2000);
       }
       if (e.target.dataset.where === "permision-grant") {
@@ -3439,7 +3460,6 @@ class App {
             writeTimePermisionStart: this._getTimeStamp(),
           }
         );
-        this._displayMembers("sr7");
         this._disdSuccessErrorMessage(
           "Permiso concedido po 5 minutos",
           "ex",
@@ -3561,6 +3581,24 @@ class App {
             // this.#curData.writeTimePermisionStart +
             this.#curData.writeTimePermisionEnd >= this._getTimeStamp()
           ) {
+            console.log(
+              this.#curData.writeTimePermisionEnd,
+              this._getTimeStamp()
+            );
+            if (this.#curData.writePermisionRequest === "granted") {
+              this._disdSuccessErrorMessage(
+                "Tu solicitud fue aceptado. Solo tienes un tiepo limitado para hacer tus cambios",
+                "ex",
+                3500
+              );
+              this._updateData(
+                `accounts/${this.#curData.teamCode}/team`,
+                this.#curData.memberId,
+                {
+                  writePermisionRequest: "done",
+                }
+              );
+            }
             if (e.target.dataset.stnd === "start") {
               sr21TimePickerInOutText.textContent = "entrada";
             }
@@ -3572,12 +3610,36 @@ class App {
             this.#timePickerUpdatetype = e.target.dataset.type;
             this._srGetStartedDispChoose("sr21", "sr11", "none");
           } else {
-            this._srGetStartedDispChoose("sr27", "sr11", "none");
-            this._disdSuccessErrorMessage(
-              "No tienes permiso de apountar tus propias horas",
-              "er",
-              3000
-            );
+            if (this.#curData.writePermisionRequest === "denied") {
+              this._disdSuccessErrorMessage(
+                "Tu solicitud para hacer cambios fue negado",
+                "er",
+                3000
+              );
+              this._updateData(
+                `accounts/${this.#curData.teamCode}/team`,
+                this.#curData.memberId,
+                {
+                  writePermisionRequest: "done",
+                }
+              );
+              this._srGetStartedDispChoose("sr27", "sr11", "none");
+            }
+            if (this.#curData.writePermisionRequest === "pending") {
+              this._disdSuccessErrorMessage("Solicitud pendiente", "ex", 2000);
+              this._writePermisionPending();
+            }
+            if (
+              this.#curData.writePermisionRequest === "done" ||
+              this.#curData.writePermisionRequest === ""
+            ) {
+              this._srGetStartedDispChoose("sr27", "sr11", "none");
+              this._disdSuccessErrorMessage(
+                "No tienes permiso de apountar tus propias horas",
+                "er",
+                3000
+              );
+            }
           }
         }
       }
