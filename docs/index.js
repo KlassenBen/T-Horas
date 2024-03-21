@@ -3424,6 +3424,27 @@ class App {
           curMemberIdHere,
           { writePermisionRequest: "denied" }
         );
+        this._displayMembers("sr7");
+        this._disdSuccessErrorMessage("Permiso negado", "er", 2000);
+      }
+      if (e.target.dataset.where === "permision-grant") {
+        const curMemberIdHere = e.target.dataset.memberid;
+
+        this._updateData(
+          `accounts/${curDataLocal.teamCode}/team`,
+          curMemberIdHere,
+          {
+            writePermisionRequest: "granted",
+            writeTimePermisionEnd: this._getTimeStamp() + 5 * 60 * 1000,
+            writeTimePermisionStart: this._getTimeStamp(),
+          }
+        );
+        this._displayMembers("sr7");
+        this._disdSuccessErrorMessage(
+          "Permiso concedido po 5 minutos",
+          "ex",
+          2000
+        );
       }
       if (e.target.dataset.where === "info") {
         const curMemberIdHere = e.target.dataset.memberid;
@@ -3537,9 +3558,8 @@ class App {
           this._srGetStartedDispChoose("sr21", "sr11", "none");
         } else {
           if (
-            this.#curData.writeTimePermisionStart +
-              this.#curData.writeTimePermisionEnd >=
-            this._getTimeStamp()
+            // this.#curData.writeTimePermisionStart +
+            this.#curData.writeTimePermisionEnd >= this._getTimeStamp()
           ) {
             if (e.target.dataset.stnd === "start") {
               sr21TimePickerInOutText.textContent = "entrada";
