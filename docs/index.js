@@ -89,6 +89,10 @@ const sr12UploadImgCon = document.querySelector("#sr12-img-upload-con");
 // const sr12ImgCon = document.querySelector("#sr12-img--con");
 const sr5UploadImgCon = document.querySelector("#sr5-img-upload-con");
 // const sr5ImgCon = document.querySelector("#sr5-img--con");
+const sr27RequestPermisionCon = document.querySelector("#sr27-cont-con-2");
+const sr27PendingPermisionCon = document.querySelector(
+  "#sr27-cont-con-pending-2"
+);
 
 // <-- Screens
 const srsGetStarted = document.querySelector("#srs-get-started");
@@ -216,6 +220,9 @@ const btnsr24Back = document.querySelector("#sr24-tb-btn-back");
 const btnsr25Back = document.querySelector("#sr25-tb-btn-back");
 const btnsr26EditAccount = document.querySelector("#sr26-tb-btn-back");
 const btnsr27Cancel = document.querySelector("#sr27-btn-cancel");
+const btnsr27BackPermisionPending = document.querySelector(
+  "#sr27-btn-back-permision-pending"
+);
 
 const firebaseConfig = {
   apiKey: "AIzaSyA30VKmZDuM0Xv0z-CuG5o6C-4lU4Z-u64",
@@ -2326,9 +2333,9 @@ class App {
           }
         } else {
           this._disdSuccessErrorMessage(
-            `No puedes tener 2 miembros con nombres idénticos`,
+            `${inpMemberName.value} ya existe en tu equipo. No puedes tener 2 miembros con nombres idénticos`,
             "er",
-            2500
+            4000
           );
         }
       });
@@ -2575,28 +2582,41 @@ class App {
     } else {
       curDataLocal = this.#curData;
     }
-
-    if (
-      sr16InpMemberName.value.length > 2 &&
-      sr16InpMemberPassword.value.length > 5
-    ) {
-      this._srGetStartedDispChoose("sr22", "sr16", "right");
-      setTimeout(() => {
-        this._updateData(
-          `accounts/${curDataLocal.teamCode}/team`,
-          this.#curMemberInfo.memberId,
-          {
-            name: sr16InpMemberName.value,
-            password: sr16InpMemberPassword.value,
-          }
+    const q = query(
+      collection(db, `accounts/${curDataLocal.teamCode}/team`),
+      where("name", "==", sr16InpMemberName.value)
+    );
+    getDocs(q).then((docSnap) => {
+      if (docSnap.empty === true) {
+        if (
+          sr16InpMemberName.value.length > 2 &&
+          sr16InpMemberPassword.value.length > 5
+        ) {
+          this._srGetStartedDispChoose("sr22", "sr16", "right");
+          setTimeout(() => {
+            this._updateData(
+              `accounts/${curDataLocal.teamCode}/team`,
+              this.#curMemberInfo.memberId,
+              {
+                name: sr16InpMemberName.value,
+                password: sr16InpMemberPassword.value,
+              }
+            );
+            setTimeout(() => {
+              this._displayMembers("sr22");
+            }, 1000);
+          }, 1000);
+        } else {
+          console.error("not valid data");
+        }
+      } else {
+        this._disdSuccessErrorMessage(
+          `${sr16InpMemberName.value} ya existe en tu equipo. No puedes tener 2 miembros con nombres idénticos`,
+          "er",
+          3800
         );
-        setTimeout(() => {
-          this._displayMembers("sr22");
-        }, 1000);
-      }, 1000);
-    } else {
-      console.error("not valid data");
-    }
+      }
+    });
   }
   async _sr16SettingsSaveChanges() {
     let curDataLocal;
@@ -3148,8 +3168,10 @@ class App {
   }
 
   _writePermisionPending() {
-    // TODO: start with this functionality
     // TODO: and also check duplicate member names in member edit
+    sr27PendingPermisionCon.style.display = "flex";
+    sr27RequestPermisionCon.style.display = "none";
+    this._srGetStartedDispChoose("sr27", "sr11", "none");
     console.log("pending");
   }
 
@@ -3219,6 +3241,9 @@ class App {
       this._openImgUpload("sr5");
     });
     btnsr27Cancel.addEventListener("click", () => {
+      this._srGetStartedDispChoose("sr11", "sr27", "right");
+    });
+    btnsr27BackPermisionPending.addEventListener("click", () => {
       this._srGetStartedDispChoose("sr11", "sr27", "right");
     });
 
@@ -3582,8 +3607,7 @@ class App {
             this.#curData.writeTimePermisionEnd >= this._getTimeStamp()
           ) {
             console.log(
-              this.#curData.writeTimePermisionEnd,
-              this._getTimeStamp()
+              this.#curData.writeTimePermisionEnd - this._getTimeStamp()
             );
             if (this.#curData.writePermisionRequest === "granted") {
               this._disdSuccessErrorMessage(
@@ -3623,6 +3647,8 @@ class App {
                   writePermisionRequest: "done",
                 }
               );
+              sr27PendingPermisionCon.style.display = "none";
+              sr27RequestPermisionCon.style.display = "flex";
               this._srGetStartedDispChoose("sr27", "sr11", "none");
             }
             if (this.#curData.writePermisionRequest === "pending") {
@@ -3633,6 +3659,8 @@ class App {
               this.#curData.writePermisionRequest === "done" ||
               this.#curData.writePermisionRequest === ""
             ) {
+              sr27PendingPermisionCon.style.display = "none";
+              sr27RequestPermisionCon.style.display = "flex";
               this._srGetStartedDispChoose("sr27", "sr11", "none");
               this._disdSuccessErrorMessage(
                 "No tienes permiso de apountar tus propias horas",
