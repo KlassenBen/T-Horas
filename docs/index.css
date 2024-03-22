@@ -343,6 +343,7 @@ body {
   justify-content: center;
   align-items: center;
   gap: 10px;
+  background: none;
 
   color: var(--color-blue-100);
   font-family: Inter;
