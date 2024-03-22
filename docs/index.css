@@ -156,7 +156,7 @@ body {
 
 #app-footer p {
   color: var(--color-white);
-  font-family: Open sans;
+  font-family: inter;
   font-size: 16px;
   font-style: normal;
   font-weight: 400;
