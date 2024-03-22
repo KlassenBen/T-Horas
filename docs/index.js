@@ -165,11 +165,13 @@ const sr27btnAskWritePermisio = document.querySelector(
   "#sr27-btn-ask-permision"
 );
 const srtInstallApp = document.querySelector("#sr7-btn-install-app");
+const sr4ResendOTP = document.querySelector("#sr4-btn-resend-code");
 
 // <-- Join Team
 const btnJoinTeamSr1 = document.querySelector("#sr1-btn-join-team");
 const btnJoinAsMemberSr13 = document.querySelector("#sr13-btn-join-as-member");
 const btnJoinAsAdminSr13 = document.querySelector("#sr13-btn-join-as-admin");
+const btnLoginSr1 = document.querySelector("#sr1-btn-login");
 const btnArrowBackSr13 = document.querySelector("#sr13-tb-btn-back");
 const btnBackSr15 = document.querySelector("#sr15-btn-back");
 const btnJoinNowSr15 = document.querySelector("#sr15-btn-join-team");
@@ -413,11 +415,15 @@ class App {
         console.log("Your App has initialized");
 
         if (this.#curData.level === "admin") {
-          this._displayMembers("sr22");
           this._onSnapshot("accounts", this.#curData.teamCode);
-          this._accountProCheck();
-          btnBackTbSr11.style.display = "flex";
-          this._onSnapshotCollectoion();
+          if (this.#curData.teamName.length < 1) {
+            this._srGetStartedDispChoose("sr5", "sr22", "right");
+          } else {
+            // this._displayMembers("sr22");
+            this._accountProCheck();
+            btnBackTbSr11.style.display = "flex";
+            this._onSnapshotCollectoion();
+          }
         }
         console.log(this.#curData);
         if (this.#curData.level === "asistente") {
@@ -429,12 +435,12 @@ class App {
           btnBackTbSr11.style.display = "flex";
         }
         if (this.#curData.level === this.#adminLevel) {
+          this._onSnapshot("accounts", this.#curData.teamCode);
           console.log("admin is top");
           this.#curAccountData = this.#curData;
-          this._displayMembers("sr22");
+          // this._displayMembers("sr22");
           sr20AppAdmin.style.display = "block";
           sr20AppAdminNorm.style.display = "block";
-          this._onSnapshot("accounts", this.#curData.teamCode);
           this._accountProCheck();
           btnBackTbSr11.style.display = "flex";
           this._onSnapshotCollectoion();
@@ -463,11 +469,22 @@ class App {
         const matrix = new WebKitCSSMatrix(style.transform);
         const nowLocated = matrix.e;
         console.log(nowLocated);
-
+        const style2 = window.getComputedStyle(sr22);
+        const matrix2 = new WebKitCSSMatrix(style2.transform);
+        const nowLocated2 = matrix2.e;
+        console.log(nowLocated2);
         if (nowLocated === -3900) {
           // this._deleteAllChildren("sr7-mem-con");
           this._displayMembers("sr7");
         }
+        // setTimeout(() => {
+
+        if (nowLocated2 === -7800) {
+          // this._deleteAllChildren("sr7-mem-con");
+          this._displayMembers("sr22");
+        }
+        // }, 2000);
+
         // -3835.59
 
         // 390 * 10
@@ -2425,7 +2442,8 @@ class App {
     const inpVerificationCode = document.querySelector(
       "#sr3-inp-verification-code"
     );
-    // if (inpVerificationCode.value === this.#otp) {// TODO: activate;
+    // if (inpVerificationCode.value === this.#otp) {
+    //   // TODO: activate;
     this._disdSuccessErrorMessage(`Correo confirmado`, "ex", 2000);
     this._srGetStartedDispChoose("sr22", "sr4", "left");
     this._idGenerator(this.#idLenght, this.#idTakeArrLenght);
@@ -2471,9 +2489,29 @@ class App {
       } else {
       }
     }, 1000);
-    // } else {// TODO: activate;
-    // this._disdSuccessErrorMessage("Código incorrecto", "er", 2000);// TODO: activate;
-    // }// TODO: activate;
+    // } else {
+    //   // TODO: activate;
+    //   this._disdSuccessErrorMessage("Código incorrecto", "er", 2000); // TODO: activate;
+    // } // TODO: activate;
+  }
+
+  _countdownResendOTP() {
+    sr4ResendOTP.textContent = `Reenviar código en 120 seg`;
+    sr4ResendOTP.style.opacity = "50%";
+    sr4ResendOTP.dataset.send = "no send";
+    let sec = 6;
+    // let sec = 119;
+    const timerCountDown = setInterval(function () {
+      sr4ResendOTP.textContent = `Reenviar código en ${sec} seg`;
+      sr4ResendOTP.style.opacity = "50%";
+      sec = sec - 1;
+      if (sec === 0) {
+        clearInterval(timerCountDown);
+        sr4ResendOTP.textContent = `Reenviar código`;
+        sr4ResendOTP.style.opacity = "100%";
+        sr4ResendOTP.dataset.send = "send";
+      }
+    }, 1000);
   }
 
   _createAccountStep1() {
@@ -2500,16 +2538,26 @@ class App {
               this.#email = inpEmail.value;
               this.#password = inpPassword.value;
               this.#otp = this._OTPGenerator(6);
-              // this._sendEmail(    TODO: activate
-              //   inpEmail.value,    TODO: activate
-              //   "thorastrack@gmail.com",    TODO: activate
-              //   this.#otp,    TODO: activate
-              //   "Este es su codigo de verificación para THoras",    TODO: activate
-              //   "Hola",    TODO: activate
-              //   "benklassen19@icloud.com",    TODO: activate
-              //   "+52 996 730 6118"    TODO: activate
-              // );    TODO: activate
+              // this._sendEmail(
+              //   // TODO: activate
+              //   inpEmail.value,
+              //   // TODO: activate
+              //   "thorastrack@gmail.com",
+              //   // TODO: activate
+              //   this.#otp,
+              //   // TODO: activate
+              //   "Este es su codigo de verificación para THoras",
+              //   // TODO: activate
+              //   "Hola",
+              //   // TODO: activate
+              //   "benklassen19@icloud.com",
+              //   // TODO: activate
+              //   "+52 996 730 6118"
+              //   // TODO: activate
+              // );
+              // // TODO: activate
               this._srGetStartedDispChoose("sr4", "sr3", "left");
+              this._countdownResendOTP();
             } else {
               inpPasswordConfErrmess.style.display = "block";
             }
@@ -3175,6 +3223,29 @@ class App {
     console.log("pending");
   }
 
+  _resendOTP() {
+    if (sr4ResendOTP.dataset.send === "send") {
+      this._sendEmail(
+        // TODO: activate
+        this.#email,
+        //  TODO: activate
+        "thorastrack@gmail.com",
+        // TODO: activate
+        this.#otp,
+        // TODO: activate
+        "Este es su codigo de verificación para THoras",
+        // TODO: activate
+        "Hola",
+        //  TODO: activate
+        "benklassen19@icloud.com",
+        // TODO: activate
+        "+52 996 730 6118"
+        // TODO: activate
+      );
+      // TODO: activate
+      this._countdownResendOTP();
+    }
+  }
   //Start Up End
 
   _events() {
@@ -3201,10 +3272,12 @@ class App {
 
     // <-- OTHER
 
+    sr4ResendOTP.addEventListener("click", () => {
+      this._resendOTP();
+    });
     srtInstallApp.addEventListener("click", () => {
       console.log("install");
       pwaless.showWidget("install-this-app-on-your-phone");
-      // this._askWritePermision();
     });
     sr27btnAskWritePermisio.addEventListener("click", () => {
       this._askWritePermision();
@@ -3256,6 +3329,9 @@ class App {
     });
     btnJoinAsAdminSr13.addEventListener("click", () => {
       this._srGetStartedDispChoose("sr18", "sr13", "left");
+    });
+    btnLoginSr1.addEventListener("click", () => {
+      this._srGetStartedDispChoose("sr18", "sr1", "left");
     });
     btnArrowBackSr13.addEventListener("click", () => {
       this._srGetStartedDispChoose("sr1", "sr13", "right");
@@ -3334,7 +3410,7 @@ class App {
       this._srGetStartedDispChoose("sr1", "sr2", "right");
     });
     btnBackSr18.addEventListener("click", () => {
-      this._srGetStartedDispChoose("sr2", "sr18", "right");
+      this._srGetStartedDispChoose("sr1", "sr18", "right");
     });
     btnBackSr3.addEventListener("click", () => {
       this._srGetStartedDispChoose("sr2", "sr3", "right");
@@ -3654,6 +3730,20 @@ class App {
             if (this.#curData.writePermisionRequest === "pending") {
               this._disdSuccessErrorMessage("Solicitud pendiente", "ex", 2000);
               this._writePermisionPending();
+            }
+            if (this.#curData.writePermisionRequest === "granted") {
+              this._disdSuccessErrorMessage(
+                "Tu solicitud fue aceptado. Solo tienes un tiepo limitado para hacer tus cambios",
+                "ex",
+                3500
+              );
+              this._updateData(
+                `accounts/${this.#curData.teamCode}/team`,
+                this.#curData.memberId,
+                {
+                  writePermisionRequest: "done",
+                }
+              );
             }
             if (
               this.#curData.writePermisionRequest === "done" ||

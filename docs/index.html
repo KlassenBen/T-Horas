@@ -26,6 +26,10 @@
     <meta charset="UTF-7" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <title>T Horas</title>
+    <link
+      href="https://fonts.googleapis.com/css?family=Inter:100,200,300,regular,500,600,700,800,900"
+      rel="stylesheet"
+    />
     <script src="https://unpkg.com/axios/dist/axios.min.js"></script>
     <script
       src="https://upload-widget.cloudinary.com/global/all.js"
@@ -231,13 +235,20 @@
                   Código incorrecto
                 </p>
               </div>
-              <button
-                class="btn-none-active-resend-conf-code"
-                id="sr4-btn-resend-code"
-              >
-                Reenviar Código en
-                <span id="sr4-btn-resend-code-time">1:58</span>
-              </button>
+              <div id="sr4-resend-con">
+                <div id="sr4-resend-text-con">
+                  <p id="sr4-resend-text">¿No recibiste el código?</p>
+                  <p id="sr4-resend-text-2">Puedes reenviarlo</p>
+                </div>
+
+                <button
+                  class="btn-none-active-resend-conf-code"
+                  id="sr4-btn-resend-code"
+                  data-send="no send"
+                >
+                  Reenviar Código en 120 seg
+                </button>
+              </div>
             </div>
             <div id="sr4-btn-con" class="contbx-btn-con">
               <button id="sr4-btn-back" class="contbx-btn-back">Atras</button>
@@ -1119,9 +1130,7 @@
 
             <!-- TODO: Hour lines start here -->
             <div id="sr11-daily-hours-monday" class="daily-hours-con">
-              <p id="sr11-daily-hours-monday-day" class="daily-hours-day">
-                lunes
-              </p>
+              <p id="sr11-daily-hours-monday-day" class="daily-hours-day">Lu</p>
               <div id="sr11-daily-hours-monday-con" class="daily-hours-con-2">
                 <p
                   id="sr11-daily-hours-monday-start"
@@ -1154,7 +1163,7 @@
 
             <div id="sr11-daily-hours-tuesday" class="daily-hours-con">
               <p id="sr11-daily-hours-tuesday-day" class="daily-hours-day">
-                martes
+                Ma
               </p>
               <div id="sr11-daily-hours-tuesday-con" class="daily-hours-con-2">
                 <p
@@ -1188,7 +1197,7 @@
 
             <div id="sr11-daily-hours-wednesday" class="daily-hours-con">
               <p id="sr11-daily-hours-wednesday-day" class="daily-hours-day">
-                miércoles
+                Mi
               </p>
               <div
                 id="sr11-daily-hours-wednesday-con"
@@ -1225,7 +1234,7 @@
 
             <div id="sr11-daily-hours-thursday" class="daily-hours-con">
               <p id="sr11-daily-hours-thursday-day" class="daily-hours-day">
-                jueves
+                Ju
               </p>
               <div id="sr11-daily-hours-thursday-con" class="daily-hours-con-2">
                 <p
@@ -1258,9 +1267,7 @@
             </div>
 
             <div id="sr11-daily-hours-friday" class="daily-hours-con">
-              <p id="sr11-daily-hours-friday-day" class="daily-hours-day">
-                viernes
-              </p>
+              <p id="sr11-daily-hours-friday-day" class="daily-hours-day">Vi</p>
               <div id="sr11-daily-hours-friday-con" class="daily-hours-con-2">
                 <p
                   id="sr11-daily-hours-friday-start"
@@ -1293,7 +1300,7 @@
 
             <div id="sr11-daily-hours-saturday" class="daily-hours-con">
               <p id="sr11-daily-hours-saturday-day" class="daily-hours-day">
-                sábado
+                Sa
               </p>
               <div id="sr11-daily-hours-saturday-con" class="daily-hours-con-2">
                 <p
@@ -1326,9 +1333,7 @@
             </div>
 
             <div id="sr11-daily-hours-sunday" class="daily-hours-con">
-              <p id="sr11-daily-hours-sunday-day" class="daily-hours-day">
-                domingo
-              </p>
+              <p id="sr11-daily-hours-sunday-day" class="daily-hours-day">Do</p>
               <div id="sr11-daily-hours-sunday-con" class="daily-hours-con-2">
                 <p
                   id="sr11-daily-hours-sunday-start"
