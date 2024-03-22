@@ -75,7 +75,7 @@ body {
 #app-header {
   width: 390px;
   display: flex;
-  padding: 24px 0px 8px 0px;
+  padding: 8px 0px 8px 0px;
   align-items: flex-end;
   gap: 16px;
   align-self: stretch;
