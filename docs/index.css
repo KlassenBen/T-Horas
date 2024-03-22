@@ -260,7 +260,7 @@ body {
   gap: 10px;
   align-self: stretch;
   border-radius: 10px;
-  background: var(--color-orange-100);
+  background: var(--color-blue-100);
 }
 #sr1-onboarding-vid {
   display: flex;
