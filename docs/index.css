@@ -622,7 +622,7 @@ body {
   justify-content: center;
   align-items: center;
   gap: 8px;
-  border-radius: 25px;
+  border-radius: 15px;
   background: var(--color-blue-100);
 
   color: var(--color-white);
@@ -639,7 +639,7 @@ body {
   justify-content: center;
   align-items: center;
   gap: 8px;
-  border-radius: 25px;
+  border-radius: 15px;
   border: 1px solid var(--color-blue-100);
 
   color: var(--color-blue-100);
