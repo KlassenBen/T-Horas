@@ -418,6 +418,7 @@ class App {
           this._onSnapshot("accounts", this.#curData.teamCode);
           if (this.#curData.teamName.length < 1) {
             this._srGetStartedDispChoose("sr5", "sr22", "right");
+            this._eventTeamCodeDisp();
           } else {
             // this._displayMembers("sr22");
             this._accountProCheck();
@@ -711,44 +712,49 @@ class App {
     const inpEmail = document.querySelector("#sr18-inp-email");
     const inpPassword = document.querySelector("#sr18-inp-password");
 
-    if (
-      inpEmail.value.includes("@") &&
-      inpEmail.value.length > 4 &&
-      inpPassword.value.length > 3
-    ) {
-      const q = query(
-        collection(db, "accounts"),
-        where("email", "==", inpEmail.value)
-      );
-      getDocs(q).then((docSnap) => {
-        if (docSnap.empty === true) {
-          console.error("no such account found");
-          this._disdSuccessErrorMessage(
-            `No hay cuenta con este correo. Crea una cuenta primero`,
-            "er",
-            3500
-          );
-        } else {
-          docSnap.forEach((doc) => {
-            const val = doc.data();
-            if (inpPassword.value === val.accountPassword) {
-              this._srGetStartedDispChoose("sr22", "sr18", "left");
-
-              console.log("your was found");
-              this.#curData = val;
-              this._saveToLocal("curData", this.#curData);
-              this._init("sr22");
-            } else {
-              document.querySelector(
-                "#sr18-inp-password-errmess"
-              ).style.display = "block";
-            }
-          });
-        }
-      });
+    if (navigator.onLine) {
+      if (
+        inpEmail.value.includes("@") &&
+        inpEmail.value.length > 4 &&
+        inpPassword.value.length > 3
+      ) {
+        const q = query(
+          collection(db, "accounts"),
+          where("email", "==", inpEmail.value)
+        );
+        getDocs(q).then((docSnap) => {
+          if (docSnap.empty === true) {
+            this._disdSuccessErrorMessage(
+              `No hay cuenta con este correo. Crea una cuenta primero.`,
+              "er",
+              3500
+            );
+          } else {
+            docSnap.forEach((doc) => {
+              const val = doc.data();
+              if (inpPassword.value === val.accountPassword) {
+                this._srGetStartedDispChoose("sr22", "sr18", "left");
+                this.#curData = val;
+                this._saveToLocal("curData", this.#curData);
+                this._init("sr22");
+              } else {
+                document.querySelector(
+                  "#sr18-inp-password-errmess"
+                ).style.display = "block";
+              }
+            });
+          }
+        });
+      } else {
+        this._disdSuccessErrorMessage(
+          `La información no es suficiente para iniciar sesión.`,
+          "er",
+          3000
+        );
+      }
     } else {
       this._disdSuccessErrorMessage(
-        `La información no es suficiente para iniciar sesión.`,
+        `Parece que no hay conexión a internet. Revisa tu conexión, e intenta de nuevo.`,
         "er",
         3000
       );
@@ -763,7 +769,7 @@ class App {
       "#sr15-inp-member-pass"
     );
 
-    if (inpTeamCode.value.length === this.#idLenght) {
+    if (navigator.onLine) {
       if (
         inpTeamMemberName.value.length > 0 &&
         inpTeamMemberPassword.value.length > 0
@@ -774,10 +780,15 @@ class App {
         );
         getDocs(q).then((docSnap) => {
           if (docSnap.empty === true) {
-            console.error(`no such team found with ${inpTeamCode.value}`);
+            this._disdSuccessErrorMessage(
+              `No encontramos "${inpTeamMemberName.value}" este equipo. Revisa tu código de equipo e intentalo de nuevo.`,
+              "er",
+              5900
+            );
           } else {
             docSnap.forEach((doc) => {
               const val = doc.data();
+              const teamNameToShow = val.teamName;
 
               // <-- secondary search start
               const q2 = query(
@@ -786,8 +797,10 @@ class App {
               );
               getDocs(q2).then((docSnap) => {
                 if (docSnap.empty === true) {
-                  console.error(
-                    `no ${inpTeamMemberName.value} member found in this team`
+                  this._disdSuccessErrorMessage(
+                    `No encontramos a "${inpTeamMemberName.value}" en este equipo.`,
+                    "er",
+                    3000
                   );
                 } else {
                   docSnap.forEach((doc) => {
@@ -796,8 +809,10 @@ class App {
                     if (inpTeamMemberPassword.value === val.password) {
                       // this._srGetStartedDispChoose("sr22", "sr18", "left");
 
-                      console.log(
-                        `you joined team with ${inpTeamCode.value} team code`
+                      this._disdSuccessErrorMessage(
+                        `Éxito. Te uniste al equipo "${teamNameToShow}".`,
+                        "ex",
+                        3000
                       );
                       this.#curData = val;
                       console.log(val);
@@ -806,9 +821,15 @@ class App {
                       btnBackTbSr11.style.display = "none";
                       // this._displayMembers("sr22");
                     } else {
-                      console.error("incorect password");
+                      this._disdSuccessErrorMessage(
+                        `Contraseña incorrecta`,
+                        "er",
+                        3000
+                      );
+                      document.querySelector(
+                        "#sr15-inp-member-pass-errmess"
+                      ).style.display = "block";
                     }
-                    console.log(val);
                   });
                 }
               });
@@ -817,10 +838,18 @@ class App {
           }
         });
       } else {
-        console.error("name or password incorect length. Can not be empty");
+        this._disdSuccessErrorMessage(
+          "Inserte la información necesaria.",
+          "er",
+          2500
+        );
       }
     } else {
-      console.error("teamCode incorect length. 16 digits only");
+      this._disdSuccessErrorMessage(
+        "Parece que no tienes conexión a internet. verifique tu conexión y vuelve a intentarlo.",
+        "er",
+        7000
+      );
     }
   }
 
@@ -1070,7 +1099,7 @@ class App {
 
     const disp = function () {
       mesText.textContent = text;
-      mesCon.style.transform = `translateY(210px)`;
+      mesCon.style.transform = `translateY(300px)`;
 
       setTimeout(() => {
         mesCon.style.transform = `translateY(0px)`;
@@ -2367,6 +2396,7 @@ class App {
 
   _createTeamStep2() {
     const inpTeamPay = document.querySelector("#sr6-inp-pay");
+    const inpTeamPayErrMess = document.querySelector("#sr6-inp-pay-errmess");
     this.#curData = this._getFromLocal("curData");
 
     let curDataLocal;
@@ -2384,23 +2414,29 @@ class App {
       headerTeamImg.src = curDataLocal.teamImg;
       headerTeamName.textContent = curDataLocal.teamName;
     } else {
-      console.error("not right length", inpTeamPay.value.length);
+      this._disdSuccessErrorMessage(
+        "Inserte la información necesaria.",
+        "er",
+        2000
+      );
+      inpTeamPayErrMess.style.display = "block";
     }
   }
 
   _eventTeamCodeDisp() {
-    let curDataLocal;
-    if (this.#curData.level === this.#adminLevel) {
-      curDataLocal = this.#curAccountData;
-    } else {
-      curDataLocal = this.#curData;
-    }
-
+    console.log("all go");
     const inpTeamName = document.querySelector("#sr5-inp-team-name");
-    const dispTeamCode = document.querySelector("#sr5-generate-team-code");
-    inpTeamName.addEventListener("focus", () => {
-      this.#curData = this._getFromLocal("curData");
-      dispTeamCode.textContent = curDataLocal.teamCode;
+    const inpSuccMess = document.querySelector(
+      "#sr5-inp-create-team-name-succmess"
+    );
+    inpTeamName.addEventListener("keyup", () => {
+      if (inpTeamName.value.length > 2 && inpTeamName.value.length < 17) {
+        inpSuccMess.style.display = "block";
+        console.log("good");
+      } else {
+        console.log("no good");
+        inpSuccMess.style.display = "none";
+      }
     });
   }
 
@@ -2421,7 +2457,7 @@ class App {
       imgUrl = "";
     }
 
-    if (inpTeamName.value.length > 4 && inpTeamName.value.length < 16) {
+    if (inpTeamName.value.length > 2 && inpTeamName.value.length < 17) {
       this._updateData("accounts", curDataLocal.teamCode, {
         teamName: inpTeamName.value,
         teamImg: imgUrl,
@@ -2430,7 +2466,11 @@ class App {
       console.log("right length", inpTeamName.value.length);
       this._srGetStartedDispChoose("sr6", "sr5", "left");
     } else {
-      console.error("not right length", inpTeamName.value.length);
+      this._disdSuccessErrorMessage(
+        "El nombre de equipo no puede tener menos de 3 o mas de 16 caráteres.",
+        "er",
+        3300
+      );
     }
 
     // const dispTeamCode = document.querySelector("#sr5-generate-team-code");
@@ -2484,7 +2524,7 @@ class App {
         this._uploadData("accounts", this.#curUseId, acc);
         // TODO: function to continue creating an account ghoes here it waits till the id is available
         this._saveToLocal("curData", acc);
-        // this._eventTeamCodeDisp();
+        this._eventTeamCodeDisp();
         this._srGetStartedDispChoose("sr5", "sr22", "left");
       } else {
       }
@@ -2522,61 +2562,75 @@ class App {
       "#sr3-inp-confpass-errmess"
     );
 
-    const q = query(
-      collection(db, "accounts"),
-      where("email", "==", inpEmail.value)
-    );
-    getDocs(q).then((docSnap) => {
-      if (docSnap.empty === true) {
-        if (
-          inpEmail.value != "" &&
-          inpPassword.value != "" &&
-          inpPasswordConf.value != ""
-        ) {
-          if (inpPassword.value.length > 5) {
-            if (inpPassword.value === inpPasswordConf.value) {
-              this.#email = inpEmail.value;
-              this.#password = inpPassword.value;
-              this.#otp = this._OTPGenerator(6);
-              // this._sendEmail(
-              //   // TODO: activate
-              //   inpEmail.value,
-              //   // TODO: activate
-              //   "thorastrack@gmail.com",
-              //   // TODO: activate
-              //   this.#otp,
-              //   // TODO: activate
-              //   "Este es su codigo de verificación para THoras",
-              //   // TODO: activate
-              //   "Hola",
-              //   // TODO: activate
-              //   "benklassen19@icloud.com",
-              //   // TODO: activate
-              //   "+52 996 730 6118"
-              //   // TODO: activate
-              // );
-              // // TODO: activate
-              this._srGetStartedDispChoose("sr4", "sr3", "left");
-              this._countdownResendOTP();
+    if (navigator.onLine) {
+      if (
+        inpEmail.value != "" &&
+        inpPassword.value != "" &&
+        inpPasswordConf.value != ""
+      ) {
+        const q = query(
+          collection(db, "accounts"),
+          where("email", "==", inpEmail.value)
+        );
+        getDocs(q).then((docSnap) => {
+          if (docSnap.empty === true) {
+            if (inpPassword.value.length > 5) {
+              if (inpPassword.value === inpPasswordConf.value) {
+                this.#email = inpEmail.value;
+                this.#password = inpPassword.value;
+                this.#otp = this._OTPGenerator(6);
+                // this._sendEmail(
+                //   // TODO: activate
+                //   inpEmail.value,
+                //   // TODO: activate
+                //   "thorastrack@gmail.com",
+                //   // TODO: activate
+                //   this.#otp,
+                //   // TODO: activate
+                //   "Este es su codigo de verificación para THoras",
+                //   // TODO: activate
+                //   "Hola",
+                //   // TODO: activate
+                //   "benklassen19@icloud.com",
+                //   // TODO: activate
+                //   "+52 996 730 6118"
+                //   // TODO: activate
+                // );
+                // // TODO: activate
+                this._srGetStartedDispChoose("sr4", "sr3", "left");
+                this._countdownResendOTP();
+              } else {
+                inpPasswordConfErrmess.style.display = "block";
+              }
             } else {
-              inpPasswordConfErrmess.style.display = "block";
+              this._disdSuccessErrorMessage(
+                `Tu contraseña tiene que tener por lo menos 6 carácteres`,
+                "er",
+                2500
+              );
             }
           } else {
             this._disdSuccessErrorMessage(
-              `Tu contraseña tiene que tener por lo menios 6 carácteres`,
+              `Ya hay una cuenta con el correo "${inpEmail.value}". Inicia sesión o intenta usar un correo diferente.`,
               "er",
-              2500
+              8000
             );
           }
-        }
+        });
       } else {
         this._disdSuccessErrorMessage(
-          `Ya hay una cuenta con el correo ${inpEmail.value}. Inicia sesión o intenta usar un correo diferente.`,
+          `La información no es suficiente.`,
           "er",
-          8000
+          2300
         );
       }
-    });
+    } else {
+      this._disdSuccessErrorMessage(
+        `Parece que no hay conexión a internet. Revisa tu conexión e intenta de nuevo.`,
+        "er",
+        3000
+      );
+    }
   }
 
   _setSwiChangeMemberInfo(write, level) {
