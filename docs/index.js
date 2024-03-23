@@ -477,14 +477,10 @@ class App {
         if (nowLocated === -3900) {
           // this._deleteAllChildren("sr7-mem-con");
           this._displayMembers("sr7");
-        }
-        // setTimeout(() => {
-
-        if (nowLocated2 === -7800) {
+        } else if (nowLocated2 === -7800) {
           // this._deleteAllChildren("sr7-mem-con");
           this._displayMembers("sr22");
         }
-        // }, 2000);
 
         // -3835.59
 
