@@ -1559,13 +1559,14 @@ class App {
     return timeFormated;
   }
 
-  _updateEntries(time) {
+  _updateEntries(time, reset) {
     let curDataLocal;
     if (this.#curData.level === this.#adminLevel) {
       curDataLocal = this.#curAccountData;
     } else {
       curDataLocal = this.#curData;
     }
+    console.log(this.#curMemberInfo.memberId);
     let IndexDayVal;
 
     if (this.#timePickerUpdateDay === "monday") {
@@ -1593,6 +1594,14 @@ class App {
     console.log("time: ", time);
 
     const updateIn = () => {
+      console.log(curDataLocal.memberId);
+      this._updateData(
+        `accounts/${curDataLocal.teamCode}/team`,
+        this.#curMemberInfo.memberId,
+        {
+          lastModified: this._getTimeStamp(),
+        }
+      );
       this.#curWeek.days[IndexDayVal].in = time;
       console.log(this.#curWeek);
       this._srGetStartedDispChoose("sr11", "sr21", "right");
@@ -1615,6 +1624,13 @@ class App {
     };
 
     const updateOut = () => {
+      this._updateData(
+        `accounts/${curDataLocal.teamCode}/team`,
+        this.#curMemberInfo.memberId,
+        {
+          lastModified: this._getTimeStamp(),
+        }
+      );
       this.#curWeek.days[IndexDayVal].out = time;
       this._srGetStartedDispChoose("sr11", "sr21", "right");
 
@@ -1657,6 +1673,11 @@ class App {
             );
 
           updateIn();
+          this._disdSuccessErrorMessage(
+            "Tiempo de entrada Guardado.",
+            "ex",
+            1000
+          );
         } else {
           const timeArr = this.#curWeek.days[IndexDayVal].out.split(":");
           const timehour = Number(timeArr[0]);
@@ -1668,22 +1689,50 @@ class App {
                 this.#curWeek.days[IndexDayVal].out
               );
             updateIn();
+            if (time === "0:00") {
+              this._disdSuccessErrorMessage(
+                "Tu tiempo de entrada ha sido restablecido.",
+                "ex",
+                1000
+              );
+            } else {
+              this._disdSuccessErrorMessage(
+                "Tiempo de entrada Guardado.",
+                "ex",
+                1000
+              );
+            }
           }
-          if (entryhour === timehour) {
-            if (entrymin < timemin) {
+          if (entryhour === timehour || time === "0:00") {
+            if (entrymin < timemin || time === "0:00") {
               this.#curWeek.days[IndexDayVal].totalTime =
                 this._calculateTimeBetween(
                   time,
                   this.#curWeek.days[IndexDayVal].out
                 );
               updateIn();
+              if (time !== "0:00") {
+                this._disdSuccessErrorMessage(
+                  "Tiempo de entrada Guardado.",
+                  "ex",
+                  1000
+                );
+              }
             }
-            if (entrymin >= timemin) {
-              console.error(`yuor in can't higher than your out`);
+            if (entrymin >= timemin && time !== "0:00") {
+              this._disdSuccessErrorMessage(
+                "Tu tiempo de entrada no pueder ser mayor de tu tiempo de salida.",
+                "er",
+                3500
+              );
             }
           }
-          if (entryhour > timehour) {
-            console.error(`yuor in can't higher than your out`);
+          if (entryhour > timehour && time !== "0:00") {
+            this._disdSuccessErrorMessage(
+              "Tu tiempo de entrada no pueder ser mayor de tu tiempo de salida.",
+              "er",
+              3500
+            );
           }
         }
       }
@@ -1695,6 +1744,19 @@ class App {
               time
             );
           updateOut();
+          if (time === "0:00") {
+            this._disdSuccessErrorMessage(
+              "Tu tiempo de salida ha sido restablecido.",
+              "ex",
+              1000
+            );
+          } else {
+            this._disdSuccessErrorMessage(
+              "Tiempo de salida Guardado.",
+              "ex",
+              1000
+            );
+          }
         } else {
           const timeArr = this.#curWeek.days[IndexDayVal].in.split(":");
           const timehour = Number(timeArr[0]);
@@ -1706,22 +1768,46 @@ class App {
                 time
               );
             updateOut();
+            this._disdSuccessErrorMessage(
+              "Tiempo de salida Guardado.",
+              "ex",
+              1000
+            );
+            console.log(5);
           }
-          if (entryhour === timehour) {
-            if (entrymin > timemin) {
+          console.log(entryhour, entrymin);
+          console.log(time);
+          if (entryhour === timehour || time === "0:00") {
+            if (entrymin > timemin || time === "0:00") {
               this.#curWeek.days[IndexDayVal].totalTime =
                 this._calculateTimeBetween(
                   this.#curWeek.days[IndexDayVal].in,
                   time
                 );
               updateOut();
+              this._disdSuccessErrorMessage(
+                "Tiempo de entrada Guardado.",
+                "ex",
+                1000
+              );
+              console.log(6);
             }
-            if (entrymin <= timemin) {
-              console.error(`yuor out can't lower than your in`);
+            if (entrymin <= timemin && time !== "0:00") {
+              this._disdSuccessErrorMessage(
+                "Tu tiempo de salida no pueder ser menor que tu tiempo de entrada.",
+                "er",
+                3500
+              );
+              console.log(1);
             }
           }
-          if (entryhour < timehour) {
-            console.error(`yuor out can't lower than your in`);
+          if (entryhour < timehour && time !== "0:00") {
+            this._disdSuccessErrorMessage(
+              "Tu tiempo de salida no pueder ser menor que tu tiempo de entrada.",
+              "er",
+              3500
+            );
+            console.log(3);
           }
         }
       }
@@ -3507,10 +3593,12 @@ class App {
       this._srGetStartedDispChoose("sr11", "sr21", "right");
     });
     btnClearSr21.addEventListener("click", () => {
-      this._srGetStartedDispChoose("sr11", "sr21", "right");
+      // this._srGetStartedDispChoose("sr11", "sr21", "right");
+      this._updateEntries("0:00", "reset");
     });
     btnSaveSr21.addEventListener("click", (e) => {
       this._updateEntries(timePicker.value);
+      console.log(timePicker.value);
     });
     btnWeekSelectForward.addEventListener("click", (e) => {
       this._weekSelect("ahead");
