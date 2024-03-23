@@ -49,6 +49,7 @@ body {
   /* overflow: hidden; */
   /* overflow: scroll; */
   padding-bottom: 51px;
+  padding-top: 91.08px;
 }
 .sr {
   width: 390px;
@@ -68,9 +69,9 @@ body {
   width: 390px;
 }
 
-.sticky-app-header + #srs-get-started {
+/* .sticky-app-header + #srs-get-started {
   padding-top: 107.08px;
-}
+} */
 
 #app-header {
   width: 390px;

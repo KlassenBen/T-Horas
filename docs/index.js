@@ -3251,11 +3251,11 @@ class App {
   _events() {
     // <-- LIVE Listeners
     window.onscroll = function () {
-      if (window.pageYOffset > stickyHeader) {
-        header.classList.add("sticky-app-header");
-      } else {
-        header.classList.remove("sticky-app-header");
-      }
+      // if (window.pageYOffset > stickyHeader) {
+      //   header.classList.add("sticky-app-header");
+      // } else {
+      //   header.classList.remove("sticky-app-header");
+      // }
     };
     sr16InpMemberPay.addEventListener("focus", () => {
       sr16InpMemberPay.value = "";
