@@ -164,7 +164,7 @@ const sr26btnSetAdminLevel = document.querySelector(
 const sr27btnAskWritePermisio = document.querySelector(
   "#sr27-btn-ask-permision"
 );
-const srtInstallApp = document.querySelector("#sr7-btn-install-app");
+// const srtInstallApp = document.querySelector("#sr7-btn-install-app");
 const sr4ResendOTP = document.querySelector("#sr4-btn-resend-code");
 
 // <-- Join Team
@@ -608,52 +608,6 @@ class App {
       });
       this._topAdminDisplayAccounts(this.#accountsArray);
       this._srGetStartedDispChoose("sr23", "sr22", "left");
-    });
-  }
-
-  _readWeeks(name) {
-    this._srGetStartedDispChoose("sr22", "sr7", "left");
-    this.#curData = this._getFromLocal("curData");
-
-    let curDataLocal;
-    if (this.#curData.level === this.#adminLevel) {
-      curDataLocal = this.#curAccountData;
-    } else {
-      curDataLocal = this.#curData;
-    }
-
-    const q = query(
-      collection(db, `accounts/${curDataLocal.teamCode}/weeks`),
-      where("memberId", "==", this.#curMemberInfo.memberId)
-    );
-    getDocs(q).then((docSnap) => {
-      let arr = [];
-      docSnap.forEach((doc) => {
-        const val = doc.data();
-        arr.push(val);
-      });
-
-      this.#curWeekArrayOrg = arr.sort((a, b) => {
-        return a.weekMadeTimeStamp - b.weekMadeTimeStamp;
-      });
-      if (this.#curWeekArrayOrg.length === 0) {
-        console.log("no weeks yet");
-        sr11TimeSheetHours.style.display = "none";
-        sr11TimeSheetSumary.style.display = "none";
-        sr11NewTimeSheetMessage.style.display = "block";
-        this._srGetStartedDispChoose("sr11", "sr22", "left");
-        sr11TimeSheetName.textContent = this.#curMemberInfo.name;
-      } else {
-        sr11TimeSheetHours.style.display = "block";
-        sr11TimeSheetSumary.style.display = "block";
-        sr11NewTimeSheetMessage.style.display = "none";
-        this._displayTimeSheet(
-          this.#curWeekArrayOrg,
-          "arr",
-          this.#curWeekArrayOrg.length
-        );
-        sr11TimeSheetName.textContent = this.#curMemberInfo.name;
-      }
     });
   }
 
@@ -1458,6 +1412,51 @@ class App {
       const calculatedTime = timeWArr.join(":");
       return calculatedTime;
     }
+  }
+  _readWeeks(name) {
+    this._srGetStartedDispChoose("sr22", "sr7", "left");
+    this.#curData = this._getFromLocal("curData");
+
+    let curDataLocal;
+    if (this.#curData.level === this.#adminLevel) {
+      curDataLocal = this.#curAccountData;
+    } else {
+      curDataLocal = this.#curData;
+    }
+
+    const q = query(
+      collection(db, `accounts/${curDataLocal.teamCode}/weeks`),
+      where("memberId", "==", this.#curMemberInfo.memberId)
+    );
+    getDocs(q).then((docSnap) => {
+      let arr = [];
+      docSnap.forEach((doc) => {
+        const val = doc.data();
+        arr.push(val);
+      });
+
+      this.#curWeekArrayOrg = arr.sort((a, b) => {
+        return a.weekMadeTimeStamp - b.weekMadeTimeStamp;
+      });
+      if (this.#curWeekArrayOrg.length === 0) {
+        console.log("no weeks yet");
+        sr11TimeSheetHours.style.display = "none";
+        sr11TimeSheetSumary.style.display = "none";
+        sr11NewTimeSheetMessage.style.display = "block";
+        this._srGetStartedDispChoose("sr11", "sr22", "left");
+        sr11TimeSheetName.textContent = this.#curMemberInfo.name;
+      } else {
+        sr11TimeSheetHours.style.display = "block";
+        sr11TimeSheetSumary.style.display = "block";
+        sr11NewTimeSheetMessage.style.display = "none";
+        this._displayTimeSheet(
+          this.#curWeekArrayOrg,
+          "arr",
+          this.#curWeekArrayOrg.length
+        );
+        sr11TimeSheetName.textContent = this.#curMemberInfo.name;
+      }
+    });
   }
 
   _displayTimeSheet(weeks, arr, i, name) {
@@ -2807,6 +2806,7 @@ class App {
               {
                 name: sr16InpMemberName.value,
                 password: sr16InpMemberPassword.value,
+                lastModified: this._getTimeStamp(),
               }
             );
             setTimeout(() => {
@@ -2849,6 +2849,7 @@ class App {
             salary: sr16InpMemberPay.value,
             writePermision: sr16SwiHours.dataset.on,
             level: level,
+            lastModified: this._getTimeStamp(),
           }
         );
         setTimeout(() => {
@@ -3434,10 +3435,10 @@ class App {
     sr4ResendOTP.addEventListener("click", () => {
       this._resendOTP();
     });
-    srtInstallApp.addEventListener("click", () => {
-      console.log("install");
-      pwaless.showWidget("install-this-app-on-your-phone");
-    });
+    // srtInstallApp.addEventListener("click", () => {
+    //   console.log("install");
+    //   pwaless.showWidget("install-this-app-on-your-phone");
+    // });
     sr27btnAskWritePermisio.addEventListener("click", () => {
       this._askWritePermision();
     });
@@ -3706,7 +3707,10 @@ class App {
         this._updateData(
           `accounts/${curDataLocal.teamCode}/team`,
           curMemberIdHere,
-          { writePermisionRequest: "denied" }
+          {
+            writePermisionRequest: "denied",
+            lastModified: this._getTimeStamp(),
+          }
         );
         this._disdSuccessErrorMessage("Permiso negado", "er", 2000);
       }
@@ -3720,6 +3724,7 @@ class App {
             writePermisionRequest: "granted",
             writeTimePermisionEnd: this._getTimeStamp() + 5 * 60 * 1000,
             writeTimePermisionStart: this._getTimeStamp(),
+            lastModified: this._getTimeStamp(),
           }
         );
         this._disdSuccessErrorMessage(
