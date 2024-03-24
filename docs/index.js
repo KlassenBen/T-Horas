@@ -470,10 +470,17 @@ class App {
         const matrix = new WebKitCSSMatrix(style.transform);
         const nowLocated = matrix.e;
         console.log(nowLocated);
+
         const style2 = window.getComputedStyle(sr22);
         const matrix2 = new WebKitCSSMatrix(style2.transform);
         const nowLocated2 = matrix2.e;
         console.log(nowLocated2);
+
+        const style3 = window.getComputedStyle(sr11);
+        const matrix3 = new WebKitCSSMatrix(style3.transform);
+        const nowLocated3 = matrix3.e;
+        console.log(nowLocated3);
+
         if (nowLocated === -3900) {
           // this._deleteAllChildren("sr7-mem-con");
           this._displayMembers("sr7");
@@ -481,6 +488,10 @@ class App {
           // this._deleteAllChildren("sr7-mem-con");
           this._displayMembers("sr22");
         }
+        //  else if (nowLocated3 === -5070) {
+        //   // this._deleteAllChildren("sr7-mem-con");
+        //   this._displayMembers("sr11");
+        // }
 
         // -3835.59
 
@@ -1865,14 +1876,20 @@ class App {
       }
       headerTeamImg.src = this.#curData.teamImg;
       headerTeamName.textContent = this.#curData.teamName;
+      let randomMemArr = [];
+      let orgMemArr = [];
       docSnap.forEach((doc) => {
+        randomMemArr.push(doc.data());
+      });
+
+      orgMemArr = randomMemArr.sort((a, b) => {
+        return a.lastModified - b.lastModified;
+      });
+      orgMemArr.forEach((val) => {
         let btnPermision = ``;
-        let val;
         let salary;
         let totalPay;
         let totalTime;
-
-        val = doc.data();
 
         // TODO:start here wtih granting or denying permision Already designed in figma
 
@@ -2102,6 +2119,8 @@ class App {
           }
         });
       });
+
+      console.log(orgMemArr);
     });
 
     // then((val) => {
