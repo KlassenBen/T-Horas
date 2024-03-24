@@ -2757,8 +2757,8 @@ class App {
     sr4ResendOTP.textContent = `Reenviar código en 120 seg`;
     sr4ResendOTP.style.opacity = "50%";
     sr4ResendOTP.dataset.send = "no send";
-    let sec = 6;
-    // let sec = 119;
+    // let sec = 6;
+    let sec = 119;
     const timerCountDown = setInterval(function () {
       sr4ResendOTP.textContent = `Reenviar código en ${sec} seg`;
       sr4ResendOTP.style.opacity = "50%";
