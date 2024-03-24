@@ -72,6 +72,7 @@ const sr11NewTimeSheetMessage = document.querySelector(
   "#new-time-sheet-message-con"
 );
 const sr11TimeSheetName = document.querySelector("#sr11-time-sheet-name-text");
+const sr1OnboardingVid = document.querySelector("#sr1-onboarding-vid");
 
 const sr16InpMemberPay = document.querySelector("#sr16-contbx-2-inp-pay--hour");
 const sr16InpMemberName = document.querySelector("#sr16-inp-member-name");
@@ -93,6 +94,8 @@ const sr27RequestPermisionCon = document.querySelector("#sr27-cont-con-2");
 const sr27PendingPermisionCon = document.querySelector(
   "#sr27-cont-con-pending-2"
 );
+const sr16InfoName = document.querySelector("#sr16-contbx-header span");
+const sr16HeaderName = document.querySelector("#sr16-header");
 
 // <-- Screens
 const srsGetStarted = document.querySelector("#srs-get-started");
@@ -323,6 +326,7 @@ class App {
   #curData;
   #country = "Mexico";
   #appSupportInfo;
+  #appExplainVideos = [];
 
   #der = {
     teamCode: "rtyhgfdr567",
@@ -358,6 +362,18 @@ class App {
     getDocs(q).then((docSnap) => {
       docSnap.forEach((doc) => {
         this.#appSupportInfo = doc.data();
+      });
+    });
+  }
+  _setExplainVideo() {
+    const q = query(
+      collection(db, `appExplainVideos`),
+      where("videoName", "==", "intro")
+    );
+    getDocs(q).then((docSnap) => {
+      docSnap.forEach((doc) => {
+        this.#appExplainVideos.push(doc.data());
+        sr1OnboardingVid.src = this.#appExplainVideos[0].url;
       });
     });
   }
@@ -423,6 +439,7 @@ class App {
   // TODO: INIT STARTS HERE
   _init(srHide) {
     this._setSupportInfo();
+    this._setExplainVideo();
     console.log("contact info:", this.#appSupportInfo);
     this._srGetStartedDispChoose("sr22", srHide, "left");
     console.log("Your App is initializing");
@@ -2683,57 +2700,57 @@ class App {
     const inpVerificationCode = document.querySelector(
       "#sr3-inp-verification-code"
     );
-    // if (inpVerificationCode.value === this.#otp) {
-    //   // TODO: activate;
-    this._disdSuccessErrorMessage(`Correo confirmado`, "ex", 2000);
-    this._srGetStartedDispChoose("sr22", "sr4", "left");
-    this._idGenerator(this.#idLenght, this.#idTakeArrLenght);
-    const intv = setInterval(() => {
-      if (this.#curUseId !== undefined) {
-        clearInterval(intv);
-        const acc = {
-          teamCode: this.#curUseId,
-          email: this.#email,
-          accountPassword: this.#password,
-          level: "admin",
-          pro: "starter", //trial, pro
-          proTime: 0,
-          trialDone: false,
-          proStartTimeStamp: 0,
-          accountMadeTimeStamp: this._getTimeStamp(),
-          teamName: "",
-          numberOfMembers: 0,
-          teamImg: "",
-          payday: "sábado",
-          salary: 0,
-          extraHours: false, //false
-          extraHoursRequiredPer: "day", //week
-          extraHoursRequired: 0,
-          mode: "normal", //maquinaria
-          teamTotalTime: "",
-          teamTotalNormalTime: "",
-          teamTotalExtraTime: "",
-          teamTotalMaqTime: "",
-          teamTotalNormalPay: "",
-          teamTotalExtraPay: "",
-          teamTotalMaqPay: "",
-          teamTotalPay: "",
-          lastPayment: "",
-          totalPayment: "",
-          categories: ["Todos"],
-        };
-        this._uploadData("accounts", this.#curUseId, acc);
-        // TODO: function to continue creating an account ghoes here it waits till the id is available
-        this._saveToLocal("curData", acc);
-        this._eventTeamCodeDisp();
-        this._srGetStartedDispChoose("sr5", "sr22", "left");
-      } else {
-      }
-    }, 1000);
-    // } else {
-    //   // TODO: activate;
-    //   this._disdSuccessErrorMessage("Código incorrecto", "er", 2000); // TODO: activate;
-    // } // TODO: activate;
+    if (inpVerificationCode.value === this.#otp) {
+      // TODO: activate;
+      this._disdSuccessErrorMessage(`Correo confirmado`, "ex", 2000);
+      this._srGetStartedDispChoose("sr22", "sr4", "left");
+      this._idGenerator(this.#idLenght, this.#idTakeArrLenght);
+      const intv = setInterval(() => {
+        if (this.#curUseId !== undefined) {
+          clearInterval(intv);
+          const acc = {
+            teamCode: this.#curUseId,
+            email: this.#email,
+            accountPassword: this.#password,
+            level: "admin",
+            pro: "starter", //trial, pro
+            proTime: 0,
+            trialDone: false,
+            proStartTimeStamp: 0,
+            accountMadeTimeStamp: this._getTimeStamp(),
+            teamName: "",
+            numberOfMembers: 0,
+            teamImg: "",
+            payday: "sábado",
+            salary: 0,
+            extraHours: false, //false
+            extraHoursRequiredPer: "day", //week
+            extraHoursRequired: 0,
+            mode: "normal", //maquinaria
+            teamTotalTime: "",
+            teamTotalNormalTime: "",
+            teamTotalExtraTime: "",
+            teamTotalMaqTime: "",
+            teamTotalNormalPay: "",
+            teamTotalExtraPay: "",
+            teamTotalMaqPay: "",
+            teamTotalPay: "",
+            lastPayment: "",
+            totalPayment: "",
+            categories: ["Todos"],
+          };
+          this._uploadData("accounts", this.#curUseId, acc);
+          // TODO: function to continue creating an account ghoes here it waits till the id is available
+          this._saveToLocal("curData", acc);
+          this._eventTeamCodeDisp();
+          this._srGetStartedDispChoose("sr5", "sr22", "left");
+        } else {
+        }
+      }, 1000);
+    } else {
+      // TODO: activate;
+      this._disdSuccessErrorMessage("Código incorrecto", "er", 2000); // TODO: activate;
+    } // TODO: activate;
   }
 
   _countdownResendOTP() {
@@ -2782,24 +2799,24 @@ class App {
                   this.#email = inpEmail.value;
                   this.#password = inpPassword.value;
                   this.#otp = this._OTPGenerator(6);
-                  // this._sendEmail(
-                  //   // TODO: activate
-                  //   inpEmail.value,
-                  //   // TODO: activate
-                  //   "thorastrack@gmail.com",
-                  //   // TODO: activate
-                  //   this.#otp,
-                  //   // TODO: activate
-                  //   "Este es su codigo de verificación para THoras",
-                  //   // TODO: activate
-                  //   "Hola",
-                  //   // TODO: activate
-                  //   "benklassen19@icloud.com",
-                  //   // TODO: activate
-                  //   "+52 996 730 6118"
-                  //   // TODO: activate
-                  // );
-                  // // TODO: activate
+                  this._sendEmail(
+                    // TODO: activate
+                    inpEmail.value,
+                    // TODO: activate
+                    "thorastrack@gmail.com",
+                    // TODO: activate
+                    this.#otp,
+                    // TODO: activate
+                    "Este es su codigo de verificación para THoras",
+                    // TODO: activate
+                    "Hola",
+                    // TODO: activate
+                    "benklassen19@icloud.com",
+                    // TODO: activate
+                    "+52 996 730 6118"
+                    // TODO: activate
+                  );
+                  // TODO: activate
                   this._srGetStartedDispChoose("sr4", "sr3", "left");
                   this._countdownResendOTP();
                 } else {
@@ -3890,6 +3907,8 @@ class App {
             sr16DispTeamCode.textContent = curDataLocal.teamCode;
             sr16InpMemberPay.value = val.salary;
             console.log(val);
+            sr16HeaderName.textContent = val.name;
+            sr16InfoName.textContent = val.name;
             this._setSwiChangeMemberInfo(val.writePermision, val.level);
           });
         });
