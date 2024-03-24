@@ -122,6 +122,7 @@ const sr24 = document.querySelector("#sr24");
 const sr25 = document.querySelector("#sr25");
 const sr26 = document.querySelector("#sr26");
 const sr27 = document.querySelector("#sr27");
+const sr28 = document.querySelector("#sr28");
 
 // <-- Buttons
 const btnWeekSelectForward = document.querySelector(
@@ -167,6 +168,7 @@ const sr27btnAskWritePermisio = document.querySelector(
 // const srtInstallApp = document.querySelector("#sr7-btn-install-app");
 const sr4ResendOTP = document.querySelector("#sr4-btn-resend-code");
 const sr11ChangeSalary = document.querySelector("#sr11-btn-change-salary");
+const sr3AceptTerms = document.querySelector("#sr3-terms-acept-text");
 
 // <-- Join Team
 const btnJoinTeamSr1 = document.querySelector("#sr1-btn-join-team");
@@ -226,6 +228,7 @@ const btnsr27Cancel = document.querySelector("#sr27-btn-cancel");
 const btnsr27BackPermisionPending = document.querySelector(
   "#sr27-btn-back-permision-pending"
 );
+const btnsr28Back = document.querySelector("#sr28-tb-btn-back");
 
 const firebaseConfig = {
   apiKey: "AIzaSyA30VKmZDuM0Xv0z-CuG5o6C-4lU4Z-u64",
@@ -318,6 +321,8 @@ class App {
   #adminLevel = "top admin";
 
   #curData;
+  #country = "Mexico";
+  #appSupportInfo;
 
   #der = {
     teamCode: "rtyhgfdr567",
@@ -345,8 +350,19 @@ class App {
     // this._srGetStartedDispChoose("sr24", "sr1", "left");
   }
 
-  // TODO: start here with team image upload
+  _setSupportInfo() {
+    const q = query(
+      collection(db, `appSupportInfo`),
+      where("country", "==", this.#country)
+    );
+    getDocs(q).then((docSnap) => {
+      docSnap.forEach((doc) => {
+        this.#appSupportInfo = doc.data();
+      });
+    });
+  }
 
+  // TODO: start here with team image upload
   _openImgUpload(sr) {
     const teamImgdisCh = document.querySelector(`#${sr}-img-con`);
     this.#teamImgUrl = [];
@@ -406,6 +422,8 @@ class App {
 
   // TODO: INIT STARTS HERE
   _init(srHide) {
+    this._setSupportInfo();
+    console.log("contact info:", this.#appSupportInfo);
     this._srGetStartedDispChoose("sr22", srHide, "left");
     console.log("Your App is initializing");
     this.#curData = this._getFromLocal("curData");
@@ -615,15 +633,6 @@ class App {
       this._srGetStartedDispChoose("sr23", "sr22", "left");
     });
   }
-
-  // _onSnapshot(name, listen) {
-  //   //line 1726 for try
-  //   // TODO: REAL TIME update on data
-  //   const unsub = onSnapshot(doc(db, name, listen), (doc) => {
-  //     this._saveToLocal("curData", doc.data());
-  //     console.log("Updated data: ", doc.data());
-  //   });
-  // }
 
   _displayMemberOnly() {
     btnBackTbSr11.style.display = "none";
@@ -1204,6 +1213,10 @@ class App {
       srdisp = sr27;
       perdisp = 390 * 25;
     }
+    if (srDisp === "sr28") {
+      srdisp = sr28;
+      perdisp = 390 * 26;
+    }
 
     // <-- Hide
     if (srHide === "sr1") {
@@ -1283,6 +1296,9 @@ class App {
     }
     if (srHide === "sr27") {
       srhide = sr27;
+    }
+    if (srHide === "sr28") {
+      srhide = sr28;
     }
 
     const style = window.getComputedStyle(srhide);
@@ -2740,6 +2756,7 @@ class App {
   }
 
   _createAccountStep1() {
+    const aceptTermsConditions = document.querySelector("#sr3-terms-acept");
     const inpEmail = document.querySelector("#sr3-inp-email");
     const inpPassword = document.querySelector("#sr3-inp-create-password");
     const inpPasswordConf = document.querySelector("#sr3-inp-confirm-password");
@@ -2761,29 +2778,37 @@ class App {
           if (docSnap.empty === true) {
             if (inpPassword.value.length > 5) {
               if (inpPassword.value === inpPasswordConf.value) {
-                this.#email = inpEmail.value;
-                this.#password = inpPassword.value;
-                this.#otp = this._OTPGenerator(6);
-                // this._sendEmail(
-                //   // TODO: activate
-                //   inpEmail.value,
-                //   // TODO: activate
-                //   "thorastrack@gmail.com",
-                //   // TODO: activate
-                //   this.#otp,
-                //   // TODO: activate
-                //   "Este es su codigo de verificación para THoras",
-                //   // TODO: activate
-                //   "Hola",
-                //   // TODO: activate
-                //   "benklassen19@icloud.com",
-                //   // TODO: activate
-                //   "+52 996 730 6118"
-                //   // TODO: activate
-                // );
-                // // TODO: activate
-                this._srGetStartedDispChoose("sr4", "sr3", "left");
-                this._countdownResendOTP();
+                if (aceptTermsConditions.checked) {
+                  this.#email = inpEmail.value;
+                  this.#password = inpPassword.value;
+                  this.#otp = this._OTPGenerator(6);
+                  // this._sendEmail(
+                  //   // TODO: activate
+                  //   inpEmail.value,
+                  //   // TODO: activate
+                  //   "thorastrack@gmail.com",
+                  //   // TODO: activate
+                  //   this.#otp,
+                  //   // TODO: activate
+                  //   "Este es su codigo de verificación para THoras",
+                  //   // TODO: activate
+                  //   "Hola",
+                  //   // TODO: activate
+                  //   "benklassen19@icloud.com",
+                  //   // TODO: activate
+                  //   "+52 996 730 6118"
+                  //   // TODO: activate
+                  // );
+                  // // TODO: activate
+                  this._srGetStartedDispChoose("sr4", "sr3", "left");
+                  this._countdownResendOTP();
+                } else {
+                  this._disdSuccessErrorMessage(
+                    "Tienes que aceptar los condiciones de esta aplicación.",
+                    "er",
+                    3500
+                  );
+                }
               } else {
                 inpPasswordConfErrmess.style.display = "block";
               }
@@ -3280,7 +3305,27 @@ class App {
   }
 
   _buyPlan(whatPlan) {
+    const whatsApp = document.querySelector("#sr25-cont-con-5-opt-1 span");
+    const telegram = document.querySelector("#sr25-cont-con-5-opt-2 span");
+    const email = document.querySelector("#sr25-cont-con-5-opt-3");
+
+    whatsApp.textContent = this.#appSupportInfo.whatsApp;
+    telegram.textContent = this.#appSupportInfo.telegram;
+    email.textContent = `Correo: ${this.#appSupportInfo.email}`;
+    email.href = this.#appSupportInfo.email;
     this._srGetStartedDispChoose("sr25", "sr24", "left");
+  }
+
+  _displayTermsCondition() {
+    this._srGetStartedDispChoose("sr28", "sr3", "none");
+    const whatsApp = document.querySelector("#sr28-opt-contact-whats span");
+    const telegram = document.querySelector("#sr28-opt-contact-telegram span");
+    const email = document.querySelector("#sr28-opt-contact-email");
+
+    whatsApp.textContent = this.#appSupportInfo.whatsApp;
+    telegram.textContent = this.#appSupportInfo.telegram;
+    email.textContent = `Correo: ${this.#appSupportInfo.email}`;
+    email.href = this.#appSupportInfo.email;
   }
 
   _startTryApp() {
@@ -3488,6 +3533,12 @@ class App {
     }
   }
   //Start Up End
+  _hideTermsCond() {
+    const style = window.getComputedStyle(sr28);
+    const matrix = new WebKitCSSMatrix(style.transform);
+    const nowLocated = matrix.e;
+    sr28.style.transform = `translateX(${nowLocated + 390}px)`;
+  }
 
   _events() {
     // <-- LIVE Listeners
@@ -3498,6 +3549,10 @@ class App {
       //   header.classList.remove("sticky-app-header");
       // }
     };
+    sr3.addEventListener("click", () => {
+      const aceptTermsConditions = document.querySelector("#sr3-terms-acept");
+      console.log(aceptTermsConditions.checked);
+    });
     sr16InpMemberPay.addEventListener("focus", () => {
       sr16InpMemberPay.value = "";
     });
@@ -3513,6 +3568,12 @@ class App {
 
     // <-- OTHER
 
+    btnsr28Back.addEventListener("click", () => {
+      this._hideTermsCond();
+    });
+    sr3AceptTerms.addEventListener("click", () => {
+      this._displayTermsCondition();
+    });
     sr4ResendOTP.addEventListener("click", () => {
       this._resendOTP();
     });

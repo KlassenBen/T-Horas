@@ -429,7 +429,37 @@ body {
 
 /* sr2 end */
 
-/* sr4 start */
+/* sr3 start */
+#sr3-terms-acept-con {
+  display: flex;
+  padding: 0px 12px;
+  align-items: center;
+  gap: 12px;
+  align-self: stretch;
+}
+#sr3-terms-acept {
+  width: 28px;
+  height: 28px;
+}
+
+#sr3-terms-acept-con-2 {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  flex: 1 0 0;
+}
+#sr3-terms-acept-text {
+  flex: 1 0 0;
+  color: var(--color-blue-50);
+  font-family: Inter;
+  font-size: 18px;
+  font-style: normal;
+  font-weight: 400;
+  line-height: normal;
+  letter-spacing: 0.8px;
+  text-decoration-line: underline;
+}
+/* sr3 end */
 
 /* sr4 start */
 #sr4-resend-con {
@@ -1519,6 +1549,9 @@ p {
 /* sr24 end */
 
 /* sr22 start */
+#sr25 {
+  background: var(--color-white);
+}
 
 #sr25-cont-con {
   display: flex;
@@ -1905,6 +1938,65 @@ p {
 
 /* sr27 end */
 
+/* sr28 start */
+#sr28 {
+  background: var(--color-white);
+}
+#sr28-cont-con {
+  display: flex;
+  width: 390px;
+  padding-bottom: 16px;
+  padding-top: 16px;
+  flex-direction: column;
+  align-items: center;
+  gap: 32px;
+  background: var(--color-white);
+}
+.sr28-header {
+  align-self: stretch;
+  color: var(--color-blue-50);
+  text-align: center;
+  font-family: Inter;
+  font-size: 24px;
+  font-style: normal;
+  font-weight: 500;
+  line-height: normal;
+}
+.sr28-con-main {
+  display: flex;
+  padding: 0px 16px;
+  flex-direction: column;
+  align-items: center;
+  gap: 12px;
+  align-self: stretch;
+}
+.sr28-con-header {
+  align-self: stretch;
+  color: var(--color-blue-50);
+  font-family: Inter;
+  font-size: 24px;
+  font-style: normal;
+  font-weight: 500;
+  line-height: normal;
+}
+.sr28-con-secd {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 12px;
+  align-self: stretch;
+}
+.sr28-cond-text {
+  align-self: stretch;
+  color: var(--color-blue-50);
+  font-family: Inter;
+  font-size: 20px;
+  font-style: normal;
+  font-weight: 300;
+  line-height: normal;
+}
+/* sr28 end */
+
 .tb {
   display: flex;
   height: 46px;
@@ -1912,6 +2004,9 @@ p {
   gap: 16px;
   align-self: stretch;
   background: var(--color-blue-0);
+}
+.tb-no-backg {
+  background: none;
 }
 .tb-cont-con {
   display: flex;
