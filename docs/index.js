@@ -450,6 +450,10 @@ class App {
         console.log(this.#curData.level);
         if (this.#curData.level === "miembro") {
           console.log("member now");
+          // this._onSnapshot(
+          //   `accounts/${this.#curData.teamCode}/team`,
+          //   this.#curData.memberId
+          // );
           this._displayMemberOnly();
         }
       } else {
@@ -633,40 +637,43 @@ class App {
         this.#curMemberInfo.memberId
       ),
       (doc) => {
-        this._saveToLocal("curData", doc.data());
-        console.log("error here");
+        console.log(this.#curData.level);
+        if (this.#curData.level === "miembro") {
+          this._saveToLocal("curData", doc.data());
+          console.log("error here");
 
-        const q = query(
-          collection(db, `accounts`),
-          where("teamCode", "==", this.#curData.teamCode)
-        );
-        getDocs(q).then((docSnap) => {
-          docSnap.forEach((doc) => {
-            // this.#curData.pro = true;
-            this.#curData.pro = doc.data().pro;
-          });
-        });
-        this._readWeeks();
-
-        const q5 = query(
-          collection(db, `accounts`),
-          where("teamCode", "==", this.#curData.teamCode)
-        );
-        getDocs(q5).then((docSnap) => {
-          if (docSnap.empty === true) {
-            console.error(`no luck this time!!!!!!`);
-          } else {
+          const q = query(
+            collection(db, `accounts`),
+            where("teamCode", "==", this.#curData.teamCode)
+          );
+          getDocs(q).then((docSnap) => {
             docSnap.forEach((doc) => {
-              const val = doc.data();
-              this.#curData.teamImg = val.teamImg;
-              this.#curData.teamName = val.teamName;
-              this._saveToLocal("curData", this.#curData);
-              this._getFromLocal("curData");
-              headerTeamImg.src = this.#curData.teamImg;
-              headerTeamName.textContent = this.#curData.teamName;
+              // this.#curData.pro = true;
+              this.#curData.pro = doc.data().pro;
             });
-          }
-        });
+          });
+          this._readWeeks();
+
+          const q5 = query(
+            collection(db, `accounts`),
+            where("teamCode", "==", this.#curData.teamCode)
+          );
+          getDocs(q5).then((docSnap) => {
+            if (docSnap.empty === true) {
+              console.error(`no luck this time!!!!!!`);
+            } else {
+              docSnap.forEach((doc) => {
+                const val = doc.data();
+                this.#curData.teamImg = val.teamImg;
+                this.#curData.teamName = val.teamName;
+                this._saveToLocal("curData", this.#curData);
+                this._getFromLocal("curData");
+                headerTeamImg.src = this.#curData.teamImg;
+                headerTeamName.textContent = this.#curData.teamName;
+              });
+            }
+          });
+        }
       }
     );
   }
@@ -1447,12 +1454,13 @@ class App {
         this._srGetStartedDispChoose("sr11", "sr22", "left");
         sr11TimeSheetName.textContent = this.#curMemberInfo.name;
       } else {
+        this._srGetStartedDispChoose("sr11", "sr22", "left");
         sr11TimeSheetHours.style.display = "block";
         sr11TimeSheetSumary.style.display = "block";
         sr11NewTimeSheetMessage.style.display = "none";
         this._displayTimeSheet(
-          this.#curWeekArrayOrg[this.#curWeekArrayOrg.length - 1],
-          "not arr",
+          this.#curWeekArrayOrg,
+          "arr",
           this.#curWeekArrayOrg.length
         );
         sr11TimeSheetName.textContent = this.#curMemberInfo.name;
@@ -2429,6 +2437,9 @@ class App {
       console.log("online this time");
 
       this.#curData = this._getFromLocal("curData");
+      const inpVerPasswordErrMess = document.querySelector(
+        "#sr8-inp-confpass-errmess"
+      );
 
       const inpMemberName = document.querySelector("#sr8-inp-name");
       const inpPassword = document.querySelector("#sr8-inp-crepass");
@@ -2443,96 +2454,122 @@ class App {
       }
       inpPayPerHour.value = curDataLocal.salary;
 
-      const q = query(
-        collection(db, `accounts/${curDataLocal.teamCode}/team`),
-        where("name", "==", inpMemberName.value)
-      );
-      getDocs(q).then((docSnap) => {
-        if (docSnap.empty === true) {
-          if (
-            inpMemberName.value.length > 2 &&
-            inpMemberName.value.length < 21
-          ) {
+      if (inpMemberName.value.length > 0 && inpPassword.value.length > 0) {
+        const q = query(
+          collection(db, `accounts/${curDataLocal.teamCode}/team`),
+          where("name", "==", inpMemberName.value)
+        );
+        getDocs(q).then((docSnap) => {
+          if (docSnap.empty === true) {
             if (
-              inpPassword.value === inpVerPassword.value &&
-              inpPassword.value.length > 5
+              inpMemberName.value.length > 2 &&
+              inpMemberName.value.length < 21
             ) {
-              this._srGetStartedDispChoose("sr22", "sr8", "right");
-              this._idGenerator(this.#idLenght, this.#idTakeArrLenght);
-              const intv = setInterval(() => {
-                if (this.#curUseId !== undefined) {
-                  clearInterval(intv);
-                  console.log("done already");
-                  this.#curMemberId = this.#curUseId;
-                  this._uploadData(
-                    `accounts/${curDataLocal.teamCode}/team`,
-                    this.#curUseId,
-                    {
-                      name: inpMemberName.value,
-                      memberId: this.#curUseId,
-                      teamCode: curDataLocal.teamCode,
-                      password: inpPassword.value,
-                      salary: curDataLocal.salary,
-                      totalHoras: "",
-                      totalPay: "",
-                      level: "miembro", //assistant
-                      lastModified: "",
-                      lastModified: this._getTimeStamp(),
-                      writePermision: "true", //false
-                      extraHours: curDataLocal.extraHours, //false
-                      extraHoursRequiredPer: curDataLocal.extraHoursRequiredPer, //week
-                      extraHoursRequired: curDataLocal.extraHoursRequired,
-                      mode: curDataLocal.mode, //maquinaria
-                      totalTime: "",
-                      curWeekTotalTime: "",
-                      totalNormalTime: "",
-                      curWeekTotalNormalTime: "",
-                      totalExtraTime: "",
-                      curWeekTotalExtraTime: "",
-                      totalMaqTime: "",
-                      curWeekTotalMaqTime: "",
-                      totalNormalPay: "",
-                      curWeekTotalNormalPay: "",
-                      totalExtraPay: "",
-                      curWeekTotalExtraPay: "",
-                      totalMaqPay: "",
-                      curWeekTotalMaqPay: "",
-                      totalPay: "",
-                      curWeekTotalPay: "",
-                      curWeekId: "",
-                      writePermisionRequest: "done",
-                      writeTimePermisionEnd: this._getTimeStamp(),
-                      writeTimePermisionStart: this._getTimeStamp(),
-                      category: "Todos", // ...more., seperate mulitple caytegorry with "/"
+              if (inpPassword.value.length > 5) {
+                if (inpPassword.value === inpVerPassword.value) {
+                  this._srGetStartedDispChoose("sr22", "sr8", "right");
+                  this._idGenerator(this.#idLenght, this.#idTakeArrLenght);
+                  const intv = setInterval(() => {
+                    if (this.#curUseId !== undefined) {
+                      clearInterval(intv);
+                      console.log("done already");
+                      this.#curMemberId = this.#curUseId;
+                      this._uploadData(
+                        `accounts/${curDataLocal.teamCode}/team`,
+                        this.#curUseId,
+                        {
+                          name: inpMemberName.value,
+                          memberId: this.#curUseId,
+                          teamCode: curDataLocal.teamCode,
+                          password: inpPassword.value,
+                          salary: curDataLocal.salary,
+                          totalHoras: "",
+                          totalPay: "",
+                          level: "miembro", //assistant
+                          lastModified: "",
+                          lastModified: this._getTimeStamp(),
+                          writePermision: "true", //false
+                          extraHours: curDataLocal.extraHours, //false
+                          extraHoursRequiredPer:
+                            curDataLocal.extraHoursRequiredPer, //week
+                          extraHoursRequired: curDataLocal.extraHoursRequired,
+                          mode: curDataLocal.mode, //maquinaria
+                          totalTime: "",
+                          curWeekTotalTime: "",
+                          totalNormalTime: "",
+                          curWeekTotalNormalTime: "",
+                          totalExtraTime: "",
+                          curWeekTotalExtraTime: "",
+                          totalMaqTime: "",
+                          curWeekTotalMaqTime: "",
+                          totalNormalPay: "",
+                          curWeekTotalNormalPay: "",
+                          totalExtraPay: "",
+                          curWeekTotalExtraPay: "",
+                          totalMaqPay: "",
+                          curWeekTotalMaqPay: "",
+                          totalPay: "",
+                          curWeekTotalPay: "",
+                          curWeekId: "",
+                          writePermisionRequest: "done",
+                          writeTimePermisionEnd: this._getTimeStamp(),
+                          writeTimePermisionStart: this._getTimeStamp(),
+                          category: "Todos", // ...more., seperate mulitple caytegorry with "/"
+                        }
+                      );
+                      inpVerPasswordErrMess.style.display = "none";
+
+                      // TODO: function to continue creating an account ghoes here it waits till the id is available
+                      // this._displayMembers("sr22");
+
+                      inpPayPerHour.addEventListener("focus", () => {
+                        inpPayPerHour.value = "";
+                      });
+
+                      this._srGetStartedDispChoose("sr9", "sr22", "left");
+                    } else {
+                      console.log("still not");
                     }
-                  );
-
-                  // TODO: function to continue creating an account ghoes here it waits till the id is available
-                  // this._displayMembers("sr22");
-
-                  inpPayPerHour.addEventListener("focus", () => {
-                    inpPayPerHour.value = "";
-                  });
-
-                  this._srGetStartedDispChoose("sr9", "sr22", "left");
+                  }, 1000);
                 } else {
-                  console.log("still not");
+                  console.error("no match passwords");
+                  inpVerPasswordErrMess.style.display = "block";
+                  this._disdSuccessErrorMessage(
+                    "Las contraseñas no coinciden.",
+                    "er",
+                    3500
+                  );
                 }
-              }, 1000);
+              } else {
+                this._disdSuccessErrorMessage(
+                  "La contraseña no puede tener menos de 6 carácteres.",
+                  "er",
+                  3500
+                );
+              }
             } else {
-              console.error("no match passwords");
+              console.error("name length is not correct");
+              this._disdSuccessErrorMessage(
+                "Un nombre de miembro no puede tener menos de 3 o mas de 20 caracteres.",
+                "er",
+                4000
+              );
             }
           } else {
-            console.error("name length is not correct");
+            this._disdSuccessErrorMessage(
+              `${inpMemberName.value} ya existe en tu equipo. No puedes tener 2 miembros con nombres idénticos`,
+              "er",
+              4000
+            );
           }
-        } else {
-          this._disdSuccessErrorMessage(
-            `${inpMemberName.value} ya existe en tu equipo. No puedes tener 2 miembros con nombres idénticos`,
-            "er",
-            4000
-          );
-        }
-      });
+        });
+      } else {
+        this._disdSuccessErrorMessage(
+          "Ingrese la información necesaria para crear un miembro.",
+          "er",
+          4000
+        );
+      }
     } else {
       this._disdSuccessErrorMessage(
         "Pareceque no tienes conexión a internet. Verifique tu conexión y vuelve a intentarlo.",
@@ -2914,7 +2951,7 @@ class App {
     }
 
     const logoutPassword = prompt(
-      `¿Cerrar sesión? \n Para confirmar, introduce tu contraseñ aqui.`
+      `¿Cerrar sesión? \n Para confirmar, introduce tu contraseña aqui.`
     );
     if (logoutPassword === curDataLocal.accountPassword) {
       console.log("good");
