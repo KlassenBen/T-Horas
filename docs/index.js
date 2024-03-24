@@ -166,6 +166,7 @@ const sr27btnAskWritePermisio = document.querySelector(
 );
 // const srtInstallApp = document.querySelector("#sr7-btn-install-app");
 const sr4ResendOTP = document.querySelector("#sr4-btn-resend-code");
+const sr11ChangeSalary = document.querySelector("#sr11-btn-change-salary");
 
 // <-- Join Team
 const btnJoinTeamSr1 = document.querySelector("#sr1-btn-join-team");
@@ -1450,8 +1451,8 @@ class App {
         sr11TimeSheetSumary.style.display = "block";
         sr11NewTimeSheetMessage.style.display = "none";
         this._displayTimeSheet(
-          this.#curWeekArrayOrg,
-          "arr",
+          this.#curWeekArrayOrg[this.#curWeekArrayOrg.length - 1],
+          "not arr",
           this.#curWeekArrayOrg.length
         );
         sr11TimeSheetName.textContent = this.#curMemberInfo.name;
@@ -1516,17 +1517,60 @@ class App {
         updateDayTotalTime.textContent = "-:--";
       }
     });
+    console.log(i, this.#curWeekArrayOrg.length);
+    if (
+      this.#curWeekArrayOrg.length === i &&
+      this.#curMemberInfo.salary !== week.salary
+    ) {
+      console.log("last week");
+      console.log(this.#curMemberInfo.salary);
+      console.log(this.#curMemberInfo);
+      console.log(week.salary);
+      console.log(week.weekId);
 
-    if (this.#curData.pro !== "false") {
-      sr11WeekTimeTotalTime.textContent = week.totalTime;
-      sr11WeekPayTotal.textContent = `$ ${week.totalPay}`;
+      if (this.#curData.pro !== "false") {
+        sr11WeekTimeTotalTime.textContent = week.totalTime;
+        sr11WeekPayTotal.textContent = `$ ${this._calculatePay(
+          this.#curMemberInfo.salary,
+          week.totalTime
+        )}`;
+      } else {
+        sr11WeekTimeTotalTime.textContent = "-:--";
+        sr11WeekPayTotal.textContent = "$ ----";
+      }
+
+      sr11WeekPayPerHour.textContent = `$ ${this.#curMemberInfo.salary}`;
+      this._updateData(
+        `accounts/${this.#curMemberInfo.teamCode}/weeks`,
+        week.weekId,
+        {
+          salary: this.#curMemberInfo.salary,
+          totalPay: this._calculatePay(
+            this.#curMemberInfo.salary,
+            week.totalTime
+          ),
+        }
+      );
     } else {
-      sr11WeekTimeTotalTime.textContent = "-:--";
-      sr11WeekPayTotal.textContent = "$ ----";
+      if (this.#curData.pro !== "false") {
+        sr11WeekTimeTotalTime.textContent = week.totalTime;
+        sr11WeekPayTotal.textContent = `$ ${week.totalPay}`;
+      } else {
+        sr11WeekTimeTotalTime.textContent = "-:--";
+        sr11WeekPayTotal.textContent = "$ ----";
+      }
+
+      sr11WeekPayPerHour.textContent = `$ ${week.salary}`;
     }
 
-    sr11WeekPayPerHour.textContent = `$ ${week.salary}`;
-    this._srGetStartedDispChoose("sr11", "sr22", "left");
+    const style = window.getComputedStyle(sr11);
+    const matrix = new WebKitCSSMatrix(style.transform);
+    const nowLocated = matrix.e;
+    console.log(nowLocated);
+    if (nowLocated === -5070) {
+    } else {
+      this._srGetStartedDispChoose("sr11", "sr22", "left");
+    }
   }
 
   _timeFormator(time) {
