@@ -2414,8 +2414,9 @@ class App {
                       totalHoras: "",
                       totalPay: "",
                       level: "miembro", //assistant
+                      lastModified: "",
                       lastModified: this._getTimeStamp(),
-                      writePermision: true, //false
+                      writePermision: "true", //false
                       extraHours: curDataLocal.extraHours, //false
                       extraHoursRequiredPer: curDataLocal.extraHoursRequiredPer, //week
                       extraHoursRequired: curDataLocal.extraHoursRequired,
@@ -2437,6 +2438,9 @@ class App {
                       totalPay: "",
                       curWeekTotalPay: "",
                       curWeekId: "",
+                      writePermisionRequest: "done",
+                      writeTimePermisionEnd: this._getTimeStamp(),
+                      writeTimePermisionStart: this._getTimeStamp(),
                       category: "Todos", // ...more., seperate mulitple caytegorry with "/"
                     }
                   );
@@ -2716,7 +2720,7 @@ class App {
   }
 
   _setSwiChangeMemberInfo(write, level) {
-    if (write === true) {
+    if (write === "true") {
       sr16SwiHours.classList.add("switch-on");
       sr16SwiHours.classList.remove("switch-off");
       sr16SwiHours2.classList.add("switch-inner-on");
@@ -2726,7 +2730,7 @@ class App {
       sr16SwiHours.dataset.on = "true";
       sr16SwiHoursText.textContent = "permitido";
     }
-    if (write === false) {
+    if (write === "false") {
       sr16SwiHours.classList.remove("switch-on");
       sr16SwiHours.classList.add("switch-off");
       sr16SwiHours2.classList.remove("switch-inner-on");
@@ -3891,7 +3895,7 @@ class App {
               sr27RequestPermisionCon.style.display = "flex";
               this._srGetStartedDispChoose("sr27", "sr11", "none");
               this._disdSuccessErrorMessage(
-                "No tienes permiso de apountar tus propias horas",
+                "No tienes permiso para hacer cambios en tus horas",
                 "er",
                 3000
               );
