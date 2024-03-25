@@ -463,6 +463,7 @@ class App {
           }
         }
         console.log(this.#curData);
+        setTimeout(() => {}, 1000);
         if (this.#curData.level === "asistente") {
           this._onSnapshot(
             `accounts/${this.#curData.teamCode}/team`,
@@ -561,7 +562,8 @@ class App {
     // TODO: REAL TIME update on data
     const unsub = onSnapshot(doc(db, name, listen), (doc) => {
       this._saveToLocal("curData", doc.data());
-      console.log("Updated data: ", doc.data());
+      this.#curData = this._getFromLocal("curData");
+      console.log("got it");
     });
   }
 
@@ -1058,7 +1060,8 @@ class App {
     title,
     message,
     contactEmail,
-    contactPhoneNumber
+    whatsAppPhoneNumber,
+    telegramPhoneNumber
   ) {
     this.#otp = otp;
     const data = JSON.stringify({
@@ -1067,7 +1070,7 @@ class App {
       name: "El equipo THoras",
       replyTo: replyTo,
       title: `${title} ${otp}`,
-      body: `${message}\n\n\nSi no solicitastes un código de verificación, no te preocupes. Puedes ignorar este correo.\nSi necesitas ayuda en algo, puedes comunicarte con ${contactEmail} o tambien por WhatsApp al ${contactPhoneNumber}.\n\n Estamos a sus ordenes`,
+      body: `${message}\n\n\nSi no solicitastes un código de verificación, no te preocupes. Puedes ignorar este correo.\nSi necesitas ayuda en algo, puede comunicarse con ${contactEmail}, tambien por WhatsApp al ${whatsAppPhoneNumber} o, por telegram al ${telegramPhoneNumber}.\n\n Estamos a sus ordenes`,
     });
 
     const xhr = new XMLHttpRequest();
@@ -2231,9 +2234,9 @@ class App {
     if (inpPayPerHour.value > 0) {
       this._srGetStartedDispChoose("sr22", "sr9", "left");
       if (writePermision.dataset.on === "false") {
-        write = false;
+        write = "false";
       } else {
-        write = true;
+        write = "true";
       }
       if (memberLevel.dataset.on === "true") {
         level = "asistente";
@@ -2311,9 +2314,9 @@ class App {
               totalMaqPay: "",
               totalPay: "",
               weekMadeTimeStamp: this._getTimeStamp(),
-              memberPayed: false,
-              adminPayed: false,
-              payed: false,
+              memberPayed: "false",
+              adminPayed: "false",
+              payed: "false",
               days: [
                 {
                   day: "monday",
@@ -2625,6 +2628,7 @@ class App {
     }
 
     if (inpTeamPay.value.length > 0) {
+      this._onSnapshot("accounts", this.#curData.teamCode);
       this._updateData("accounts", curDataLocal.teamCode, {
         salary: inpTeamPay.value,
       });
@@ -2800,23 +2804,15 @@ class App {
                   this.#password = inpPassword.value;
                   this.#otp = this._OTPGenerator(6);
                   this._sendEmail(
-                    // TODO: activate
                     inpEmail.value,
-                    // TODO: activate
-                    "thorastrack@gmail.com",
-                    // TODO: activate
+                    this.#appSupportInfo.email,
                     this.#otp,
-                    // TODO: activate
                     "Este es su codigo de verificación para THoras",
-                    // TODO: activate
                     "Hola",
-                    // TODO: activate
-                    "benklassen19@icloud.com",
-                    // TODO: activate
-                    "+52 996 730 6118"
-                    // TODO: activate
+                    this.#appSupportInfo.email,
+                    this.#appSupportInfo.whatsApp,
+                    this.#appSupportInfo.telegram
                   );
-                  // TODO: activate
                   this._srGetStartedDispChoose("sr4", "sr3", "left");
                   this._countdownResendOTP();
                 } else {
@@ -3366,6 +3362,7 @@ class App {
       "ex",
       5000
     );
+    // this._init();
   }
 
   _adminSetPlan() {
@@ -3529,23 +3526,16 @@ class App {
   _resendOTP() {
     if (sr4ResendOTP.dataset.send === "send") {
       this._sendEmail(
-        // TODO: activate
         this.#email,
-        //  TODO: activate
-        "thorastrack@gmail.com",
-        // TODO: activate
+        this.#appSupportInfo.email,
         this.#otp,
-        // TODO: activate
         "Este es su codigo de verificación para THoras",
-        // TODO: activate
         "Hola",
-        //  TODO: activate
-        "benklassen19@icloud.com",
-        // TODO: activate
-        "+52 996 730 6118"
-        // TODO: activate
+        this.#appSupportInfo.email,
+        this.#appSupportInfo.whatsApp,
+        this.#appSupportInfo.telegram
       );
-      // TODO: activate
+
       this._countdownResendOTP();
     }
   }
