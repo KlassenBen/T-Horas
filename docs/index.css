@@ -2562,12 +2562,12 @@ p {
 .switch-text-1 {
   color: var(--color-white);
   transition: 1000ms;
-  font-size: 20px;
+  font-size: 18px;
 }
 .switch-text-2 {
   color: var(--color-blue-100);
   transition: 1000ms;
-  font-size: 20px;
+  font-size: 18px;
 }
 
 /* SWITCH CLASSES END HERE */
