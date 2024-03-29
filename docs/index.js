@@ -50,6 +50,18 @@ const sr16SwiHours3 = document.querySelector("#sr16-swi-write--hours3");
 const sr16SwiHoursText = document.querySelector(
   "#sr16-swi-write--hours-switch-description-tx"
 );
+const sr16SwiPunchIn = document.querySelector("#sr16-swi-punchin");
+const sr16SwiPunchIn2 = document.querySelector("#sr16-swi-punchin2");
+const sr16SwiPunchIn3 = document.querySelector("#sr16-swi-punchin3");
+const sr16SwiPunchInText = document.querySelector(
+  "#sr16-swi-punchin-switch-description-tx"
+);
+const sr9SwiPunchIn = document.querySelector("#sr9-swi-punchin");
+const sr9SwiPunchIn2 = document.querySelector("#sr9-swi-punchin2");
+const sr9SwiPunchIn3 = document.querySelector("#sr9-swi-punchin3");
+const sr9SwiPunchInText = document.querySelector(
+  "#sr9-swi-punchin-switch-description-tx"
+);
 
 const sr16SwiAssis = document.querySelector("#sr16-swi-assis");
 const sr16SwiAssis2 = document.querySelector("#sr16-swi-assis2");
@@ -96,6 +108,19 @@ const sr27PendingPermisionCon = document.querySelector(
 );
 const sr16InfoName = document.querySelector("#sr16-contbx-header span");
 const sr16HeaderName = document.querySelector("#sr16-header");
+const sr11punchInClockHours = document.querySelector(
+  "#sr11-punchin-clock-hours"
+);
+const sr11punchInClockMinutes = document.querySelector(
+  "#sr11-punchin-clock-minutes"
+);
+const sr11punchInClockSeconds = document.querySelector(
+  "#sr11-punchin-clock-seconds"
+);
+const sr11punchInDay = document.querySelector("#sr11-punchin-day");
+const sr11punchInConMain = document.querySelector("#sr11-punchin-cont-con");
+const sr11SettingsPunchInCon = document.querySelector("#sr16-swi-punchin-con");
+const sr9CreateMemPunchInCon = document.querySelector("#sr9-swi-punchin-con");
 
 // <-- Screens
 const srsGetStarted = document.querySelector("#srs-get-started");
@@ -172,6 +197,8 @@ const sr27btnAskWritePermisio = document.querySelector(
 const sr4ResendOTP = document.querySelector("#sr4-btn-resend-code");
 const sr11ChangeSalary = document.querySelector("#sr11-btn-change-salary");
 const sr3AceptTerms = document.querySelector("#sr3-terms-acept-text");
+const sr11PunchInBtnIn = document.querySelector("#sr11-punchin-btn-in");
+const sr11PunchInBtnOut = document.querySelector("#sr11-punchin-btn-out");
 
 // <-- Join Team
 const btnJoinTeamSr1 = document.querySelector("#sr1-btn-join-team");
@@ -327,6 +354,7 @@ class App {
   #country = "Mexico";
   #appSupportInfo;
   #appExplainVideos = [];
+  clockInterval;
 
   #der = {
     teamCode: "rtyhgfdr567",
@@ -1504,8 +1532,155 @@ class App {
     });
   }
 
+  _daySp(dayNum) {
+    let todaySp;
+
+    if (dayNum === 0) {
+      todaySp = "Domingo";
+    }
+    if (dayNum === 1) {
+      todaySp = "Lunes";
+    }
+    if (dayNum === 2) {
+      todaySp = "Martes";
+    }
+    if (dayNum === 3) {
+      todaySp = "Miércoles";
+    }
+    if (dayNum === 4) {
+      todaySp = "Jueves";
+    }
+    if (dayNum === 5) {
+      todaySp = "Viernes";
+    }
+    if (dayNum === 6) {
+      todaySp = "Sábado";
+    }
+    return todaySp;
+  }
+
+  _punchInTimer(punch, time) {
+    const date = new Date();
+    const dayDate = date.getDay();
+    const monthDate = date.getMonth();
+    const yearDate = date.getFullYear();
+    const hourDate = date.getHours();
+    const minutesDate = date.getMinutes();
+    const secondsDate = date.getSeconds();
+    const timeArrDate = [hourDate, minutesDate];
+    const timeDate = timeArrDate.join(":");
+
+    let hour = 0;
+    let min = 0;
+    let sec = 0;
+
+    if (time) {
+      const timeInArr = this._calculateTimeBetween(time, timeDate).split(":");
+
+      hour = Number(timeInArr[0]);
+      if (Number(timeInArr[1]) < 10) {
+        min = `0${Number(timeInArr[1])}`;
+      } else {
+        min = Number(timeInArr[1]);
+      }
+      if (secondsDate < 10) {
+        sec = `0${secondsDate}`;
+      } else {
+        sec = secondsDate;
+      }
+      console.log(hour, min, sec);
+      sr11punchInClockSeconds.textContent = `${sec}`;
+      console.log(min);
+      setTimeout(() => {
+        sr11punchInClockMinutes.textContent = min;
+        sr11punchInClockHours.textContent = hour;
+      }, 1000);
+    }
+
+    const setTime = function () {
+      if (sec < 60) {
+        let secc;
+        sec++;
+        if (sec < 10) {
+          secc = `0${sec}`;
+        } else {
+          secc = sec;
+        }
+        sr11punchInClockSeconds.textContent = `${secc}`;
+      }
+      if (sec > 59) {
+        let minc;
+        sr11punchInClockSeconds.textContent = "00";
+        sec = 0;
+        min++;
+        if (min < 10) {
+          minc = `0${min}`;
+        } else {
+          minc = min;
+        }
+        sr11punchInClockMinutes.textContent = minc;
+      }
+      if (min > 59) {
+        sr11punchInClockMinutes.textContent = "00";
+        min = 0;
+        hour++;
+        sr11punchInClockHours.textContent = hour;
+      }
+    };
+
+    if (punch === "in") {
+      sr11punchInClockSeconds.textContent = "00";
+      sr11punchInClockMinutes.textContent = "00";
+      sr11punchInClockHours.textContent = "00";
+      sr11PunchInBtnIn.style.opacity = "50%";
+      sr11PunchInBtnOut.style.opacity = "100%";
+      clearInterval(this.clockInterval);
+      this.clockInterval = setInterval(setTime, 1000);
+    }
+    if (punch === "out") {
+      sr11PunchInBtnOut.style.opacity = "10%";
+      sr11PunchInBtnIn.style.opacity = "10%";
+      console.log("out now and here");
+      clearInterval(this.clockInterval);
+    }
+  }
+
+  _punchIn(punch) {
+    const date = new Date();
+    const dayDate = date.getDay();
+    const monthDate = date.getMonth();
+    const yearDate = date.getFullYear();
+    const hourDate = date.getHours();
+    const minutesDate = date.getMinutes();
+    const secondsDate = date.getSeconds();
+    let minCor;
+    if (minutesDate < 10) {
+      minCor = `0${minutesDate}`;
+    } else {
+      minCor = minutesDate;
+    }
+    const timeArrDate = [hourDate, minCor];
+    const timeDate = timeArrDate.join(":");
+    // sr11punchInClockHours
+
+    if (punch === "in") {
+      this.#timePickerUpdatestnd = "start";
+      this._updateEntries(timeDate, dayDate);
+    }
+    if (punch === "out") {
+      this.#timePickerUpdatestnd = "end";
+      this._updateEntries(timeDate, dayDate);
+    }
+  }
+
   _displayTimeSheet(weeks, arr, i, name) {
+    clearInterval(this.clockInterval);
+    sr11punchInClockMinutes.textContent = "00";
+    sr11punchInClockHours.textContent = "00";
+    sr11punchInClockHours.textContent = "0";
+
     let week;
+    let IndexDayValNum;
     if (arr === "arr") {
       week = weeks[weeks.length - 1];
       this.#curWeek = week;
@@ -1513,6 +1688,68 @@ class App {
       week = weeks;
     }
     console.log(week);
+
+    const date = new Date();
+    const dayDate = date.getDay();
+    if (this.#curWeekArrayOrg.length === i) {
+      if (
+        this.#curMemberInfo.teamCode === "0h54tc988ry5pf76" ||
+        this.#curMemberInfo.teamCode === "03f9tt9ezh81tdd9"
+      ) {
+        if (this.#curMemberInfo.writePermision === "true") {
+          sr11punchInConMain.style.display = "flex";
+          sr11punchInDay.textContent = this._daySp(dayDate);
+          sr11punchInClockMinutes.textContent = "00";
+          sr11punchInClockHours.textContent = "00";
+          sr11punchInClockHours.textContent = "0";
+        }
+        if (this.#curMemberInfo.punchInPermision === "true") {
+          sr11punchInConMain.style.display = "flex";
+          sr11punchInDay.textContent = this._daySp(dayDate);
+          sr11punchInClockMinutes.textContent = "00";
+          sr11punchInClockHours.textContent = "00";
+          sr11punchInClockHours.textContent = "0";
+        }
+        ("00");
+      }
+    } else {
+      sr11punchInConMain.style.display = "none";
+    }
+    if (dayDate === 0) {
+      IndexDayValNum = 6;
+    }
+    if (dayDate > 0 && dayDate < 6) {
+      IndexDayValNum = dayDate - 1;
+    }
+
+    if (week.days[IndexDayValNum].in === "0:00") {
+      sr11PunchInBtnIn.dataset.active = "act";
+      sr11PunchInBtnIn.style.opacity = "100%";
+    } else {
+      if (week.days[IndexDayValNum].out === "0:00") {
+        this._punchInTimer("in", week.days[IndexDayValNum].in);
+        console.log();
+      } else {
+        const timeInArr = week.days[IndexDayValNum].totalTime.split(":");
+        let hour = Number(timeInArr[0]);
+        let min = Number(timeInArr[1]);
+        sr11punchInClockMinutes.textContent = min;
+        sr11punchInClockHours.textContent = hour;
+        sr11PunchInBtnOut.style.opacity = "30%";
+        sr11PunchInBtnIn.style.opacity = "30%";
+        sr11PunchInBtnIn.dataset.active = "no";
+        sr11PunchInBtnOut.dataset.active = "no";
+      }
+      // sr11PunchInBtnIn.style.opacity = "50%";
+    }
+    if (
+      week.days[IndexDayValNum].out === "0:00" &&
+      week.days[IndexDayValNum].in !== "0:00"
+    ) {
+      sr11PunchInBtnOut.dataset.active = "act";
+      sr11PunchInBtnOut.style.opacity = "100%";
+    }
+
     const sr11WeekTimeTotalTime = document.querySelector(
       `#sr11-summary-time-total-time`
     );
@@ -1653,7 +1890,7 @@ class App {
     return timeFormated;
   }
 
-  _updateEntries(time, reset) {
+  _updateEntries(time, dayNum) {
     let curDataLocal;
     if (this.#curData.level === this.#adminLevel) {
       curDataLocal = this.#curAccountData;
@@ -1662,32 +1899,43 @@ class App {
     }
     console.log(this.#curMemberInfo.memberId);
     let IndexDayVal;
-
-    if (this.#timePickerUpdateDay === "monday") {
-      IndexDayVal = 0;
-    }
-    if (this.#timePickerUpdateDay === "tuesday") {
-      IndexDayVal = 1;
-    }
-    if (this.#timePickerUpdateDay === "wednesday") {
-      IndexDayVal = 2;
-    }
-    if (this.#timePickerUpdateDay === "thursday") {
-      IndexDayVal = 3;
-    }
-    if (this.#timePickerUpdateDay === "friday") {
-      IndexDayVal = 4;
-    }
-    if (this.#timePickerUpdateDay === "saturday") {
-      IndexDayVal = 5;
-    }
-    if (this.#timePickerUpdateDay === "sunday") {
-      IndexDayVal = 6;
+    if (dayNum) {
+      if (dayNum === 0) {
+        IndexDayVal = 6;
+      }
+      if (dayNum > 0 && dayNum < 6) {
+        IndexDayVal = dayNum - 1;
+      }
+    } else {
+      if (this.#timePickerUpdateDay === "monday") {
+        IndexDayVal = 0;
+      }
+      if (this.#timePickerUpdateDay === "tuesday") {
+        IndexDayVal = 1;
+      }
+      if (this.#timePickerUpdateDay === "wednesday") {
+        IndexDayVal = 2;
+      }
+      if (this.#timePickerUpdateDay === "thursday") {
+        IndexDayVal = 3;
+      }
+      if (this.#timePickerUpdateDay === "friday") {
+        IndexDayVal = 4;
+      }
+      if (this.#timePickerUpdateDay === "saturday") {
+        IndexDayVal = 5;
+      }
+      if (this.#timePickerUpdateDay === "sunday") {
+        IndexDayVal = 6;
+      }
     }
 
     console.log("time: ", time);
 
     const updateIn = () => {
+      if (dayNum) {
+        this._punchInTimer("in");
+      }
       console.log(curDataLocal.memberId);
       this._updateData(
         `accounts/${curDataLocal.teamCode}/team`,
@@ -1718,6 +1966,9 @@ class App {
     };
 
     const updateOut = () => {
+      if (dayNum) {
+        this._punchInTimer("out");
+      }
       this._updateData(
         `accounts/${curDataLocal.teamCode}/team`,
         this.#curMemberInfo.memberId,
@@ -2228,16 +2479,13 @@ class App {
     const inpPayPerHour = document.querySelector("#sr9-inp-pay--hour");
     const writePermision = document.querySelector("#sr9-swi-write--hours");
     const memberLevel = document.querySelector("#sr9-swi-assis");
-    let write;
+    let write = writePermision.dataset.on;
+    let punchIn = sr9SwiPunchIn.dataset.on;
     let level;
 
     if (inpPayPerHour.value > 0) {
       this._srGetStartedDispChoose("sr22", "sr9", "left");
-      if (writePermision.dataset.on === "false") {
-        write = "false";
-      } else {
-        write = "true";
-      }
+
       if (memberLevel.dataset.on === "true") {
         level = "asistente";
       } else {
@@ -2250,6 +2498,7 @@ class App {
         {
           level: level,
           writePermision: write,
+          punchInPermision: punchIn,
           salary: inpPayPerHour.value,
         }
       );
@@ -2490,6 +2739,18 @@ class App {
       }
       inpPayPerHour.value = curDataLocal.salary;
 
+      setTimeout(() => {
+        if (
+          curDataLocal.teamCode === "0h54tc988ry5pf76" ||
+          curDataLocal.teamCode === "03f9tt9ezh81tdd9"
+        ) {
+          sr9CreateMemPunchInCon.style.display = "flex";
+        } else {
+          sr9CreateMemPunchInCon.style.display = "none";
+        }
+      }, 2000);
+      sr9CreateMemPunchInCon.style.display = "none";
+
       if (inpMemberName.value.length > 0 && inpPassword.value.length > 0) {
         const q = query(
           collection(db, `accounts/${curDataLocal.teamCode}/team`),
@@ -2525,6 +2786,7 @@ class App {
                           lastModified: "",
                           lastModified: this._getTimeStamp(),
                           writePermision: "true", //false
+                          punchInPermision: "true", //false
                           extraHours: curDataLocal.extraHours, //false
                           extraHoursRequiredPer:
                             curDataLocal.extraHoursRequiredPer, //week
@@ -2856,7 +3118,11 @@ class App {
     }
   }
 
-  _setSwiChangeMemberInfo(write, level) {
+  _setSwiChangeMemberInfo(write, level, punchIn) {
+    //     sr16SwiPunchIn
+    // sr16SwiPunchIn2
+    // sr16SwiPunchIn3
+    // sr16SwiPunchInText
     if (write === "true") {
       sr16SwiHours.classList.add("switch-on");
       sr16SwiHours.classList.remove("switch-off");
@@ -2866,6 +3132,19 @@ class App {
       sr16SwiHours3.classList.remove("switch-text-off");
       sr16SwiHours.dataset.on = "true";
       sr16SwiHoursText.textContent = "permitido";
+
+      sr16SwiPunchIn.style.opacity = "30%";
+      sr16SwiPunchIn.dataset.active = "no";
+
+      //  auto punchin
+      sr16SwiPunchIn.classList.add("switch-on");
+      sr16SwiPunchIn.classList.remove("switch-off");
+      sr16SwiPunchIn2.classList.add("switch-inner-on");
+      sr16SwiPunchIn2.classList.remove("switch-inner-off");
+      sr16SwiPunchIn3.classList.add("switch-text-on");
+      sr16SwiPunchIn3.classList.remove("switch-text-off");
+      sr16SwiPunchIn.dataset.on = "true";
+      sr16SwiPunchInText.textContent = "permitido";
     }
     if (write === "false") {
       sr16SwiHours.classList.remove("switch-on");
@@ -2876,6 +3155,30 @@ class App {
       sr16SwiHours3.classList.add("switch-text-off");
       sr16SwiHours.dataset.on = "false";
       sr16SwiHoursText.textContent = "negado";
+
+      sr16SwiPunchIn.style.opacity = "100%";
+      sr16SwiPunchIn.dataset.active = "act";
+    }
+
+    if (punchIn === "true") {
+      sr16SwiPunchIn.classList.add("switch-on");
+      sr16SwiPunchIn.classList.remove("switch-off");
+      sr16SwiPunchIn2.classList.add("switch-inner-on");
+      sr16SwiPunchIn2.classList.remove("switch-inner-off");
+      sr16SwiPunchIn3.classList.add("switch-text-on");
+      sr16SwiPunchIn3.classList.remove("switch-text-off");
+      sr16SwiPunchIn.dataset.on = "true";
+      sr16SwiPunchInText.textContent = "permitido";
+    }
+    if (punchIn === "false") {
+      sr16SwiPunchIn.classList.remove("switch-on");
+      sr16SwiPunchIn.classList.add("switch-off");
+      sr16SwiPunchIn2.classList.remove("switch-inner-on");
+      sr16SwiPunchIn2.classList.add("switch-inner-off");
+      sr16SwiPunchIn3.classList.remove("switch-text-on");
+      sr16SwiPunchIn3.classList.add("switch-text-off");
+      sr16SwiPunchIn.dataset.on = "false";
+      sr16SwiPunchInText.textContent = "negado";
     }
 
     if (level === "asistente") {
@@ -2967,6 +3270,7 @@ class App {
           {
             salary: sr16InpMemberPay.value,
             writePermision: sr16SwiHours.dataset.on,
+            punchInPermision: sr16SwiPunchIn.dataset.on,
             level: level,
             lastModified: this._getTimeStamp(),
           }
@@ -3560,6 +3864,16 @@ class App {
       const aceptTermsConditions = document.querySelector("#sr3-terms-acept");
       console.log(aceptTermsConditions.checked);
     });
+    sr11PunchInBtnIn.addEventListener("click", (e) => {
+      if (e.target.dataset.active === "act") {
+        this._punchIn("in");
+      }
+    });
+    sr11PunchInBtnOut.addEventListener("click", (e) => {
+      if (e.target.dataset.active === "act") {
+        this._punchIn("out");
+      }
+    });
     sr16InpMemberPay.addEventListener("focus", () => {
       sr16InpMemberPay.value = "";
     });
@@ -3741,6 +4055,7 @@ class App {
     });
     btnBackTbSr11.addEventListener("click", () => {
       this._displayMembers("sr11");
+      clearInterval(this.clockInterval);
       // this._srGetStartedDispChoose("sr7", "sr11", "right");
     });
     btnBackSr20.addEventListener("click", () => {
@@ -3763,7 +4078,7 @@ class App {
     });
     btnClearSr21.addEventListener("click", () => {
       // this._srGetStartedDispChoose("sr11", "sr21", "right");
-      this._updateEntries("0:00", "reset");
+      this._updateEntries("0:00");
     });
     btnSaveSr21.addEventListener("click", (e) => {
       this._updateEntries(timePicker.value);
@@ -3774,6 +4089,7 @@ class App {
     });
     btnWeekSelectBack.addEventListener("click", (e) => {
       this._weekSelect("back");
+      clearInterval(this.clockInterval);
     });
     btnsr16InfoSaveChanges.addEventListener("click", (e) => {
       this._sr16InfoSaveChanges();
@@ -3888,6 +4204,7 @@ class App {
           collection(db, `accounts/${curDataLocal.teamCode}/team`),
           where("memberId", "==", curMemberIdHere)
         );
+
         getDocs(q).then((docSnap) => {
           docSnap.forEach((doc) => {
             const val = doc.data();
@@ -3899,9 +4216,26 @@ class App {
             console.log(val);
             sr16HeaderName.textContent = val.name;
             sr16InfoName.textContent = val.name;
-            this._setSwiChangeMemberInfo(val.writePermision, val.level);
+            this._setSwiChangeMemberInfo(
+              val.writePermision,
+              val.level,
+              val.punchInPermision
+            );
           });
         });
+        console.log();
+        setTimeout(() => {
+          if (
+            this.#curMemberInfo.teamCode === "0h54tc988ry5pf76" ||
+            this.#curMemberInfo.teamCode === "03f9tt9ezh81tdd9"
+          ) {
+            sr11SettingsPunchInCon.style.display = "flex";
+          } else {
+            sr11SettingsPunchInCon.style.display = "none";
+          }
+        }, 2000);
+        sr11SettingsPunchInCon.style.display = "none";
+
         this._srGetStartedDispChoose("sr16", "sr7", "left");
       }
     });
@@ -4093,6 +4427,19 @@ class App {
         sr9SwiHours3.classList.remove("switch-text-off");
         sr9SwiHours.dataset.on = "true";
         sr9SwiHoursText.textContent = "permitido";
+
+        sr9SwiPunchIn.style.opacity = "30%";
+        sr9SwiPunchIn.dataset.active = "no";
+
+        //  auto punchin
+        sr9SwiPunchIn.classList.add("switch-on");
+        sr9SwiPunchIn.classList.remove("switch-off");
+        sr9SwiPunchIn2.classList.add("switch-inner-on");
+        sr9SwiPunchIn2.classList.remove("switch-inner-off");
+        sr9SwiPunchIn3.classList.add("switch-text-on");
+        sr9SwiPunchIn3.classList.remove("switch-text-off");
+        sr9SwiPunchIn.dataset.on = "true";
+        sr9SwiPunchInText.textContent = "permitido";
       }
       if (datanow === "true") {
         sr9SwiHours.classList.remove("switch-on");
@@ -4103,6 +4450,9 @@ class App {
         sr9SwiHours3.classList.add("switch-text-off");
         sr9SwiHours.dataset.on = "false";
         sr9SwiHoursText.textContent = "negado";
+
+        sr9SwiPunchIn.style.opacity = "100%";
+        sr9SwiPunchIn.dataset.active = "act";
       }
     });
     sr9SwiAssis.addEventListener("click", function () {
@@ -4128,6 +4478,31 @@ class App {
         sr9SwiAssisText.textContent = "miembro";
       }
     });
+    sr9SwiPunchIn.addEventListener("click", function () {
+      const datanow = sr9SwiPunchIn.dataset.on;
+      if (sr9SwiPunchIn.dataset.active === "act") {
+        if (datanow === "false") {
+          sr9SwiPunchIn.classList.add("switch-on");
+          sr9SwiPunchIn.classList.remove("switch-off");
+          sr9SwiPunchIn2.classList.add("switch-inner-on");
+          sr9SwiPunchIn2.classList.remove("switch-inner-off");
+          sr9SwiPunchIn3.classList.add("switch-text-on");
+          sr9SwiPunchIn3.classList.remove("switch-text-off");
+          sr9SwiPunchIn.dataset.on = "true";
+          sr9SwiPunchInText.textContent = "permitido";
+        }
+        if (datanow === "true") {
+          sr9SwiPunchIn.classList.remove("switch-on");
+          sr9SwiPunchIn.classList.add("switch-off");
+          sr9SwiPunchIn2.classList.remove("switch-inner-on");
+          sr9SwiPunchIn2.classList.add("switch-inner-off");
+          sr9SwiPunchIn3.classList.remove("switch-text-on");
+          sr9SwiPunchIn3.classList.add("switch-text-off");
+          sr9SwiPunchIn.dataset.on = "false";
+          sr9SwiPunchInText.textContent = "negado";
+        }
+      }
+    });
 
     sr16SwiHours.addEventListener("click", function () {
       const datanow = sr16SwiHours.dataset.on;
@@ -4140,6 +4515,18 @@ class App {
         sr16SwiHours3.classList.remove("switch-text-off");
         sr16SwiHours.dataset.on = "true";
         sr16SwiHoursText.textContent = "permitido";
+        sr16SwiPunchIn.style.opacity = "30%";
+        sr16SwiPunchIn.dataset.active = "no";
+
+        //  auto punchin
+        sr16SwiPunchIn.classList.add("switch-on");
+        sr16SwiPunchIn.classList.remove("switch-off");
+        sr16SwiPunchIn2.classList.add("switch-inner-on");
+        sr16SwiPunchIn2.classList.remove("switch-inner-off");
+        sr16SwiPunchIn3.classList.add("switch-text-on");
+        sr16SwiPunchIn3.classList.remove("switch-text-off");
+        sr16SwiPunchIn.dataset.on = "true";
+        sr16SwiPunchInText.textContent = "permitido";
       }
       if (datanow === "true") {
         sr16SwiHours.classList.remove("switch-on");
@@ -4150,6 +4537,39 @@ class App {
         sr16SwiHours3.classList.add("switch-text-off");
         sr16SwiHours.dataset.on = "false";
         sr16SwiHoursText.textContent = "negado";
+        sr16SwiPunchIn.style.opacity = "100%";
+        sr16SwiPunchIn.dataset.active = "act";
+      }
+    });
+    //     sr16SwiPunchIn
+    // sr16SwiPunchIn2
+    // sr16SwiPunchIn3
+    // sr16SwiPunchInText
+
+    sr16SwiPunchIn.addEventListener("click", function (e) {
+      console.log(sr16SwiPunchIn.dataset.active);
+      if (sr16SwiPunchIn.dataset.active === "act") {
+        const datanow = sr16SwiPunchIn.dataset.on;
+        if (datanow === "false") {
+          sr16SwiPunchIn.classList.add("switch-on");
+          sr16SwiPunchIn.classList.remove("switch-off");
+          sr16SwiPunchIn2.classList.add("switch-inner-on");
+          sr16SwiPunchIn2.classList.remove("switch-inner-off");
+          sr16SwiPunchIn3.classList.add("switch-text-on");
+          sr16SwiPunchIn3.classList.remove("switch-text-off");
+          sr16SwiPunchIn.dataset.on = "true";
+          sr16SwiPunchInText.textContent = "permitido";
+        }
+        if (datanow === "true") {
+          sr16SwiPunchIn.classList.remove("switch-on");
+          sr16SwiPunchIn.classList.add("switch-off");
+          sr16SwiPunchIn2.classList.remove("switch-inner-on");
+          sr16SwiPunchIn2.classList.add("switch-inner-off");
+          sr16SwiPunchIn3.classList.remove("switch-text-on");
+          sr16SwiPunchIn3.classList.add("switch-text-off");
+          sr16SwiPunchIn.dataset.on = "false";
+          sr16SwiPunchInText.textContent = "negado";
+        }
       }
     });
     sr16SwiAssis.addEventListener("click", function () {
