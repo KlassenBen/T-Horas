@@ -1692,26 +1692,21 @@ class App {
     const date = new Date();
     const dayDate = date.getDay();
     if (this.#curWeekArrayOrg.length === i) {
-      if (
-        this.#curMemberInfo.teamCode === "0h54tc988ry5pf76" ||
-        this.#curMemberInfo.teamCode === "03f9tt9ezh81tdd9"
-      ) {
-        if (this.#curMemberInfo.writePermision === "true") {
-          sr11punchInConMain.style.display = "flex";
-          sr11punchInDay.textContent = this._daySp(dayDate);
-          sr11punchInClockMinutes.textContent = "00";
-          sr11punchInClockHours.textContent = "00";
-          sr11punchInClockHours.textContent = "0";
-        }
-        if (this.#curMemberInfo.punchInPermision === "true") {
-          sr11punchInConMain.style.display = "flex";
-          sr11punchInDay.textContent = this._daySp(dayDate);
-          sr11punchInClockMinutes.textContent = "00";
-          sr11punchInClockHours.textContent = "00";
-          sr11punchInClockHours.textContent = "0";
-        }
-        ("00");
+      if (this.#curMemberInfo.writePermision === "true") {
+        sr11punchInConMain.style.display = "flex";
+        sr11punchInDay.textContent = this._daySp(dayDate);
+        sr11punchInClockMinutes.textContent = "00";
+        sr11punchInClockHours.textContent = "00";
+        sr11punchInClockHours.textContent = "0";
       }
+      if (this.#curMemberInfo.punchInPermision === "true") {
+        sr11punchInConMain.style.display = "flex";
+        sr11punchInDay.textContent = this._daySp(dayDate);
+        sr11punchInClockMinutes.textContent = "00";
+        sr11punchInClockHours.textContent = "00";
+        sr11punchInClockHours.textContent = "0";
+      }
+      ("00");
     } else {
       sr11punchInConMain.style.display = "none";
     }
@@ -2738,18 +2733,6 @@ class App {
         curDataLocal = this.#curData;
       }
       inpPayPerHour.value = curDataLocal.salary;
-
-      setTimeout(() => {
-        if (
-          curDataLocal.teamCode === "0h54tc988ry5pf76" ||
-          curDataLocal.teamCode === "03f9tt9ezh81tdd9"
-        ) {
-          sr9CreateMemPunchInCon.style.display = "flex";
-        } else {
-          sr9CreateMemPunchInCon.style.display = "none";
-        }
-      }, 2000);
-      sr9CreateMemPunchInCon.style.display = "none";
 
       if (inpMemberName.value.length > 0 && inpPassword.value.length > 0) {
         const q = query(
@@ -4224,17 +4207,6 @@ class App {
           });
         });
         console.log();
-        setTimeout(() => {
-          if (
-            this.#curMemberInfo.teamCode === "0h54tc988ry5pf76" ||
-            this.#curMemberInfo.teamCode === "03f9tt9ezh81tdd9"
-          ) {
-            sr11SettingsPunchInCon.style.display = "flex";
-          } else {
-            sr11SettingsPunchInCon.style.display = "none";
-          }
-        }, 2000);
-        sr11SettingsPunchInCon.style.display = "none";
 
         this._srGetStartedDispChoose("sr16", "sr7", "left");
       }
