@@ -1485,6 +1485,8 @@ class App {
       return calculatedTime;
     }
   }
+
+  // TODO: start here with loading weeks ofline
   _readWeeks(name) {
     this._srGetStartedDispChoose("sr22", "sr7", "left");
     this.#curData = this._getFromLocal("curData");
@@ -1673,6 +1675,42 @@ class App {
     }
   }
 
+  // TODO: Auto week creator
+  _checkForNewWeek(weekTimeStamp) {
+    const dateNow = new Date();
+    const date = new Date(weekTimeStamp);
+    const day = date.getDay();
+    const dayNow = dateNow.getDay();
+
+    // 604,800,000 one week in milliseconds
+    if (this._getTimeStamp() - weekTimeStamp > 604800000) {
+      this._newWeek();
+      console.log("new week needed");
+    } else {
+      console.log("skip");
+      if (dayNow < day) {
+        console.log("skip");
+        this._newWeek();
+        console.log("new week needed");
+      }
+      if (dayNow === day) {
+        console.log("skip");
+        const millBetween = 604800000 - (weekTimeStamp - this._getTimeStamp());
+
+        if (millBetween < 86400000) {
+          console.log("skip");
+          console.log("new week needed");
+
+          this._newWeek();
+        } else {
+          console.log(`it's today`);
+        }
+      }
+    }
+
+    console.log(day, dayNow);
+  }
+
   _displayTimeSheet(weeks, arr, i, name) {
     clearInterval(this.clockInterval);
     sr11punchInClockMinutes.textContent = "00";
@@ -1686,6 +1724,9 @@ class App {
       this.#curWeek = week;
     } else {
       week = weeks;
+    }
+    if (arr === "arr") {
+      setTimeout(this._checkForNewWeek(week.weekMadeTimeStamp), 2000);
     }
     console.log(week);
 
@@ -4206,6 +4247,7 @@ class App {
             );
           });
         });
+
         console.log();
 
         this._srGetStartedDispChoose("sr16", "sr7", "left");
