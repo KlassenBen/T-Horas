@@ -1566,89 +1566,84 @@ class App {
   }
 
   _punchInTimer(punch, time) {
-    const date = new Date();
-    const dayDate = date.getDay();
-    const monthDate = date.getMonth();
-    const yearDate = date.getFullYear();
-    const hourDate = date.getHours();
-    const minutesDate = date.getMinutes();
-    const secondsDate = date.getSeconds();
-    const timeArrDate = [hourDate, minutesDate];
-    const timeDate = timeArrDate.join(":");
-
-    let hour = 0;
-    let min = 0;
-    let sec = 0;
-
-    if (time) {
-      const timeInArr = this._calculateTimeBetween(time, timeDate).split(":");
-
-      hour = Number(timeInArr[0]);
-      if (Number(timeInArr[1]) < 10) {
-        min = `0${Number(timeInArr[1])}`;
-      } else {
-        min = Number(timeInArr[1]);
-      }
-      if (secondsDate < 10) {
-        sec = `0${secondsDate}`;
-      } else {
-        sec = secondsDate;
-      }
-      console.log(hour, min, sec);
-      sr11punchInClockSeconds.textContent = `${sec}`;
-      console.log(min);
-      setTimeout(() => {
-        sr11punchInClockMinutes.textContent = min;
-        sr11punchInClockHours.textContent = hour;
-      }, 1000);
-    }
-
-    const setTime = function () {
-      if (sec < 60) {
-        let secc;
-        sec++;
-        if (sec < 10) {
-          secc = `0${sec}`;
-        } else {
-          secc = sec;
-        }
-        sr11punchInClockSeconds.textContent = `${secc}`;
-      }
-      if (sec > 59) {
-        let minc;
-        sr11punchInClockSeconds.textContent = "00";
-        sec = 0;
-        min++;
-        if (min < 10) {
-          minc = `0${min}`;
-        } else {
-          minc = min;
-        }
-        sr11punchInClockMinutes.textContent = minc;
-      }
-      if (min > 59) {
-        sr11punchInClockMinutes.textContent = "00";
-        min = 0;
-        hour++;
-        sr11punchInClockHours.textContent = hour;
-      }
-    };
-
-    if (punch === "in") {
-      sr11punchInClockSeconds.textContent = "00";
-      sr11punchInClockMinutes.textContent = "00";
-      sr11punchInClockHours.textContent = "00";
-      sr11PunchInBtnIn.style.opacity = "50%";
-      sr11PunchInBtnOut.style.opacity = "100%";
-      clearInterval(this.clockInterval);
-      this.clockInterval = setInterval(setTime, 1000);
-    }
-    if (punch === "out") {
-      sr11PunchInBtnOut.style.opacity = "10%";
-      sr11PunchInBtnIn.style.opacity = "10%";
-      console.log("out now and here");
-      clearInterval(this.clockInterval);
-    }
+    // const date = new Date();
+    // const dayDate = date.getDay();
+    // const monthDate = date.getMonth();
+    // const yearDate = date.getFullYear();
+    // const hourDate = date.getHours();
+    // const minutesDate = date.getMinutes();
+    // const secondsDate = date.getSeconds();
+    // const timeArrDate = [hourDate, minutesDate];
+    // const timeDate = timeArrDate.join(":");
+    // let hour = 0;
+    // let min = 0;
+    // let sec = 0;
+    // if (time) {
+    //   const timeInArr = this._calculateTimeBetween(time, timeDate).split(":");
+    //   hour = Number(timeInArr[0]);
+    //   if (Number(timeInArr[1]) < 10) {
+    //     min = `0${Number(timeInArr[1])}`;
+    //   } else {
+    //     min = Number(timeInArr[1]);
+    //   }
+    //   if (secondsDate < 10) {
+    //     sec = `0${secondsDate}`;
+    //   } else {
+    //     sec = secondsDate;
+    //   }
+    //   console.log(hour, min, sec);
+    //   sr11punchInClockSeconds.textContent = `${sec}`;
+    //   console.log(min);
+    //   setTimeout(() => {
+    //     sr11punchInClockMinutes.textContent = min;
+    //     sr11punchInClockHours.textContent = hour;
+    //   }, 1000);
+    // }
+    // const setTime = function () {
+    //   if (sec < 60) {
+    //     let secc;
+    //     sec++;
+    //     if (sec < 10) {
+    //       secc = `0${sec}`;
+    //     } else {
+    //       secc = sec;
+    //     }
+    //     sr11punchInClockSeconds.textContent = `${secc}`;
+    //   }
+    //   if (sec > 59) {
+    //     let minc;
+    //     sr11punchInClockSeconds.textContent = "00";
+    //     sec = 0;
+    //     min++;
+    //     if (min < 10) {
+    //       minc = `0${min}`;
+    //     } else {
+    //       minc = min;
+    //     }
+    //     sr11punchInClockMinutes.textContent = minc;
+    //   }
+    //   if (min > 59) {
+    //     sr11punchInClockMinutes.textContent = "00";
+    //     min = 0;
+    //     hour++;
+    //     sr11punchInClockHours.textContent = hour;
+    //   }
+    // };
+    // if (punch === "in") {
+    //   sr11punchInClockSeconds.textContent = "00";
+    //   sr11punchInClockMinutes.textContent = "00";
+    //   sr11punchInClockHours.textContent = "00";
+    //   sr11PunchInBtnIn.style.opacity = "50%";
+    //   sr11PunchInBtnOut.style.opacity = "100%";
+    //   clearInterval(this.clockInterval);
+    //   this.clockInterval = setInterval(setTime, 1000);
+    // }
+    // if (punch === "out") {
+    //   sr11PunchInBtnOut.style.opacity = "10%";
+    //   sr11PunchInBtnIn.style.opacity = "10%";
+    //   console.log("out now and here");
+    //   clearInterval(this.clockInterval);
+    // }
   }
 
   _punchIn(punch) {
@@ -1685,7 +1680,6 @@ class App {
     const date = new Date(weekTimeStamp);
     const day = date.getDay();
     const dayNow = dateNow.getDay();
-
     // 604,800,000 one week in milliseconds
     if (this._getTimeStamp() - weekTimeStamp > 604800000) {
       this._newWeek();
@@ -1700,18 +1694,15 @@ class App {
       if (dayNow === day) {
         console.log("skip");
         const millBetween = 604800000 - (weekTimeStamp - this._getTimeStamp());
-
         if (millBetween < 86400000) {
           console.log("skip");
           console.log("new week needed");
-
           this._newWeek();
         } else {
           console.log(`it's today`);
         }
       }
     }
-
     console.log(day, dayNow);
   }
 
@@ -1738,14 +1729,14 @@ class App {
     const dayDate = date.getDay();
     if (this.#curWeekArrayOrg.length === i) {
       if (this.#curMemberInfo.writePermision === "true") {
-        sr11punchInConMain.style.display = "flex";
+        // sr11punchInConMain.style.display = "flex";
         sr11punchInDay.textContent = this._daySp(dayDate);
         sr11punchInClockMinutes.textContent = "00";
         sr11punchInClockHours.textContent = "00";
         sr11punchInClockHours.textContent = "0";
       }
       if (this.#curMemberInfo.punchInPermision === "true") {
-        sr11punchInConMain.style.display = "flex";
+        // sr11punchInConMain.style.display = "flex";
         sr11punchInDay.textContent = this._daySp(dayDate);
         sr11punchInClockMinutes.textContent = "00";
         sr11punchInClockHours.textContent = "00";
@@ -1762,33 +1753,33 @@ class App {
       IndexDayValNum = dayDate - 1;
     }
 
-    if (week.days[IndexDayValNum].in === "0:00") {
-      sr11PunchInBtnIn.dataset.active = "act";
-      sr11PunchInBtnIn.style.opacity = "100%";
-    } else {
-      if (week.days[IndexDayValNum].out === "0:00") {
-        this._punchInTimer("in", week.days[IndexDayValNum].in);
-        console.log();
-      } else {
-        const timeInArr = week.days[IndexDayValNum].totalTime.split(":");
-        let hour = Number(timeInArr[0]);
-        let min = Number(timeInArr[1]);
-        sr11punchInClockMinutes.textContent = min;
-        sr11punchInClockHours.textContent = hour;
-        sr11PunchInBtnOut.style.opacity = "30%";
-        sr11PunchInBtnIn.style.opacity = "30%";
-        sr11PunchInBtnIn.dataset.active = "no";
-        sr11PunchInBtnOut.dataset.active = "no";
-      }
-      // sr11PunchInBtnIn.style.opacity = "50%";
-    }
-    if (
-      week.days[IndexDayValNum].out === "0:00" &&
-      week.days[IndexDayValNum].in !== "0:00"
-    ) {
-      sr11PunchInBtnOut.dataset.active = "act";
-      sr11PunchInBtnOut.style.opacity = "100%";
-    }
+    // if (week.days[IndexDayValNum].in === "0:00") {
+    //   sr11PunchInBtnIn.dataset.active = "act";
+    //   sr11PunchInBtnIn.style.opacity = "100%";
+    // } else {
+    //   if (week.days[IndexDayValNum].out === "0:00") {
+    //     this._punchInTimer("in", week.days[IndexDayValNum].in);
+    //     console.log();
+    //   } else {
+    //     const timeInArr = week.days[IndexDayValNum].totalTime.split(":");
+    //     let hour = Number(timeInArr[0]);
+    //     let min = Number(timeInArr[1]);
+    //     sr11punchInClockMinutes.textContent = min;
+    //     sr11punchInClockHours.textContent = hour;
+    //     sr11PunchInBtnOut.style.opacity = "30%";
+    //     sr11PunchInBtnIn.style.opacity = "30%";
+    //     sr11PunchInBtnIn.dataset.active = "no";
+    //     sr11PunchInBtnOut.dataset.active = "no";
+    //   }
+    //   // sr11PunchInBtnIn.style.opacity = "50%";
+    // }
+    // if (
+    //   week.days[IndexDayValNum].out === "0:00" &&
+    //   week.days[IndexDayValNum].in !== "0:00"
+    // ) {
+    //   sr11PunchInBtnOut.dataset.active = "act";
+    //   sr11PunchInBtnOut.style.opacity = "100%";
+    // }
 
     const sr11WeekTimeTotalTime = document.querySelector(
       `#sr11-summary-time-total-time`
