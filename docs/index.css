@@ -86,9 +86,9 @@ body {
 /* .tb-cont-con + #sr20-cho-app-admin {
   background: var(--color-orange-50);
 } */
-/* #sr20-cho-app-admin {
+#sr20-cho-app-admin {
   background: var(--color-orange-0);
-} */
+}
 
 #app-header {
   width: 390px;
@@ -121,7 +121,7 @@ body {
 }
 #team-image {
   width: 55px;
-  /* height: 55px; *
+  /* height: 55px; */
   flex-shrink: 0;
   border-radius: 30px;
 }
