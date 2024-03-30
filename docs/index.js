@@ -2740,7 +2740,7 @@ class App {
 
           this._readWeeks();
           this._disdSuccessErrorMessage(
-            "Éxito. Creaste nueva tabla de horas.",
+            "Éxito. Una nueva semana ha comenzado.",
             "ex",
             3000
           );
@@ -2750,7 +2750,7 @@ class App {
       }, 1000);
     } else {
       this._disdSuccessErrorMessage(
-        "Parece que no tienes conexión a internet. verifique tu conexión y vuelve a intentarlo.",
+        "No pudimos comenzar una nueva semana. Parece que no tienes conexión a internet.",
         "er",
         7000
       );

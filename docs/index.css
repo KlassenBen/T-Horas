@@ -68,9 +68,26 @@ body {
   top: 0px;
   width: 390px;
 }
+/* .app-header-border-bottom {
+  border-right: solid 1px red;
+} */
 
-/* .sticky-app-header + #srs-get-started {
-  padding-top: 107.08px;
+/* .admin-mode-ind {
+  width: 5px;
+  height: 75.08px;
+  background: red;
+} */
+
+/* TODO: for admin mode */
+/* .tb-cont-con {
+  background: var(--color-orange-50);
+  content: admin mode;
+} */
+/* .tb-cont-con + #sr20-cho-app-admin {
+  background: var(--color-orange-50);
+} */
+/* #sr20-cho-app-admin {
+  background: var(--color-orange-0);
 } */
 
 #app-header {
@@ -104,7 +121,7 @@ body {
 }
 #team-image {
   width: 55px;
-  height: 55px;
+  /* height: 55px; *
   flex-shrink: 0;
   border-radius: 30px;
 }
