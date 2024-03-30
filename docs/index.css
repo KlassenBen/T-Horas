@@ -79,10 +79,10 @@ body {
 } */
 
 /* TODO: for admin mode */
-.tb-cont-con {
+/* .tb-cont-con {
   background: var(--color-orange-50);
   content: admin mode;
-}
+} */
 /* .tb-cont-con + #sr20-cho-app-admin {
   background: var(--color-orange-50);
 } */
