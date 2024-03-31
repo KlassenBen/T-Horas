@@ -78,18 +78,6 @@ body {
   background: red;
 } */
 
-/* TODO: for admin mode */
-/* .tb-cont-con {
-  background: var(--color-orange-50);
-  content: admin mode;
-} */
-/* .tb-cont-con + #sr20-cho-app-admin {
-  background: var(--color-orange-50);
-} */
-#sr20-cho-app-admin {
-  background: var(--color-orange-0);
-}
-
 #app-header {
   width: 390px;
   display: flex;

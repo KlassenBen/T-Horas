@@ -26,6 +26,7 @@ const hourSheetWeekNumber = document.querySelector(
 const sr20Logout = document.querySelector("#sr20-cho-logout");
 const sr20DeleteAccount = document.querySelector("#sr20-cho-delete-account");
 const sr20AppAdmin = document.querySelector("#sr20-cho-app-admin");
+const sr20AppAdminP = document.querySelector("#sr20-cho-app-admin p");
 const sr20AppAdminNorm = document.querySelector("#sr20-cho-app-admin-norm");
 const sr23btnMenu = document.querySelector("#sr23-btn-menu");
 
@@ -668,17 +669,50 @@ class App {
   }
 
   _topAdminDisplay() {
-    this.#accountsArray = [];
-    this._srGetStartedDispChoose("sr22", "sr20", "left");
-    const q = query(collection(db, "accounts"));
-    getDocs(q).then((docSnap) => {
-      docSnap.forEach((doc) => {
-        const val = doc.data();
-        this.#accountsArray.push(val);
+    let admionPassword;
+
+    const openAdminMode = () => {
+      const adminModeTbBar = document.querySelector("#app-name");
+      adminModeTbBar.style.color = "#ffdcc2";
+      adminModeTbBar.textContent = "Admin";
+      this.#accountsArray = [];
+      this._srGetStartedDispChoose("sr22", "sr20", "left");
+      const q = query(collection(db, "accounts"));
+      getDocs(q).then((docSnap) => {
+        docSnap.forEach((doc) => {
+          const val = doc.data();
+          this.#accountsArray.push(val);
+        });
+        this._topAdminDisplayAccounts(this.#accountsArray);
+        this._srGetStartedDispChoose("sr23", "sr22", "left");
       });
-      this._topAdminDisplayAccounts(this.#accountsArray);
-      this._srGetStartedDispChoose("sr23", "sr22", "left");
-    });
+      this._disdSuccessErrorMessage("Admin mode started", "ex", 2000);
+      sr20AppAdmin.dataset.mode = "admin";
+      sr20AppAdminP.dataset.mode = "admin";
+    };
+
+    if (sr20AppAdmin.dataset.mode === "norm") {
+      admionPassword = prompt(
+        `To start Admin mode you have to put in the admin password`
+      );
+      const q = query(
+        collection(db, "appSettings"),
+        where("settings", "==", "admin_mode")
+      );
+      getDocs(q).then((docSnap) => {
+        docSnap.forEach((doc) => {
+          const val = doc.data();
+
+          if (admionPassword === val.password) {
+            openAdminMode();
+          } else {
+            this._disdSuccessErrorMessage("Incorect password", "er", 2000);
+          }
+        });
+      });
+    } else {
+      openAdminMode();
+    }
   }
 
   _displayMemberOnly() {
@@ -2254,8 +2288,8 @@ class App {
         </div>`;
         conMemberDisplay.insertAdjacentHTML("beforeend", HTML);
       }
-      headerTeamImg.src = this.#curData.teamImg;
-      headerTeamName.textContent = this.#curData.teamName;
+      headerTeamImg.src = this.#curAccountData.teamImg;
+      headerTeamName.textContent = this.#curAccountData.teamName;
       let randomMemArr = [];
       let orgMemArr = [];
       docSnap.forEach((doc) => {
@@ -3394,9 +3428,15 @@ class App {
   }
 
   _fromAdminToNorm() {
+    sr20AppAdmin.dataset.mode = "norm";
+    sr20AppAdminP.dataset.mode = "norm";
+    const adminModeTbBar = document.querySelector("#app-name");
+    adminModeTbBar.style.color = "#fff";
+    adminModeTbBar.textContent = "T Horas";
     this.#curAccountData = this.#curData;
     this._displayMembers("sr20");
     sr23AccountSearch.value = "";
+    this._disdSuccessErrorMessage("Admin mode stoped", "ex", 2000);
   }
 
   _adminSearchAccount(inptx) {
@@ -4169,7 +4209,22 @@ class App {
 
     // --> EVENT DELEGATION
 
+    sr20.addEventListener("click", (e) => {
+      // console.log(e.target.dataset.mode);
+      // // console.log(e.target.classList);
+      // console.log("clicked");
+      // if (
+      //   e.target.dataset.mode !== "norm" ||
+      //   e.target.dataset.mode !== "admin"
+      // ) {
+      //   sr20AppAdmin.dataset.mode = "norm";
+      //   sr20AppAdminP.dataset.mode = "norm";
+      //   console.log("yes here");
+      // }
+    });
+
     // <-- member screen
+
     sr7.addEventListener("click", (e) => {
       let curDataLocal;
       if (this.#curData.level === this.#adminLevel) {
@@ -4288,7 +4343,6 @@ class App {
         this.#curAccountData = found;
         this._displayMembers("sr23");
       } else {
-        console.log("undefined");
       }
       if (teamCode && btn === "edit") {
         const found = this.#accountsArray.find((el) => el.teamCode == teamCode);
@@ -4329,7 +4383,6 @@ class App {
 
         this._srGetStartedDispChoose("sr26", "sr23", "left");
       } else {
-        console.log("undefined");
       }
     });
 
