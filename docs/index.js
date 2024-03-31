@@ -1566,111 +1566,84 @@ class App {
   }
 
   _punchInTimer(punch, time) {
-    // const date = new Date();
-    // const dayDate = date.getDay();
-    // const monthDate = date.getMonth();
-    // const yearDate = date.getFullYear();
-    // const hourDate = date.getHours();
-    // const minutesDate = date.getMinutes();
-    // const secondsDate = date.getSeconds();
-    // const timeArrDate = [hourDate, minutesDate];
-    // const timeDate = timeArrDate.join(":");
-    // let hour = 0;
-    // let min = 0;
-    // let sec = 0;
-    // if (time) {
-    //   const timeInArr = this._calculateTimeBetween(time, timeDate).split(":");
-    //   hour = Number(timeInArr[0]);
-    //   if (Number(timeInArr[1]) < 10) {
-    //     min = `0${Number(timeInArr[1])}`;
-    //   } else {
-    //     min = Number(timeInArr[1]);
-    //   }
-    //   if (secondsDate < 10) {
-    //     sec = `0${secondsDate}`;
-    //   } else {
-    //     sec = secondsDate;
-    //   }
-    //   console.log(hour, min, sec);
-    //   sr11punchInClockSeconds.textContent = `${sec}`;
-    //   console.log(min);
-    //   setTimeout(() => {
-    //     sr11punchInClockMinutes.textContent = min;
-    //     sr11punchInClockHours.textContent = hour;
-    //   }, 1000);
-    // }
-    // const setTime = function () {
-    //   if (sec < 60) {
-    //     let secc;
-    //     sec++;
-    //     if (sec < 10) {
-    //       secc = `0${sec}`;
-    //     } else {
-    //       secc = sec;
-    //     }
-    //     sr11punchInClockSeconds.textContent = `${secc}`;
-    //   }
-    //   if (sec > 59) {
-    //     let minc;
-    //     sr11punchInClockSeconds.textContent = "00";
-    //     sec = 0;
-    //     min++;
-    //     if (min < 10) {
-    //       minc = `0${min}`;
-    //     } else {
-    //       minc = min;
-    //     }
-    //     sr11punchInClockMinutes.textContent = minc;
-    //   }
-    //   if (min > 59) {
-    //     sr11punchInClockMinutes.textContent = "00";
-    //     min = 0;
-    //     hour++;
-    //     sr11punchInClockHours.textContent = hour;
-    //   }
-    // };
-    // if (punch === "in") {
-    //   sr11punchInClockSeconds.textContent = "00";
-    //   sr11punchInClockMinutes.textContent = "00";
-    //   sr11punchInClockHours.textContent = "00";
-    //   sr11PunchInBtnIn.style.opacity = "50%";
-    //   sr11PunchInBtnOut.style.opacity = "100%";
-    //   clearInterval(this.clockInterval);
-    //   this.clockInterval = setInterval(setTime, 1000);
-    // }
-    // if (punch === "out") {
-    //   sr11PunchInBtnOut.style.opacity = "10%";
-    //   sr11PunchInBtnIn.style.opacity = "10%";
-    //   console.log("out now and here");
-    //   clearInterval(this.clockInterval);
-    // }
-  }
-
-  _punchIn(punch) {
     const date = new Date();
     const dayDate = date.getDay();
+    // const dayDate = 0;
     const monthDate = date.getMonth();
     const yearDate = date.getFullYear();
     const hourDate = date.getHours();
     const minutesDate = date.getMinutes();
     const secondsDate = date.getSeconds();
-    let minCor;
-    if (minutesDate < 10) {
-      minCor = `0${minutesDate}`;
-    } else {
-      minCor = minutesDate;
-    }
-    const timeArrDate = [hourDate, minCor];
+    const timeArrDate = [hourDate, minutesDate];
     const timeDate = timeArrDate.join(":");
-    // sr11punchInClockHours
-
+    let hour = 0;
+    let min = 0;
+    let sec = 0;
+    if (time) {
+      const timeInArr = this._calculateTimeBetween(time, timeDate).split(":");
+      hour = Number(timeInArr[0]);
+      if (Number(timeInArr[1]) < 10) {
+        min = `0${Number(timeInArr[1])}`;
+      } else {
+        min = Number(timeInArr[1]);
+      }
+      if (secondsDate < 10) {
+        sec = `0${secondsDate}`;
+      } else {
+        sec = secondsDate;
+      }
+      console.log(hour, min, sec);
+      sr11punchInClockSeconds.textContent = `${sec}`;
+      console.log(min);
+      setTimeout(() => {
+        sr11punchInClockMinutes.textContent = min;
+        sr11punchInClockHours.textContent = hour;
+      }, 1000);
+    }
+    const setTime = function () {
+      if (sec < 60) {
+        let secc;
+        sec++;
+        if (sec < 10) {
+          secc = `0${sec}`;
+        } else {
+          secc = sec;
+        }
+        sr11punchInClockSeconds.textContent = `${secc}`;
+      }
+      if (sec > 59) {
+        let minc;
+        sr11punchInClockSeconds.textContent = "00";
+        sec = 0;
+        min++;
+        if (min < 10) {
+          minc = `0${min}`;
+        } else {
+          minc = min;
+        }
+        sr11punchInClockMinutes.textContent = minc;
+      }
+      if (min > 59) {
+        sr11punchInClockMinutes.textContent = "00";
+        min = 0;
+        hour++;
+        sr11punchInClockHours.textContent = hour;
+      }
+    };
     if (punch === "in") {
-      this.#timePickerUpdatestnd = "start";
-      this._updateEntries(timeDate, dayDate);
+      sr11punchInClockSeconds.textContent = "00";
+      sr11punchInClockMinutes.textContent = "00";
+      sr11punchInClockHours.textContent = "0";
+      sr11PunchInBtnIn.style.opacity = "50%";
+      sr11PunchInBtnOut.style.opacity = "100%";
+      clearInterval(this.clockInterval);
+      this.clockInterval = setInterval(setTime, 1000);
     }
     if (punch === "out") {
-      this.#timePickerUpdatestnd = "end";
-      this._updateEntries(timeDate, dayDate);
+      sr11PunchInBtnOut.style.opacity = "10%";
+      sr11PunchInBtnIn.style.opacity = "10%";
+      console.log("out now and here");
+      clearInterval(this.clockInterval);
     }
   }
 
@@ -1706,10 +1679,43 @@ class App {
     console.log(day, dayNow);
   }
 
+  _punchIn(punch) {
+    const date = new Date();
+    const dayDate = date.getDay();
+    let dayDateCor;
+    if (dayDate === 0) {
+      dayDateCor = 7;
+    } else {
+      dayDateCor = dayDate;
+    }
+    const monthDate = date.getMonth();
+    const yearDate = date.getFullYear();
+    const hourDate = date.getHours();
+    const minutesDate = date.getMinutes();
+    const secondsDate = date.getSeconds();
+    let minCor;
+    if (minutesDate < 10) {
+      minCor = `0${minutesDate}`;
+    } else {
+      minCor = minutesDate;
+    }
+    const timeArrDate = [hourDate, minCor];
+    const timeDate = timeArrDate.join(":");
+
+    if (punch === "in") {
+      this.#timePickerUpdatestnd = "start";
+      this._updateEntries(timeDate, dayDateCor);
+    }
+    if (punch === "out") {
+      this.#timePickerUpdatestnd = "end";
+      this._updateEntries(timeDate, dayDateCor);
+    }
+  }
+
   _displayTimeSheet(weeks, arr, i, name) {
     clearInterval(this.clockInterval);
+    sr11punchInClockSeconds.textContent = "00";
     sr11punchInClockMinutes.textContent = "00";
-    sr11punchInClockHours.textContent = "00";
     sr11punchInClockHours.textContent = "0";
 
     let week;
@@ -1727,59 +1733,63 @@ class App {
 
     const date = new Date();
     const dayDate = date.getDay();
+    let dayDateCor;
+    if (dayDate === 0) {
+      dayDateCor = 7;
+    } else {
+      dayDateCor = dayDate;
+    }
+    if (dayDate > 0 && dayDate < 7) {
+      IndexDayValNum = dayDate - 1;
+      console.log("here");
+    }
     if (this.#curWeekArrayOrg.length === i) {
       if (this.#curMemberInfo.writePermision === "true") {
-        // sr11punchInConMain.style.display = "flex";
+        sr11punchInConMain.style.display = "flex";
         sr11punchInDay.textContent = this._daySp(dayDate);
         sr11punchInClockMinutes.textContent = "00";
-        sr11punchInClockHours.textContent = "00";
         sr11punchInClockHours.textContent = "0";
       }
       if (this.#curMemberInfo.punchInPermision === "true") {
-        // sr11punchInConMain.style.display = "flex";
+        sr11punchInConMain.style.display = "flex";
         sr11punchInDay.textContent = this._daySp(dayDate);
         sr11punchInClockMinutes.textContent = "00";
-        sr11punchInClockHours.textContent = "00";
         sr11punchInClockHours.textContent = "0";
       }
       ("00");
     } else {
       sr11punchInConMain.style.display = "none";
     }
-    if (dayDate === 0) {
-      IndexDayValNum = 6;
-    }
-    if (dayDate > 0 && dayDate < 6) {
-      IndexDayValNum = dayDate - 1;
-    }
+    IndexDayValNum = dayDateCor - 1;
+    console.log(week.days);
 
-    // if (week.days[IndexDayValNum].in === "0:00") {
-    //   sr11PunchInBtnIn.dataset.active = "act";
-    //   sr11PunchInBtnIn.style.opacity = "100%";
-    // } else {
-    //   if (week.days[IndexDayValNum].out === "0:00") {
-    //     this._punchInTimer("in", week.days[IndexDayValNum].in);
-    //     console.log();
-    //   } else {
-    //     const timeInArr = week.days[IndexDayValNum].totalTime.split(":");
-    //     let hour = Number(timeInArr[0]);
-    //     let min = Number(timeInArr[1]);
-    //     sr11punchInClockMinutes.textContent = min;
-    //     sr11punchInClockHours.textContent = hour;
-    //     sr11PunchInBtnOut.style.opacity = "30%";
-    //     sr11PunchInBtnIn.style.opacity = "30%";
-    //     sr11PunchInBtnIn.dataset.active = "no";
-    //     sr11PunchInBtnOut.dataset.active = "no";
-    //   }
-    //   // sr11PunchInBtnIn.style.opacity = "50%";
-    // }
-    // if (
-    //   week.days[IndexDayValNum].out === "0:00" &&
-    //   week.days[IndexDayValNum].in !== "0:00"
-    // ) {
-    //   sr11PunchInBtnOut.dataset.active = "act";
-    //   sr11PunchInBtnOut.style.opacity = "100%";
-    // }
+    if (week.days[IndexDayValNum].in === "0:00") {
+      sr11PunchInBtnIn.dataset.active = "act";
+      sr11PunchInBtnIn.style.opacity = "100%";
+    } else {
+      if (week.days[IndexDayValNum].out === "0:00") {
+        this._punchInTimer("in", week.days[IndexDayValNum].in);
+        console.log();
+      } else {
+        const timeInArr = week.days[IndexDayValNum].totalTime.split(":");
+        let hour = Number(timeInArr[0]);
+        let min = Number(timeInArr[1]);
+        sr11punchInClockMinutes.textContent = min;
+        sr11punchInClockHours.textContent = hour;
+        sr11PunchInBtnOut.style.opacity = "30%";
+        sr11PunchInBtnIn.style.opacity = "30%";
+        sr11PunchInBtnIn.dataset.active = "no";
+        sr11PunchInBtnOut.dataset.active = "no";
+      }
+      // sr11PunchInBtnIn.style.opacity = "50%";
+    }
+    if (
+      week.days[IndexDayValNum].out === "0:00" &&
+      week.days[IndexDayValNum].in !== "0:00"
+    ) {
+      sr11PunchInBtnOut.dataset.active = "act";
+      sr11PunchInBtnOut.style.opacity = "100%";
+    }
 
     const sr11WeekTimeTotalTime = document.querySelector(
       `#sr11-summary-time-total-time`
@@ -1922,6 +1932,7 @@ class App {
   }
 
   _updateEntries(time, dayNum) {
+    console.log(dayNum);
     let curDataLocal;
     if (this.#curData.level === this.#adminLevel) {
       curDataLocal = this.#curAccountData;
@@ -1930,14 +1941,11 @@ class App {
     }
     console.log(this.#curMemberInfo.memberId);
     let IndexDayVal;
+    console.log("er4gtrewfe");
     if (dayNum) {
-      if (dayNum === 0) {
-        IndexDayVal = 6;
-      }
-      if (dayNum > 0 && dayNum < 6) {
-        IndexDayVal = dayNum - 1;
-      }
+      IndexDayVal = dayNum - 1;
     } else {
+      console.log("nomo");
       if (this.#timePickerUpdateDay === "monday") {
         IndexDayVal = 0;
       }
@@ -1975,6 +1983,8 @@ class App {
           lastModified: this._getTimeStamp(),
         }
       );
+      console.log(this.#curWeek.days[IndexDayVal]);
+      console.log(this.#curWeek.days[6]);
       this.#curWeek.days[IndexDayVal].in = time;
       console.log(this.#curWeek);
       this._srGetStartedDispChoose("sr11", "sr21", "right");
@@ -2040,6 +2050,7 @@ class App {
       const entryhour = Number(entyryArr[0]);
       const entrymin = Number(entyryArr[1]);
 
+      console.log(IndexDayVal);
       if (this.#timePickerUpdatestnd === "start") {
         if (this.#curWeek.days[IndexDayVal].out === "0:00") {
           this.#curWeek.days[IndexDayVal].totalTime =
