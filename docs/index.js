@@ -77,6 +77,7 @@ const stickyHeader = header.offsetTop;
 
 const appName = document.querySelector("#app-name");
 const teamImage = document.querySelector("#team-image");
+const sr29Image = document.querySelector("#sr29-image");
 const timePicker = document.querySelector("#sr21-time-picker");
 const inpPayPerHour = document.querySelector("#sr9-inp-pay--hour");
 const sr11TimeSheetHours = document.querySelector("#sr11-daily-hours-con");
@@ -152,6 +153,7 @@ const sr25 = document.querySelector("#sr25");
 const sr26 = document.querySelector("#sr26");
 const sr27 = document.querySelector("#sr27");
 const sr28 = document.querySelector("#sr28");
+const sr29 = document.querySelector("#sr29");
 
 // <-- Buttons
 const btnWeekSelectForward = document.querySelector(
@@ -260,6 +262,7 @@ const btnsr27BackPermisionPending = document.querySelector(
   "#sr27-btn-back-permision-pending"
 );
 const btnsr28Back = document.querySelector("#sr28-tb-btn-back");
+const btnsr29Back = document.querySelector("#sr29-btn-back");
 
 const firebaseConfig = {
   apiKey: "AIzaSyA30VKmZDuM0Xv0z-CuG5o6C-4lU4Z-u64",
@@ -381,6 +384,7 @@ class App {
     // this._onSnapshot("accounts", "cn25uwg629tb9143");
     // console.log(sr21TimePickerInOutText.textContent);
     // this._srGetStartedDispChoose("sr24", "sr1", "left");
+    // this._srGetStartedDispChoose("sr29", "sr1", "none");
   }
 
   _setSupportInfo() {
@@ -1299,6 +1303,10 @@ class App {
       srdisp = sr28;
       perdisp = 390 * 26;
     }
+    if (srDisp === "sr29") {
+      srdisp = sr29;
+      perdisp = 390 * 27;
+    }
 
     // <-- Hide
     if (srHide === "sr1") {
@@ -1382,6 +1390,9 @@ class App {
     if (srHide === "sr28") {
       srhide = sr28;
     }
+    if (srHide === "sr29") {
+      srhide = sr29;
+    }
 
     const style = window.getComputedStyle(srhide);
     const matrix = new WebKitCSSMatrix(style.transform);
@@ -1409,7 +1420,8 @@ class App {
       srDisp === "sr16" ||
       srDisp === "sr17" ||
       srDisp === "sr19" ||
-      srDisp === "sr20"
+      srDisp === "sr20" ||
+      srDisp === "sr29"
     ) {
       appName.classList.add("app-name-not-only");
       teamImage.classList.remove("team-image-hidden");
@@ -3920,6 +3932,17 @@ class App {
     const nowLocated = matrix.e;
     sr28.style.transform = `translateX(${nowLocated + 390}px)`;
   }
+  _imgDispHide(srhide) {
+    const style = window.getComputedStyle(srhide);
+    const matrix = new WebKitCSSMatrix(style.transform);
+    const nowLocated = matrix.e;
+    const perhide = nowLocated + 390;
+    srhide.style.transform = `translateX(${perhide}px)`;
+  }
+  _imgDispDisp(img) {
+    sr29Image.src = img.src;
+    this._srGetStartedDispChoose("sr29", "sr1", "none");
+  }
 
   _events() {
     // <-- LIVE Listeners
@@ -3959,6 +3982,12 @@ class App {
 
     // <-- OTHER
 
+    teamImage.addEventListener("click", () => {
+      this._imgDispDisp(teamImage);
+    });
+    btnsr29Back.addEventListener("click", () => {
+      this._imgDispHide(sr29);
+    });
     btnsr28Back.addEventListener("click", () => {
       this._hideTermsCond();
     });
