@@ -2154,17 +2154,17 @@ class App {
             }
             if (entrymin >= timemin && time !== "0:00") {
               this._disdSuccessErrorMessage(
-                "Tu tiempo de entrada no pueder ser mayor de tu tiempo de salida.",
+                "Tu tiempo de entrada no pueder ser mayor de, o igual a tu tiempo de salida.",
                 "er",
-                3500
+                4000
               );
             }
           }
           if (entryhour > timehour && time !== "0:00") {
             this._disdSuccessErrorMessage(
-              "Tu tiempo de entrada no pueder ser mayor de tu tiempo de salida.",
+              "Tu tiempo de entrada no pueder ser mayor de, o igual a tu tiempo de salida.",
               "er",
-              3500
+              4000
             );
           }
         }
@@ -2227,18 +2227,18 @@ class App {
             }
             if (entrymin <= timemin && time !== "0:00") {
               this._disdSuccessErrorMessage(
-                "Tu tiempo de salida no pueder ser menor que tu tiempo de entrada.",
+                "Tu tiempo de salida no pueder ser menor de, o igual a tu tiempo de entrada.",
                 "er",
-                3500
+                4000
               );
               console.log(1);
             }
           }
           if (entryhour < timehour && time !== "0:00") {
             this._disdSuccessErrorMessage(
-              "Tu tiempo de salida no pueder ser menor que tu tiempo de entrada.",
+              "Tu tiempo de salida no pueder ser menor de o igual a tu tiempo de entrada.",
               "er",
-              3500
+              4000
             );
             console.log(3);
           }
@@ -3286,42 +3286,63 @@ class App {
     } else {
       curDataLocal = this.#curData;
     }
-    const q = query(
-      collection(db, `accounts/${curDataLocal.teamCode}/team`),
-      where("name", "==", sr16InpMemberName.value)
-    );
-    getDocs(q).then((docSnap) => {
-      if (docSnap.empty === true) {
-        if (
-          sr16InpMemberName.value.length > 2 &&
-          sr16InpMemberPassword.value.length > 5
-        ) {
-          this._srGetStartedDispChoose("sr22", "sr16", "right");
-          setTimeout(() => {
-            this._updateData(
-              `accounts/${curDataLocal.teamCode}/team`,
-              this.#curMemberInfo.memberId,
-              {
-                name: sr16InpMemberName.value,
-                password: sr16InpMemberPassword.value,
-                lastModified: this._getTimeStamp(),
-              }
-            );
-            setTimeout(() => {
-              this._displayMembers("sr22");
-            }, 1000);
-          }, 1000);
-        } else {
-          console.error("not valid data");
-        }
+
+    if (
+      sr16InpMemberName.value === this.#curMemberInfo.name &&
+      sr16InpMemberPassword.value === this.#curMemberInfo.password
+    ) {
+      console.log("all right");
+      this._srGetStartedDispChoose("sr22", "sr16", "right");
+      this._displayMembers("sr22");
+    } else {
+      if (sr16InpMemberName.value === this.#curMemberInfo.name) {
+        this._srGetStartedDispChoose("sr22", "sr16", "right");
+        setTimeout(() => {
+          this._updateData(
+            `accounts/${curDataLocal.teamCode}/team`,
+            this.#curMemberInfo.memberId,
+            {
+              password: sr16InpMemberPassword.value,
+              lastModified: this._getTimeStamp(),
+            }
+          );
+        }, 1000);
       } else {
-        this._disdSuccessErrorMessage(
-          `${sr16InpMemberName.value} ya existe en tu equipo. No puedes tener 2 miembros con nombres idénticos`,
-          "er",
-          3800
+        const q = query(
+          collection(db, `accounts/${curDataLocal.teamCode}/team`),
+          where("name", "==", sr16InpMemberName.value)
         );
+        getDocs(q).then((docSnap) => {
+          if (docSnap.empty === true) {
+            if (
+              sr16InpMemberName.value.length > 2 &&
+              sr16InpMemberPassword.value.length > 5
+            ) {
+              this._srGetStartedDispChoose("sr22", "sr16", "right");
+              setTimeout(() => {
+                this._updateData(
+                  `accounts/${curDataLocal.teamCode}/team`,
+                  this.#curMemberInfo.memberId,
+                  {
+                    name: sr16InpMemberName.value,
+                    password: sr16InpMemberPassword.value,
+                    lastModified: this._getTimeStamp(),
+                  }
+                );
+              }, 1000);
+            } else {
+              console.error("not valid data");
+            }
+          } else {
+            this._disdSuccessErrorMessage(
+              `${sr16InpMemberName.value} ya existe en tu equipo. No puedes tener 2 miembros con nombres idénticos`,
+              "er",
+              3800
+            );
+          }
+        });
       }
-    });
+    }
   }
   async _sr16SettingsSaveChanges() {
     let curDataLocal;
@@ -3330,33 +3351,40 @@ class App {
     } else {
       curDataLocal = this.#curData;
     }
-
-    if (sr16InpMemberPay.value > 0) {
-      this._srGetStartedDispChoose("sr22", "sr16", "right");
-      let level;
-      if (sr16SwiAssis.dataset.on === "true") {
-        level = "asistente";
-      } else {
-        level = "miembro";
-      }
-      setTimeout(() => {
-        this._updateData(
-          `accounts/${curDataLocal.teamCode}/team`,
-          this.#curMemberInfo.memberId,
-          {
-            salary: sr16InpMemberPay.value,
-            writePermision: sr16SwiHours.dataset.on,
-            punchInPermision: sr16SwiPunchIn.dataset.on,
-            level: level,
-            lastModified: this._getTimeStamp(),
-          }
-        );
-        setTimeout(() => {
-          this._displayMembers("sr22");
-        }, 1000);
-      }, 1000);
+    let level;
+    if (sr16SwiAssis.dataset.on === "true") {
+      level = "asistente";
     } else {
-      console.error("not valid data");
+      level = "miembro";
+    }
+
+    if (
+      this.#curMemberInfo.salary === sr16InpMemberPay.value &&
+      this.#curMemberInfo.writePermision === sr16SwiHours.dataset.on &&
+      this.#curMemberInfo.punchInPermision === sr16SwiPunchIn.dataset.on &&
+      this.#curMemberInfo.level === level
+    ) {
+      this._srGetStartedDispChoose("sr22", "sr16", "right");
+      this._displayMembers("sr22");
+    } else {
+      if (sr16InpMemberPay.value > 0) {
+        this._srGetStartedDispChoose("sr22", "sr16", "right");
+        setTimeout(() => {
+          this._updateData(
+            `accounts/${curDataLocal.teamCode}/team`,
+            this.#curMemberInfo.memberId,
+            {
+              salary: sr16InpMemberPay.value,
+              writePermision: sr16SwiHours.dataset.on,
+              punchInPermision: sr16SwiPunchIn.dataset.on,
+              level: level,
+              lastModified: this._getTimeStamp(),
+            }
+          );
+        }, 1000);
+      } else {
+        console.error("not valid data");
+      }
     }
   }
 

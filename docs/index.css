@@ -1189,6 +1189,7 @@ body {
   gap: 8px;
   border-radius: 10px;
   border: 1px solid var(--color-red-100);
+  background: none;
 
   color: var(--color-red-100);
   font-family: Inter;
@@ -1385,6 +1386,7 @@ p {
   gap: 8px;
   border-radius: 10px;
   border: 1px solid var(--color-blue-100);
+  background: none;
 
   color: var(--color-blue-100);
   font-family: Inter;
