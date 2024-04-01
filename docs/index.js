@@ -72,6 +72,17 @@ const sr16SwiAssisText = document.querySelector(
 );
 
 // <-- Other
+// Rating starts
+let stars = document.getElementsByClassName("star");
+let output = document.getElementById("sr30-rate-output");
+let sr30RateCard = document.getElementById("sr30-rate-con-2");
+const sr30RateNow = document.querySelector(`#sr30-btn-rate-now`);
+const sr30RateLater = document.querySelector(`#sr30-btn-rate-later`);
+const sr30DescriptionTextArea = document.querySelector(
+  `#sr30-description-textarea-hint`
+);
+const sr30StarsCon = document.querySelector(`#sr30-rate-con-4`);
+// Rating ends
 const header = document.querySelector("#app-header");
 const stickyHeader = header.offsetTop;
 
@@ -154,6 +165,7 @@ const sr26 = document.querySelector("#sr26");
 const sr27 = document.querySelector("#sr27");
 const sr28 = document.querySelector("#sr28");
 const sr29 = document.querySelector("#sr29");
+const sr30 = document.querySelector("#sr30");
 
 // <-- Buttons
 const btnWeekSelectForward = document.querySelector(
@@ -353,6 +365,7 @@ class App {
   #curWeekArrayOrg = [];
   #curUseId;
   #adminLevel = "top admin";
+  #appRating;
 
   #curData;
   #country = "Mexico";
@@ -385,6 +398,7 @@ class App {
     // console.log(sr21TimePickerInOutText.textContent);
     // this._srGetStartedDispChoose("sr24", "sr1", "left");
     // this._srGetStartedDispChoose("sr29", "sr1", "none");
+    // this._srGetStartedDispChoose("sr30", "sr1", "none");
   }
 
   _setSupportInfo() {
@@ -1307,6 +1321,10 @@ class App {
       srdisp = sr29;
       perdisp = 390 * 27;
     }
+    if (srDisp === "sr30") {
+      srdisp = sr30;
+      perdisp = 390 * 28;
+    }
 
     // <-- Hide
     if (srHide === "sr1") {
@@ -1393,6 +1411,9 @@ class App {
     if (srHide === "sr29") {
       srhide = sr29;
     }
+    if (srHide === "sr30") {
+      srhide = sr30;
+    }
 
     const style = window.getComputedStyle(srhide);
     const matrix = new WebKitCSSMatrix(style.transform);
@@ -1421,7 +1442,8 @@ class App {
       srDisp === "sr17" ||
       srDisp === "sr19" ||
       srDisp === "sr20" ||
-      srDisp === "sr29"
+      srDisp === "sr29" ||
+      srDisp === "sr30"
     ) {
       appName.classList.add("app-name-not-only");
       teamImage.classList.remove("team-image-hidden");
@@ -2300,8 +2322,14 @@ class App {
         </div>`;
         conMemberDisplay.insertAdjacentHTML("beforeend", HTML);
       }
-      headerTeamImg.src = this.#curAccountData.teamImg;
-      headerTeamName.textContent = this.#curAccountData.teamName;
+      if (this.#curData.level === this.#adminLevel) {
+        headerTeamImg.src = this.#curAccountData.teamImg;
+        headerTeamName.textContent = this.#curAccountData.teamName;
+      } else {
+        headerTeamImg.src = this.#curData.teamImg;
+        headerTeamName.textContent = this.#curData.teamName;
+      }
+
       let randomMemArr = [];
       let orgMemArr = [];
       docSnap.forEach((doc) => {
@@ -3972,7 +4000,107 @@ class App {
     this._srGetStartedDispChoose("sr29", "sr1", "none");
   }
 
+  // RATING start here
+
+  _checkForRating() {
+    this._srGetStartedDispChoose("sr30", "sr1", "none");
+  }
+  _resetRatingStars() {
+    sr30DescriptionTextArea.textContent = "";
+    let i = 0;
+    while (i < 5) {
+      const star = document.querySelector(`#star${i + 1}`);
+      stars[i].className = "star";
+      star.dataset.active = "off";
+      i++;
+    }
+    output.innerText = "Calificación: " + 0 + "/5";
+  }
+  _setRatingOnTap(n) {
+    let cls;
+    this._resetRatingStars();
+    for (let i = 0; i < n; i++) {
+      for (let i = 0; i < n; i++) {
+        const star = document.querySelector(`#star${n}`);
+        console.log(star.dataset.active);
+        star.dataset.active = "act";
+      }
+      if (n == 1) {
+        cls = "one";
+        sr30DescriptionTextArea.textContent = `Describe abajo lo que no te gusta y ayudanos a mejorar`;
+        sr30DescriptionTextArea.style.backgroundColor = `#ff0000`;
+        // sr30StarsCon.style.backgroundColor = "#ffcbcb";
+        sr30DescriptionTextArea.style.color = `#fff`;
+      } else if (n == 2) {
+        cls = "two";
+        sr30DescriptionTextArea.textContent = `Describe abajo lo que no te gusta y ayudanos a mejorar`;
+        sr30DescriptionTextArea.style.backgroundColor = `#ff6b00`;
+        // sr30StarsCon.style.backgroundColor = "#ffcbcb";
+        sr30DescriptionTextArea.style.color = `#fff`;
+      } else if (n == 3) {
+        cls = "three";
+        sr30DescriptionTextArea.textContent = ``;
+        // sr30DescriptionTextArea.textContent = `¿Como podemos mejorar?`;
+        sr30DescriptionTextArea.style.backgroundColor = `#ffd600`;
+        sr30DescriptionTextArea.style.color = `#ff6b00`;
+        // sr30StarsCon.style.backgroundColor = "#d2f4cf";
+      } else if (n == 4) {
+        cls = "four";
+        sr30DescriptionTextArea.textContent = ``;
+        // sr30DescriptionTextArea.textContent = `¿Como podemos mejorar?`;
+        sr30DescriptionTextArea.style.backgroundColor = `#ffe500`;
+        sr30DescriptionTextArea.style.color = `#ff6b00`;
+        // sr30StarsCon.style.backgroundColor = "#ffdcc2";
+      } else if (n == 5) {
+        sr30DescriptionTextArea.textContent = `Gracias por tu calificación.`;
+        sr30DescriptionTextArea.style.backgroundColor = `#0eaa00`;
+        // sr30DescriptionTextArea.style.backgroundColor = `#096d00`;
+        sr30DescriptionTextArea.style.color = `#fff`;
+        // sr30StarsCon.style.backgroundColor = "#d2f4cf";
+        cls = "five";
+      }
+      stars[i].className = "star " + cls;
+    }
+    output.innerText = "Calificación: " + n + "/5";
+  }
+
+  _getRating(starRating) {
+    let rating;
+    const star = document.querySelector(`#star${starRating}`);
+    if (star.dataset.active === "act") {
+      rating = starRating;
+      this.#appRating = starRating;
+    } else {
+      rating = "none";
+      this.#appRating = "none";
+    }
+    console.log(rating);
+  }
+
+  // RATING ends here
+
   _events() {
+    //rating starts
+    sr30RateCard.addEventListener("click", (e) => {
+      if (e.target.dataset.active === "act") {
+        this._resetRatingStars();
+        this._getRating(Number(e.target.dataset.star));
+      } else if (e.target.dataset.active === "off") {
+        this._setRatingOnTap(Number(e.target.dataset.star));
+        this._getRating(Number(e.target.dataset.star));
+      }
+    });
+    sr30RateNow.addEventListener("click", () => {
+      if (this.#appRating !== "none" && this.#appRating !== undefined) {
+        console.log(this.#appRating);
+      }
+    });
+    sr30RateLater.addEventListener("click", () => {
+      // hide rating window
+      console.log("Rate later");
+    });
+    //rating ends
+
     // <-- LIVE Listeners
     window.onscroll = function () {
       // if (window.pageYOffset > stickyHeader) {
