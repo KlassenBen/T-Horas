@@ -81,6 +81,7 @@ const sr30RateLater = document.querySelector(`#sr30-btn-rate-later`);
 const sr30DescriptionTextArea = document.querySelector(
   `#sr30-description-textarea-hint`
 );
+const sr30UserInputText = document.querySelector(`#sr30-rate-user-description`);
 const sr30StarsCon = document.querySelector(`#sr30-rate-con-4`);
 // Rating ends
 const header = document.querySelector("#app-header");
@@ -364,7 +365,7 @@ class App {
   #curWeek;
   #curWeekArrayOrg = [];
   #curUseId;
-  #adminLevel = "top admin";
+  #adminLevel;
   #appRating;
 
   #curData;
@@ -508,37 +509,45 @@ class App {
             btnBackTbSr11.style.display = "flex";
             this._onSnapshotCollectoion();
           }
-        }
-        console.log(this.#curData);
-        setTimeout(() => {}, 1000);
-        if (this.#curData.level === "asistente") {
+        } else if (this.#curData.level === "asistente") {
           this._onSnapshot(
             `accounts/${this.#curData.teamCode}/team`,
             this.#curData.memberId
           );
           this._displayMembers("sr22");
           btnBackTbSr11.style.display = "flex";
-        }
-        if (this.#curData.level === this.#adminLevel) {
-          this._onSnapshot("accounts", this.#curData.teamCode);
-          console.log("admin is top");
-          this.#curAccountData = this.#curData;
-          // this._displayMembers("sr22");
-          sr20AppAdmin.style.display = "block";
-          sr20AppAdminNorm.style.display = "block";
-          this._accountProCheck();
-          btnBackTbSr11.style.display = "flex";
-          this._onSnapshotCollectoion();
-        }
-        console.log(this.#curData.level);
-        if (this.#curData.level === "miembro") {
+        } else if (this.#curData.level === "miembro") {
           console.log("member now");
           // this._onSnapshot(
           //   `accounts/${this.#curData.teamCode}/team`,
           //   this.#curData.memberId
           // );
           this._displayMemberOnly();
+        } else {
+          const q = query(
+            collection(db, "appSettings"),
+            where("settings", "==", "admin_mode")
+          );
+          getDocs(q).then((docSnap) => {
+            docSnap.forEach((doc) => {
+              const val = doc.data();
+              this.#adminLevel = val.appAdmin;
+              if (this.#curData.level === this.#adminLevel) {
+                this._onSnapshot("accounts", this.#curData.teamCode);
+                console.log("admin is top");
+                this.#curAccountData = this.#curData;
+                // this._displayMembers("sr22");
+                sr20AppAdmin.style.display = "block";
+                sr20AppAdminNorm.style.display = "block";
+                this._accountProCheck();
+                btnBackTbSr11.style.display = "flex";
+                this._onSnapshotCollectoion();
+              }
+            });
+          });
         }
+
+        this._checkForRating();
       } else {
         console.log("Log in or create an account");
         this._srGetStartedDispChoose("sr1", "sr22", "left");
@@ -2889,6 +2898,7 @@ class App {
                           level: "miembro", //assistant
                           lastModified: "",
                           lastModified: this._getTimeStamp(),
+                          memberCreatedTimeStamp: this._getTimeStamp(),
                           writePermision: "true", //false
                           punchInPermision: "true", //false
                           extraHours: curDataLocal.extraHours, //false
@@ -4000,10 +4010,140 @@ class App {
     this._srGetStartedDispChoose("sr29", "sr1", "none");
   }
 
+  // TODO: RATING
   // RATING start here
+  _closeRatingScreen() {
+    const style = window.getComputedStyle(sr30);
+    const matrix = new WebKitCSSMatrix(style.transform);
+    const nowLocated = matrix.e;
+    sr30.style.transform = `translateX(${nowLocated + 390}px)`;
+  }
+  _rateLater() {
+    console.log("Rate later");
+    if (
+      this.#curData.level === "asistente" ||
+      this.#curData.level === "miembro"
+    ) {
+      this._updateData(
+        `accounts/${this.#curData.teamCode}/team`,
+        this.#curData.memberId,
+        {
+          hasRated: "later",
+          lastRated: this._getTimeStamp(),
+        }
+      );
+    } else {
+      this._updateData(`accounts`, this.#curData.teamCode, {
+        hasRated: "later",
+        lastRated: this._getTimeStamp(),
+      });
+    }
+    this._closeRatingScreen();
+  }
+
+  _rateNow() {
+    if (!navigator.onLine) {
+      this._disdSuccessErrorMessage(
+        "Parece que no hay conección a internet. Vuelve a intentarlo mas tarde.",
+        "er",
+        4000
+      );
+      this._closeRatingScreen();
+    } else {
+      let id;
+      let level;
+      let name;
+      let text;
+      if (this.#appRating !== "none" && this.#appRating !== undefined) {
+        if (sr30UserInputText.value === "") {
+          text = "Sin texto";
+        } else {
+          text = sr30UserInputText.value;
+        }
+        if (
+          this.#curData.level === "asistente" ||
+          this.#curData.level === "miembro"
+        ) {
+          id = this.#curData.memberId;
+          level = this.#curData.level;
+          name = this.#curData.memberName;
+          this._updateData(
+            `accounts/${this.#curData.teamCode}/team`,
+            this.#curData.memberId,
+            {
+              hasRated: "true",
+              lastRated: this._getTimeStamp(),
+              ratedAt: this.#appRating,
+              ratedText: text,
+            }
+          );
+        } else {
+          id = this.#curData.teamCode;
+          level = this.#curData.level;
+          name = this.#curData.email;
+          this._updateData(`accounts`, this.#curData.teamCode, {
+            hasRated: "true",
+            lastRated: this._getTimeStamp(),
+            ratedAt: this.#appRating,
+            ratedText: text,
+          });
+        }
+        const rating = {
+          teamCode: this.#curData.teamCode,
+          id: id,
+          level: level,
+          name: name,
+          timeStampRated: this._getTimeStamp(),
+          ratedAt: this.#appRating,
+          ratedText: text,
+        };
+        this._addData("appRatings", rating);
+        this._srGetStartedDispChoose("sr22", "sr30", "right");
+        setTimeout(() => {
+          const style = window.getComputedStyle(sr22);
+          const matrix = new WebKitCSSMatrix(style.transform);
+          const nowLocated = matrix.e;
+          sr22.style.transform = `translateX(${nowLocated + 390}px)`;
+        }, 500);
+      }
+    }
+  }
 
   _checkForRating() {
-    this._srGetStartedDispChoose("sr30", "sr1", "none");
+    let timeCreated;
+    setTimeout(() => {
+      if (!navigator.onLine) return;
+      if (
+        this.#curData.level === this.#adminLevel ||
+        this.#curData.level === "admin"
+      ) {
+        timeCreated = this.#curData.accountMadeTimeStamp;
+      }
+      if (
+        this.#curData.level === "asistente" ||
+        this.#curData.level === "miembro"
+      ) {
+        timeCreated = this.#curData.memberCreatedTimeStamp;
+      }
+
+      if (this.#curData.hasRated) {
+        if (this.#curData.hasRated === "true") {
+          // This is to re rate app
+          // if (this.#curData.lastRated - this._getTimeStamp() > 86400000) {
+          //   this._srGetStartedDispChoose("sr30", "sr1", "none");
+          // }
+        }
+        if (this.#curData.hasRated === "later") {
+          if (this._getTimeStamp() - this.#curData.lastRated > 86400000) {
+            this._srGetStartedDispChoose("sr30", "sr1", "none");
+          }
+        }
+      } else {
+        if (this._getTimeStamp() - timeCreated > 86400000 * 5) {
+          this._srGetStartedDispChoose("sr30", "sr1", "none");
+        }
+      }
+    }, 5000);
   }
   _resetRatingStars() {
     sr30DescriptionTextArea.textContent = "";
@@ -4091,13 +4231,10 @@ class App {
       }
     });
     sr30RateNow.addEventListener("click", () => {
-      if (this.#appRating !== "none" && this.#appRating !== undefined) {
-        console.log(this.#appRating);
-      }
+      this._rateNow();
     });
     sr30RateLater.addEventListener("click", () => {
-      // hide rating window
-      console.log("Rate later");
+      this._rateLater();
     });
     //rating ends
 

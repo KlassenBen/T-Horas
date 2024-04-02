@@ -2107,6 +2107,9 @@ p {
 /* sr29 end */
 
 /* sr30 start */
+#sr30 {
+  transition: none;
+}
 #sr30-main-rate-con {
   display: flex;
   padding: 32px 16px 16px 16px;
