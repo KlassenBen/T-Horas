@@ -4134,14 +4134,35 @@ class App {
           // }
         }
         if (this.#curData.hasRated === "later") {
-          if (this._getTimeStamp() - this.#curData.lastRated > 86400000) {
-            this._srGetStartedDispChoose("sr30", "sr1", "none");
-          }
+          const q = query(
+            collection(db, "appSettings"),
+            where("settings", "==", "general")
+          );
+          getDocs(q).then((docSnap) => {
+            docSnap.forEach((doc) => {
+              const val = doc.data();
+              if (
+                this._getTimeStamp() - this.#curData.lastRated >
+                val.requestRatingLaterIn
+              ) {
+                this._srGetStartedDispChoose("sr30", "sr1", "none");
+              }
+            });
+          });
         }
       } else {
-        if (this._getTimeStamp() - timeCreated > 86400000 * 5) {
-          this._srGetStartedDispChoose("sr30", "sr1", "none");
-        }
+        const q = query(
+          collection(db, "appSettings"),
+          where("settings", "==", "general")
+        );
+        getDocs(q).then((docSnap) => {
+          docSnap.forEach((doc) => {
+            const val = doc.data();
+            if (this._getTimeStamp() - timeCreated > val.requestRatingIn) {
+              this._srGetStartedDispChoose("sr30", "sr1", "none");
+            }
+          });
+        });
       }
     }, 5000);
   }
