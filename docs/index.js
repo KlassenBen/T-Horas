@@ -414,10 +414,12 @@ class App {
     // document.cookie =
     //   "teamCode=1234567890123456789078; samsite=none; max-age=-320000000000; secure";
     // console.log(document.cookie);
+    // this._setCookie("check", "0h54tc988ry5pf76", 840000);
     // this._setCookie("teamCode", "0h54tc988ry5pf76", 840000);
     // this._setCookie("memberId", "2nnuzn9l7446t5lz", 840000);
     // this._setCookie("level", "miembro", 840000);
     // this._setCookie("level", "asistente", 840000);
+    // this._deleteCookie("check");
     this._deleteCookie("teamCode");
     this._deleteCookie("memberId");
     this._deleteCookie("level");
@@ -425,7 +427,7 @@ class App {
   }
 
   _setCookie(cName, cValue, cMaxAge) {
-    document.cookie = `${cName}=${cValue}; samsite=none; max-age=${cMaxAge}; secure`;
+    document.cookie = `${cName}=${cValue}; samsite=none; max-age=${cMaxAge}; secure; Priority=High`;
   }
   _deleteCookie(cName) {
     document.cookie = `${cName}=; samsite=none; max-age=-10; secure`;
@@ -1059,6 +1061,9 @@ class App {
                       this.#curData = val;
                       console.log(val);
                       this._saveToLocal("curData", this.#curData);
+                      this._setCookie("teamCode", val.teamCode, 86400000 * 400);
+                      this._setCookie("memberId", val.memberId, 86400000 * 400);
+                      this._setCookie("level", val.level, 86400000 * 400);
                       this._init("sr15");
                       btnBackTbSr11.style.display = "none";
                       // this._displayMembers("sr22");
@@ -3275,6 +3280,8 @@ class App {
           this._uploadData("accounts", this.#curUseId, acc);
           // TODO: function to continue creating an account ghoes here it waits till the id is available
           this._saveToLocal("curData", acc);
+          this._setCookie("teamCode", this.#curUseId, 86400000 * 400);
+          this._setCookie("level", "admin", 86400000 * 400);
           this._eventTeamCodeDisp();
           this._srGetStartedDispChoose("sr5", "sr22", "left");
         } else {
