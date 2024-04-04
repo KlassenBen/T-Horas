@@ -399,8 +399,8 @@ class App {
 
     // TODO: ALSO NEED IN INIT, CHECK IF THE LOCAL STORED ACCOUNT STILL EXISTS IN THE CLOUD
     // this._removeFromLocal("curData");
+    // this._tryOutCookies();
     this._init("sr1");
-    this._tryOutCookies();
     // this._onSnapshot("accounts", "cn25uwg629tb9143");
     // console.log(sr21TimePickerInOutText.textContent);
     // this._srGetStartedDispChoose("sr24", "sr1", "left");
@@ -416,6 +416,7 @@ class App {
     // console.log(document.cookie);
     // this._setCookie("teamCode", "0h54tc988ry5pf76", 840000);
     // this._setCookie("memberId", "2nnuzn9l7446t5lz", 840000);
+    // this._setCookie("level", "miembro", 840000);
     // this._setCookie("level", "asistente", 840000);
     this._deleteCookie("teamCode");
     this._deleteCookie("memberId");
@@ -606,7 +607,7 @@ class App {
     this._setSupportInfo();
     this._setExplainVideo();
     console.log("contact info:", this.#appSupportInfo);
-    this.#curData = this._getFromLocal("curData");
+    // this.#curData = this._getFromLocal("curData");
     this._srGetStartedDispChoose("sr22", srHide, "left");
     console.log("Your App is initializing");
 
@@ -616,31 +617,35 @@ class App {
 
     console.log(this.#cTeamCode, this.#cLevel, this.#cMemberId);
 
-    // if (this.#cTeamCode !== "" && this.#cTeamCode !== undefined) {
-    //   if (this.#cLevel !== "" && this.#cLevel !== undefined) {
-    //     if (this.#cLevel === "miembro" || this.#cLevel === "asistente") {
-    //       const q = query(
-    //         collection(db, `accounts/${this.#cTeamCode}/team`),
-    //         where("memberId", "==", this.#cMemberId)
-    //       );
-    //       getDocs(q).then((docSnap) => {
-    //         docSnap.forEach((doc) => {
-    //           const val = doc.data();
-    //           this._saveToLocal("curData", val);
-    //         });
-    //       });
-    //     }
-    //     if (this.#cLevel === "admin" || this.#cLevel === "top admin") {
-    //       const q = query(collection(db, `accounts/${this.#cTeamCode}`));
-    //       getDocs(q).then((docSnap) => {
-    //         docSnap.forEach((doc) => {
-    //           const val = doc.data();
-    //           this._saveToLocal("curData", val);
-    //         });
-    //       });
-    //     }
-    //   }
-    // }
+    if (this.#cTeamCode !== "" && this.#cTeamCode !== undefined) {
+      if (this.#cLevel !== "" && this.#cLevel !== undefined) {
+        if (this.#cLevel === "miembro" || this.#cLevel === "asistente") {
+          const q = query(
+            collection(db, `accounts/${this.#cTeamCode}/team`),
+            where("memberId", "==", this.#cMemberId)
+          );
+          getDocs(q).then((docSnap) => {
+            docSnap.forEach((doc) => {
+              const val = doc.data();
+              this._saveToLocal("curData", val);
+            });
+          });
+        }
+        if (this.#cLevel === "admin" || this.#cLevel === "top admin") {
+          const q = query(
+            collection(db, `accounts`),
+            where("teamCode", "==", this.#cTeamCode)
+          );
+          getDocs(q).then((docSnap) => {
+            docSnap.forEach((doc) => {
+              const val = doc.data();
+              this._saveToLocal("curData", val);
+            });
+          });
+        }
+      }
+    }
+    this.#curData = this._getFromLocal("curData");
 
     setTimeout(() => {
       if (this.#curData !== undefined) {
@@ -970,6 +975,8 @@ class App {
               if (inpPassword.value === val.accountPassword) {
                 this._srGetStartedDispChoose("sr22", "sr18", "left");
                 this.#curData = val;
+                this._setCookie("teamCode", val.teamCode, 86400000 * 400);
+                this._setCookie("level", val.level, 86400000 * 400);
                 this._saveToLocal("curData", this.#curData);
                 this._init("sr22");
               } else {
@@ -3586,6 +3593,8 @@ class App {
     if (logoutPassword === curDataLocal.accountPassword) {
       console.log("good");
       this._removeFromLocal("curData");
+      this._deleteCookie("teamCode");
+      this._deleteCookie("level");
       this._init("sr20");
       // this._disdSuccessErrorMessage(`Cerraste sesión`, "ex", 5000);
     } else {
