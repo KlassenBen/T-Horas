@@ -340,6 +340,11 @@ class App {
     "0",
   ];
 
+  //cookies
+  #cTeamCode;
+  #cLevel;
+  #cMemberId;
+
   #mycloudNameForImgUpload = "dkvsxpnp6";
   #myuploadPresetForImgUpload = "THoras";
   #teamImgUrl = [];
@@ -395,11 +400,53 @@ class App {
     // TODO: ALSO NEED IN INIT, CHECK IF THE LOCAL STORED ACCOUNT STILL EXISTS IN THE CLOUD
     // this._removeFromLocal("curData");
     this._init("sr1");
+    this._tryOutCookies();
     // this._onSnapshot("accounts", "cn25uwg629tb9143");
     // console.log(sr21TimePickerInOutText.textContent);
     // this._srGetStartedDispChoose("sr24", "sr1", "left");
     // this._srGetStartedDispChoose("sr29", "sr1", "none");
     // this._srGetStartedDispChoose("sr30", "sr1", "none");
+  }
+  _tryOutCookies() {
+    // document.cookie =
+    //   "teamCode=1234567890123456789078; samsite=none; max-age=320000000000; secure";
+    // // to delete a cookie, set max-Age to -
+    // document.cookie =
+    //   "teamCode=1234567890123456789078; samsite=none; max-age=-320000000000; secure";
+    // console.log(document.cookie);
+    // this._setCookie("teamCode", "0h54tc988ry5pf76", 840000);
+    // this._setCookie("memberId", "2nnuzn9l7446t5lz", 840000);
+    // this._setCookie("level", "asistente", 840000);
+    this._deleteCookie("teamCode");
+    this._deleteCookie("memberId");
+    this._deleteCookie("level");
+    // this._readCokie("teamCode");
+  }
+
+  _setCookie(cName, cValue, cMaxAge) {
+    document.cookie = `${cName}=${cValue}; samsite=none; max-age=${cMaxAge}; secure`;
+  }
+  _deleteCookie(cName) {
+    document.cookie = `${cName}=; samsite=none; max-age=-10; secure`;
+  }
+  _readCokie(cName) {
+    function getCookie(cname) {
+      let name = cname + "=";
+      let decodedCookie = decodeURIComponent(document.cookie);
+      let ca = decodedCookie.split(";");
+      for (let i = 0; i < ca.length; i++) {
+        let c = ca[i];
+        while (c.charAt(0) == " ") {
+          c = c.substring(1);
+        }
+        if (c.indexOf(name) == 0) {
+          return c.substring(name.length, c.length);
+        }
+      }
+      return "";
+    }
+
+    return getCookie(cName);
   }
 
   _setSupportInfo() {
@@ -485,13 +532,115 @@ class App {
   }
 
   // TODO: INIT STARTS HERE
+  // _init(srHide) {
+  //   this._setSupportInfo();
+  //   this._setExplainVideo();
+  //   console.log("contact info:", this.#appSupportInfo);
+  //   this._srGetStartedDispChoose("sr22", srHide, "left");
+  //   console.log("Your App is initializing");
+  //   this.#curData = this._getFromLocal("curData");
+
+  //   setTimeout(() => {
+  //     if (this.#curData !== undefined) {
+  //       // TODO: if user is logedIn, all validations come under here
+  //       console.log("Your App has initialized");
+
+  //       if (this.#curData.level === "admin") {
+  //         this._onSnapshot("accounts", this.#curData.teamCode);
+  //         if (this.#curData.teamName.length < 1) {
+  //           this._srGetStartedDispChoose("sr5", "sr22", "right");
+  //           this._eventTeamCodeDisp();
+  //         } else {
+  //           // this._displayMembers("sr22");
+  //           this._accountProCheck();
+  //           btnBackTbSr11.style.display = "flex";
+  //           this._onSnapshotCollectoion();
+  //         }
+  //       } else if (this.#curData.level === "asistente") {
+  //         this._onSnapshot(
+  //           `accounts/${this.#curData.teamCode}/team`,
+  //           this.#curData.memberId
+  //         );
+  //         this._displayMembers("sr22");
+  //         btnBackTbSr11.style.display = "flex";
+  //       } else if (this.#curData.level === "miembro") {
+  //         console.log("member now");
+  //         // this._onSnapshot(
+  //         //   `accounts/${this.#curData.teamCode}/team`,
+  //         //   this.#curData.memberId
+  //         // );
+  //         this._displayMemberOnly();
+  //       } else {
+  //         const q = query(
+  //           collection(db, "appSettings"),
+  //           where("settings", "==", "admin_mode")
+  //         );
+  //         getDocs(q).then((docSnap) => {
+  //           docSnap.forEach((doc) => {
+  //             const val = doc.data();
+  //             this.#adminLevel = val.appAdmin;
+  //             if (this.#curData.level === this.#adminLevel) {
+  //               this._onSnapshot("accounts", this.#curData.teamCode);
+  //               console.log("admin is top");
+  //               this.#curAccountData = this.#curData;
+  //               // this._displayMembers("sr22");
+  //               sr20AppAdmin.style.display = "block";
+  //               sr20AppAdminNorm.style.display = "block";
+  //               this._accountProCheck();
+  //               btnBackTbSr11.style.display = "flex";
+  //               this._onSnapshotCollectoion();
+  //             }
+  //           });
+  //         });
+  //       }
+
+  //       this._checkForRating();
+  //     } else {
+  //       console.log("Log in or create an account");
+  //       this._srGetStartedDispChoose("sr1", "sr22", "left");
+  //     }
+  //   }, 100);
+  // }
+
   _init(srHide) {
     this._setSupportInfo();
     this._setExplainVideo();
     console.log("contact info:", this.#appSupportInfo);
+    this.#curData = this._getFromLocal("curData");
     this._srGetStartedDispChoose("sr22", srHide, "left");
     console.log("Your App is initializing");
-    this.#curData = this._getFromLocal("curData");
+
+    this.#cTeamCode = this._readCokie("teamCode");
+    this.#cLevel = this._readCokie("level");
+    this.#cMemberId = this._readCokie("memberId");
+
+    console.log(this.#cTeamCode, this.#cLevel, this.#cMemberId);
+
+    // if (this.#cTeamCode !== "" && this.#cTeamCode !== undefined) {
+    //   if (this.#cLevel !== "" && this.#cLevel !== undefined) {
+    //     if (this.#cLevel === "miembro" || this.#cLevel === "asistente") {
+    //       const q = query(
+    //         collection(db, `accounts/${this.#cTeamCode}/team`),
+    //         where("memberId", "==", this.#cMemberId)
+    //       );
+    //       getDocs(q).then((docSnap) => {
+    //         docSnap.forEach((doc) => {
+    //           const val = doc.data();
+    //           this._saveToLocal("curData", val);
+    //         });
+    //       });
+    //     }
+    //     if (this.#cLevel === "admin" || this.#cLevel === "top admin") {
+    //       const q = query(collection(db, `accounts/${this.#cTeamCode}`));
+    //       getDocs(q).then((docSnap) => {
+    //         docSnap.forEach((doc) => {
+    //           const val = doc.data();
+    //           this._saveToLocal("curData", val);
+    //         });
+    //       });
+    //     }
+    //   }
+    // }
 
     setTimeout(() => {
       if (this.#curData !== undefined) {
@@ -1110,18 +1259,15 @@ class App {
 
   _readData(path, id) {
     let data;
-    //line 1727 for try
-    // TODO: read data
-    getDoc(collection(db, path, id)).then((docSnap) => {
+    return getDoc(collection(db, path, id)).then((docSnap) => {
       if (docSnap.exists()) {
         data = docSnap.data();
         console.log(docSnap.data());
+        return data;
       } else {
-        console.log("no luck");
+        return "";
       }
     });
-    // console.log("data", data);
-    // return data;
   }
   // <--------- Data End -----------> //
 
