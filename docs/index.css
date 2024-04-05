@@ -2334,7 +2334,7 @@ p {
 /* sr31 start */
 #sr31 {
   transition: none;
-    display: flex;
+  display: flex;
   width: 390px;
   padding-bottom: 16px;
   flex-direction: column;
@@ -2349,7 +2349,7 @@ p {
   gap: 10px;
   align-self: stretch;
 }
-#sr31-messages-text {
+#sr31-message-text {
   flex: 1 0 0;
   color: var(--color-red-50);
   text-align: center;
