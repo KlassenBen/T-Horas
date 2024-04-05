@@ -167,6 +167,7 @@ const sr27 = document.querySelector("#sr27");
 const sr28 = document.querySelector("#sr28");
 const sr29 = document.querySelector("#sr29");
 const sr30 = document.querySelector("#sr30");
+const sr31 = document.querySelector("#sr31");
 
 // <-- Buttons
 const btnWeekSelectForward = document.querySelector(
@@ -215,6 +216,7 @@ const sr11ChangeSalary = document.querySelector("#sr11-btn-change-salary");
 const sr3AceptTerms = document.querySelector("#sr3-terms-acept-text");
 const sr11PunchInBtnIn = document.querySelector("#sr11-punchin-btn-in");
 const sr11PunchInBtnOut = document.querySelector("#sr11-punchin-btn-out");
+const sr31BtnReload = document.querySelector("#sr31-btn-reload");
 
 // <-- Join Team
 const btnJoinTeamSr1 = document.querySelector("#sr1-btn-join-team");
@@ -618,110 +620,117 @@ class App {
   // }
 
   _init(srHide) {
-    this._setSupportInfo();
-    this._setExplainVideo();
-    console.log("contact info:", this.#appSupportInfo);
-    // this.#curData = this._getFromLocal("curData");
-    this._srGetStartedDispChoose("sr22", srHide, "left");
-    console.log("Your App is initializing");
+    if (navigator.onLine) {
+      this._setSupportInfo();
+      this._setExplainVideo();
+      console.log("contact info:", this.#appSupportInfo);
+      // this.#curData = this._getFromLocal("curData");
+      this._srGetStartedDispChoose("sr22", srHide, "left");
+      console.log("Your App is initializing");
 
-    this.#cTeamCode = this._readCokie("teamCode");
-    this.#cLevel = this._readCokie("level");
-    this.#cMemberId = this._readCokie("memberId");
+      this.#cTeamCode = this._readCokie("teamCode");
+      this.#cLevel = this._readCokie("level");
+      this.#cMemberId = this._readCokie("memberId");
 
-    console.log(this.#cTeamCode, this.#cLevel, this.#cMemberId);
+      console.log(this.#cTeamCode, this.#cLevel, this.#cMemberId);
 
-    if (this.#cTeamCode !== "" && this.#cTeamCode !== undefined) {
-      if (this.#cLevel !== "" && this.#cLevel !== undefined) {
-        if (this.#cLevel === "miembro" || this.#cLevel === "asistente") {
-          const q = query(
-            collection(db, `accounts/${this.#cTeamCode}/team`),
-            where("memberId", "==", this.#cMemberId)
-          );
-          getDocs(q).then((docSnap) => {
-            docSnap.forEach((doc) => {
-              const val = doc.data();
-              this._saveToLocal("curData", val);
+      if (this.#cTeamCode !== "" && this.#cTeamCode !== undefined) {
+        if (this.#cLevel !== "" && this.#cLevel !== undefined) {
+          if (this.#cLevel === "miembro" || this.#cLevel === "asistente") {
+            const q = query(
+              collection(db, `accounts/${this.#cTeamCode}/team`),
+              where("memberId", "==", this.#cMemberId)
+            );
+            getDocs(q).then((docSnap) => {
+              docSnap.forEach((doc) => {
+                const val = doc.data();
+                this._saveToLocal("curData", val);
+              });
             });
-          });
-        }
-        if (this.#cLevel === "admin" || this.#cLevel === "top admin") {
-          const q = query(
-            collection(db, `accounts`),
-            where("teamCode", "==", this.#cTeamCode)
-          );
-          getDocs(q).then((docSnap) => {
-            docSnap.forEach((doc) => {
-              const val = doc.data();
-              this._saveToLocal("curData", val);
-            });
-          });
-        }
-      }
-    }
-    this.#curData = this._getFromLocal("curData");
-
-    setTimeout(() => {
-      if (this.#curData !== undefined) {
-        // TODO: if user is logedIn, all validations come under here
-        console.log("Your App has initialized");
-
-        if (this.#curData.level === "admin") {
-          this._onSnapshot("accounts", this.#curData.teamCode);
-          if (this.#curData.teamName.length < 1) {
-            this._srGetStartedDispChoose("sr5", "sr22", "right");
-            this._eventTeamCodeDisp();
-          } else {
-            // this._displayMembers("sr22");
-            this._accountProCheck();
-            btnBackTbSr11.style.display = "flex";
-            this._onSnapshotCollectoion();
           }
-        } else if (this.#curData.level === "asistente") {
-          this._onSnapshot(
-            `accounts/${this.#curData.teamCode}/team`,
-            this.#curData.memberId
-          );
-          this._displayMembers("sr22");
-          btnBackTbSr11.style.display = "flex";
-        } else if (this.#curData.level === "miembro") {
-          console.log("member now");
-          // this._onSnapshot(
-          //   `accounts/${this.#curData.teamCode}/team`,
-          //   this.#curData.memberId
-          // );
-          this._displayMemberOnly();
-        } else {
-          const q = query(
-            collection(db, "appSettings"),
-            where("settings", "==", "admin_mode")
-          );
-          getDocs(q).then((docSnap) => {
-            docSnap.forEach((doc) => {
-              const val = doc.data();
-              this.#adminLevel = val.appAdmin;
-              if (this.#curData.level === this.#adminLevel) {
-                this._onSnapshot("accounts", this.#curData.teamCode);
-                console.log("admin is top");
-                this.#curAccountData = this.#curData;
-                // this._displayMembers("sr22");
-                sr20AppAdmin.style.display = "block";
-                sr20AppAdminNorm.style.display = "block";
-                this._accountProCheck();
-                btnBackTbSr11.style.display = "flex";
-                this._onSnapshotCollectoion();
-              }
+          if (this.#cLevel === "admin" || this.#cLevel === "top admin") {
+            const q = query(
+              collection(db, `accounts`),
+              where("teamCode", "==", this.#cTeamCode)
+            );
+            getDocs(q).then((docSnap) => {
+              docSnap.forEach((doc) => {
+                const val = doc.data();
+                this._saveToLocal("curData", val);
+              });
             });
-          });
+          }
         }
-
-        this._checkForRating();
-        // this._registerSW();
-      } else {
-        console.log("Log in or create an account");
-        this._srGetStartedDispChoose("sr1", "sr22", "left");
       }
-    }, 100);
+      this.#curData = this._getFromLocal("curData");
+
+      setTimeout(() => {
+        if (this.#curData !== undefined) {
+          // TODO: if user is logedIn, all validations come under here
+          console.log("Your App has initialized");
+
+          if (this.#curData.level === "admin") {
+            this._onSnapshot("accounts", this.#curData.teamCode);
+            if (this.#curData.teamName.length < 1) {
+              this._srGetStartedDispChoose("sr5", "sr22", "right");
+              this._eventTeamCodeDisp();
+            } else {
+              // this._displayMembers("sr22");
+              this._accountProCheck();
+              btnBackTbSr11.style.display = "flex";
+              this._onSnapshotCollectoion();
+            }
+          } else if (this.#curData.level === "asistente") {
+            this._onSnapshot(
+              `accounts/${this.#curData.teamCode}/team`,
+              this.#curData.memberId
+            );
+            this._displayMembers("sr22");
+            btnBackTbSr11.style.display = "flex";
+          } else if (this.#curData.level === "miembro") {
+            console.log("member now");
+            // this._onSnapshot(
+            //   `accounts/${this.#curData.teamCode}/team`,
+            //   this.#curData.memberId
+            // );
+            this._displayMemberOnly();
+          } else {
+            const q = query(
+              collection(db, "appSettings"),
+              where("settings", "==", "admin_mode")
+            );
+            getDocs(q).then((docSnap) => {
+              docSnap.forEach((doc) => {
+                const val = doc.data();
+                this.#adminLevel = val.appAdmin;
+                if (this.#curData.level === this.#adminLevel) {
+                  this._onSnapshot("accounts", this.#curData.teamCode);
+                  console.log("admin is top");
+                  this.#curAccountData = this.#curData;
+                  // this._displayMembers("sr22");
+                  sr20AppAdmin.style.display = "block";
+                  sr20AppAdminNorm.style.display = "block";
+                  this._accountProCheck();
+                  btnBackTbSr11.style.display = "flex";
+                  this._onSnapshotCollectoion();
+                }
+              });
+            });
+          }
+
+          this._checkForRating();
+          // this._registerSW();
+        } else {
+          console.log("Log in or create an account");
+          this._srGetStartedDispChoose("sr1", "sr22", "left");
+        }
+      }, 100);
+    } else {
+      this._srGetStartedDispChoose("sr22", srHide, "right");
+      setTimeout(() => {
+        this._srGetStartedDispChoose("sr31", "sr22", "right");
+      }, 5000);
+    }
   }
   // TODO: INIT ENDS HERE
 
@@ -1505,6 +1514,10 @@ class App {
       srdisp = sr30;
       perdisp = 390 * 28;
     }
+    if (srDisp === "sr31") {
+      srdisp = sr31;
+      perdisp = 390 * 29;
+    }
 
     // <-- Hide
     if (srHide === "sr1") {
@@ -1593,6 +1606,9 @@ class App {
     }
     if (srHide === "sr30") {
       srhide = sr30;
+    }
+    if (srHide === "sr31") {
+      srhide = sr31;
     }
 
     const style = window.getComputedStyle(srhide);
@@ -4471,6 +4487,9 @@ class App {
 
     // <-- OTHER
 
+    sr31BtnReload.addEventListener("click", () => {
+      this._init("sr31");
+    });
     teamImage.addEventListener("click", () => {
       this._imgDispDisp(teamImage);
     });
