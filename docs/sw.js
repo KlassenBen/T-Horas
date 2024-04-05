@@ -18,11 +18,7 @@ self.addEventListener("activate", (e) => {
 
 self.addEventListener("fetch", async (e) => {
   const req = e.request;
-  console.log(req.url);
-  const stUrl = req.url.toString();
-  console.log(stUrl);
   if (req.url.includes("google")) {
-    console.log("google");
   } else {
     const url = new URL(req.url);
     if (url.origin === location.origin) {
