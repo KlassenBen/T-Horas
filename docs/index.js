@@ -426,6 +426,18 @@ class App {
     // this._readCokie("teamCode");
   }
 
+  async _registerSW() {
+    if ("serviceWorker" in navigator) {
+      try {
+        await navigator.serviceWorker.register("./sw.js");
+        console.log("registered");
+      } catch (e) {
+        console.log("SW registration failed");
+      }
+    } else {
+    }
+  }
+
   _setCookie(cName, cValue, cMaxAge) {
     document.cookie = `${cName}=${cValue}; samsite=none; max-age=${cMaxAge}; secure; Priority=High`;
   }
@@ -704,6 +716,7 @@ class App {
         }
 
         this._checkForRating();
+        // this._registerSW();
       } else {
         console.log("Log in or create an account");
         this._srGetStartedDispChoose("sr1", "sr22", "left");
