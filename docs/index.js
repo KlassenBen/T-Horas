@@ -17,6 +17,8 @@ import {
   onSnapshot,
   updateDoc,
   deleteDoc,
+  runTransaction,
+  increment,
 } from "https://www.gstatic.com/firebasejs/10.7.2/firebase-firestore.js";
 
 // <-- Labels
@@ -409,6 +411,15 @@ class App {
     // this._srGetStartedDispChoose("sr29", "sr1", "none");
     // this._srGetStartedDispChoose("sr30", "sr1", "none");
   }
+
+  _visitsToApp() {
+    const appInfo = doc(db, "appInfo", "KOsv4lbS42vJWlejpTFn");
+
+    updateDoc(appInfo, {
+      visits: increment(1),
+    });
+  }
+
   _tryOutCookies() {
     // document.cookie =
     //   "teamCode=1234567890123456789078; samsite=none; max-age=320000000000; secure";
@@ -725,6 +736,7 @@ class App {
           this._srGetStartedDispChoose("sr1", "sr22", "left");
         }
       }, 100);
+      this._visitsToApp();
     } else {
       this._srGetStartedDispChoose("sr22", srHide, "right");
       setTimeout(() => {
