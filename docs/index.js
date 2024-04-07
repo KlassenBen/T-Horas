@@ -3731,6 +3731,9 @@ class App {
       `¿Quieres dejar este equipo? \n Para comfirmar introduce tu contraseña aqui.`
     );
     if (this.#curMemberInfo.password === password) {
+      this._deleteCookie("teamCode");
+      this._deleteCookie("memberId");
+      this._deleteCookie("level");
       this._removeFromLocal("curData");
       this._init("sr17");
     } else {
