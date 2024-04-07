@@ -407,7 +407,7 @@ class App {
     // this._tryOutCookies();
     // this._onSnapshot("accounts", "cn25uwg629tb9143");
     // console.log(sr21TimePickerInOutText.textContent);
-    // this._srGetStartedDispChoose("sr27", "sr1", "left");
+    // this._srGetStartedDispChoose("sr31", "sr1", "left");
     // this._srGetStartedDispChoose("sr29", "sr1", "none");
     // this._srGetStartedDispChoose("sr30", "sr1", "none");
     this._transactionsTry();
@@ -604,75 +604,6 @@ class App {
   }
 
   // TODO: INIT STARTS HERE
-  // _init(srHide) {
-  //   this._setSupportInfo();
-  //   this._setExplainVideo();
-  //   console.log("contact info:", this.#appSupportInfo);
-  //   this._srGetStartedDispChoose("sr22", srHide, "left");
-  //   console.log("Your App is initializing");
-  //   this.#curData = this._getFromLocal("curData");
-
-  //   setTimeout(() => {
-  //     if (this.#curData !== undefined) {
-  //       // TODO: if user is logedIn, all validations come under here
-  //       console.log("Your App has initialized");
-
-  //       if (this.#curData.level === "admin") {
-  //         this._onSnapshot("accounts", this.#curData.teamCode);
-  //         if (this.#curData.teamName.length < 1) {
-  //           this._srGetStartedDispChoose("sr5", "sr22", "right");
-  //           this._eventTeamCodeDisp();
-  //         } else {
-  //           // this._displayMembers("sr22");
-  //           this._accountProCheck();
-  //           btnBackTbSr11.style.display = "flex";
-  //           this._onSnapshotCollectoion();
-  //         }
-  //       } else if (this.#curData.level === "asistente") {
-  //         this._onSnapshot(
-  //           `accounts/${this.#curData.teamCode}/team`,
-  //           this.#curData.memberId
-  //         );
-  //         this._displayMembers("sr22");
-  //         btnBackTbSr11.style.display = "flex";
-  //       } else if (this.#curData.level === "miembro") {
-  //         console.log("member now");
-  //         // this._onSnapshot(
-  //         //   `accounts/${this.#curData.teamCode}/team`,
-  //         //   this.#curData.memberId
-  //         // );
-  //         this._displayMemberOnly();
-  //       } else {
-  //         const q = query(
-  //           collection(db, "appSettings"),
-  //           where("settings", "==", "admin_mode")
-  //         );
-  //         getDocs(q).then((docSnap) => {
-  //           docSnap.forEach((doc) => {
-  //             const val = doc.data();
-  //             this.#adminLevel = val.appAdmin;
-  //             if (this.#curData.level === this.#adminLevel) {
-  //               this._onSnapshot("accounts", this.#curData.teamCode);
-  //               console.log("admin is top");
-  //               this.#curAccountData = this.#curData;
-  //               // this._displayMembers("sr22");
-  //               sr20AppAdmin.style.display = "block";
-  //               sr20AppAdminNorm.style.display = "block";
-  //               this._accountProCheck();
-  //               btnBackTbSr11.style.display = "flex";
-  //               this._onSnapshotCollectoion();
-  //             }
-  //           });
-  //         });
-  //       }
-
-  //       this._checkForRating();
-  //     } else {
-  //       console.log("Log in or create an account");
-  //       this._srGetStartedDispChoose("sr1", "sr22", "left");
-  //     }
-  //   }, 100);
-  // }
 
   _init(srHide) {
     if (navigator.onLine) {
@@ -2878,9 +2809,9 @@ class App {
       setTimeout(() => {
         this._displayMembers("sr22");
         this._disdSuccessErrorMessage(
-          "Éxito. Creaste un nuevo miembro.",
+          "Éxito. Un nuevo trabajador fue añadido a tu equipo.",
           "ex",
-          3000
+          3800
         );
       }, 1000);
     } else {
@@ -3205,14 +3136,14 @@ class App {
             } else {
               console.error("name length is not correct");
               this._disdSuccessErrorMessage(
-                "Un nombre de miembro no puede tener menos de 3 o mas de 20 caracteres.",
+                "El nombre del trabajador no puede tener menos de 3 o mas de 20 caracteres.",
                 "er",
                 4000
               );
             }
           } else {
             this._disdSuccessErrorMessage(
-              `${inpMemberName.value} ya existe en tu equipo. No puedes tener 2 miembros con nombres idénticos`,
+              `${inpMemberName.value} ya existe en tu equipo. No puedes tener 2 trabajadores con nombres idénticos`,
               "er",
               4000
             );
@@ -3220,7 +3151,7 @@ class App {
         });
       } else {
         this._disdSuccessErrorMessage(
-          "Ingrese la información necesaria para crear un miembro.",
+          "Ingrese la información necesaria para añdir un trabajador nuevo.",
           "er",
           4000
         );
@@ -3618,7 +3549,7 @@ class App {
             }
           } else {
             this._disdSuccessErrorMessage(
-              `${sr16InpMemberName.value} ya existe en tu equipo. No puedes tener 2 miembros con nombres idénticos`,
+              `${sr16InpMemberName.value} ya existe en tu equipo. No puedes tener 2 trabajadores con nombres idénticos`,
               "er",
               3800
             );

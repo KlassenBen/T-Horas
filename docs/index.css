@@ -1223,6 +1223,15 @@ body {
 /* sr11 end */
 
 /* sr12 start */
+.sr12-content-con {
+  display: flex;
+  padding: 12px;
+  flex-direction: column;
+  align-items: center;
+  gap: 32px;
+  flex: 1 0 0;
+  align-self: stretch;
+}
 #sr12-2-team-image {
   display: flex;
   height: 65px;
@@ -1234,6 +1243,17 @@ body {
   border: 1px solid var(--color-blue-50);
 }
 /* sr12 end */
+
+/* sr13 start */
+#sr14 {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 32px;
+  flex: 1 0 0;
+  align-self: stretch;
+}
+/* sr13 end */
 
 /* sr16 start */
 #sr16-delete-member {
@@ -1340,6 +1360,7 @@ p {
   border: none;
   width: 230px;
   border-bottom: 1px solid var(--color-blue-100);
+  background: var(--color-white);
 
   color: var(--color-blue-100);
   font-family: Inter;
@@ -1689,6 +1710,7 @@ p {
   gap: 10px;
   border-radius: 10px;
   background: var(--main-btn-blue);
+  box-shadow: var(--ghost-btn-shadow);
 
   color: #fff;
   text-shadow: 0px 4px 4px rgba(0, 0, 0, 0.25);
@@ -2478,7 +2500,7 @@ p {
   font-family: Inter;
   font-size: 32px;
   font-style: normal;
-  font-weight: 400;
+  font-weight: 200;
   line-height: normal;
 }
 /* sr31 end */
@@ -2533,6 +2555,7 @@ p {
   gap: 6px;
   align-self: stretch;
   border: none;
+  background: var(--color-white);
 
   color: var(--color-blue-100);
   font-family: Inter;
@@ -2613,9 +2636,9 @@ p {
   color: var(--color-blue-100);
   text-align: center;
   font-family: Inter;
-  font-size: 32px;
+  font-size: 24px;
   font-style: normal;
-  font-weight: 500;
+  font-weight: 400;
   line-height: normal;
   letter-spacing: 0.64px;
 }
@@ -2624,9 +2647,9 @@ p {
   color: var(--color-blue-50);
   text-align: center;
   font-family: Inter;
-  font-size: 24px;
+  font-size: 18px;
   font-style: normal;
-  font-weight: 400;
+  font-weight: 300;
   line-height: normal;
 }
 
@@ -3119,6 +3142,7 @@ p {
   align-items: center;
   gap: 24px;
   align-self: stretch;
+  padding-top: 12px;
 }
 
 .btn-dim-dim {
