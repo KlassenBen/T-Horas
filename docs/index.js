@@ -407,7 +407,7 @@ class App {
     // this._tryOutCookies();
     // this._onSnapshot("accounts", "cn25uwg629tb9143");
     // console.log(sr21TimePickerInOutText.textContent);
-    // this._srGetStartedDispChoose("sr31", "sr1", "left");
+    // this._srGetStartedDispChoose("sr22", "sr1", "left");
     // this._srGetStartedDispChoose("sr29", "sr1", "none");
     // this._srGetStartedDispChoose("sr30", "sr1", "none");
     this._transactionsTry();
