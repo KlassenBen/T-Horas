@@ -5223,4 +5223,45 @@ class App {
           sr16SwiPunchIn2.classList.remove("switch-inner-off");
           sr16SwiPunchIn3.classList.add("switch-text-on");
           sr16SwiPunchIn3.classList.remove("switch-text-off");
-          sr16Swi
+          sr16SwiPunchIn.dataset.on = "true";
+          sr16SwiPunchInText.textContent = "permitido";
+        }
+        if (datanow === "true") {
+          sr16SwiPunchIn.classList.remove("switch-on");
+          sr16SwiPunchIn.classList.add("switch-off");
+          sr16SwiPunchIn2.classList.remove("switch-inner-on");
+          sr16SwiPunchIn2.classList.add("switch-inner-off");
+          sr16SwiPunchIn3.classList.remove("switch-text-on");
+          sr16SwiPunchIn3.classList.add("switch-text-off");
+          sr16SwiPunchIn.dataset.on = "false";
+          sr16SwiPunchInText.textContent = "negado";
+        }
+      }
+    });
+    sr16SwiAssis.addEventListener("click", function () {
+      const datanow = sr16SwiAssis.dataset.on;
+      if (datanow === "false") {
+        sr16SwiAssis.classList.add("switch-on");
+        sr16SwiAssis.classList.remove("switch-off");
+        sr16SwiAssis2.classList.add("switch-inner-on");
+        sr16SwiAssis2.classList.remove("switch-inner-off");
+        sr16SwiAssis3.classList.add("switch-text-on");
+        sr16SwiAssis3.classList.remove("switch-text-off");
+        sr16SwiAssis.dataset.on = "true";
+        sr16SwiAssisText.textContent = "asistente";
+      }
+      if (datanow === "true") {
+        sr16SwiAssis.classList.remove("switch-on");
+        sr16SwiAssis.classList.add("switch-off");
+        sr16SwiAssis2.classList.remove("switch-inner-on");
+        sr16SwiAssis2.classList.add("switch-inner-off");
+        sr16SwiAssis3.classList.remove("switch-text-on");
+        sr16SwiAssis3.classList.add("switch-text-off");
+        sr16SwiAssis.dataset.on = "false";
+        sr16SwiAssisText.textContent = "miembro";
+      }
+    });
+  }
+}
+
+const app = new App();
