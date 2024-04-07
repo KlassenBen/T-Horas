@@ -986,6 +986,9 @@ class App {
               if (inpPassword.value === val.accountPassword) {
                 this._srGetStartedDispChoose("sr22", "sr18", "left");
                 this.#curData = val;
+                this._deleteCookie("teamCode");
+                this._deleteCookie("memberId");
+                this._deleteCookie("level");
                 this._setCookie("teamCode", val.teamCode, 86400000 * 400);
                 this._setCookie("level", val.level, 86400000 * 400);
                 this._saveToLocal("curData", this.#curData);
