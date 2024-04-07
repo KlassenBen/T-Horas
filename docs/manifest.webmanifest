@@ -24,13 +24,13 @@
   "icons": [
     {
       "src": "images/THoras App logo 2-2.png",
-      "sizes": "192x192",
+      "sizes": "768x768",
       "type": "image/png",
       "purpose": "any"
     },
     {
       "src": "images/THoras App logo 2-2.png",
-      "sizes": "192x192",
+      "sizes": "768x768",
       "type": "image/png",
       "purpose": "maskable"
     }
