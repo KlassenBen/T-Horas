@@ -21,6 +21,14 @@
   --color-gray-9: #eaeaea;
 
   --ghost-btn-white: linear-gradient(0deg, #e1e1e1 0%, #fff 56.5%);
+  --app-header-blue: linear-gradient(
+    180deg,
+    #38a0ff 0%,
+    #0082fa 41.5%,
+    #0080f6 50%,
+    #00529e 98%
+  );
+
   --main-btn-blue: linear-gradient(180deg, #0085ff 0%, #005099 98%);
   --secondary-btn-blue: linear-gradient(
     180deg,
@@ -101,7 +109,7 @@ body {
   align-items: flex-end;
   gap: 16px;
   align-self: stretch;
-  background: var(--color-blue-100);
+  background: var(--app-header-blue);
 }
 #app-header-cont-con {
   display: flex;
@@ -120,7 +128,6 @@ body {
   width: 75px;
   height: 75px;
   flex-shrink: 0;
-  border: solid 1px white;
   border-radius: 12px;
 }
 #team-image {
