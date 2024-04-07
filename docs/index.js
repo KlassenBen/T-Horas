@@ -458,10 +458,10 @@ class App {
 
   _visitsToApp() {
     // TODO: Activate this before comminting
-    // const appInfo = doc(db, "appInfo", "KOsv4lbS42vJWlejpTFn");
-    // updateDoc(appInfo, {
-    //   visits: increment(1),
-    // });
+    const appInfo = doc(db, "appInfo", "KOsv4lbS42vJWlejpTFn");
+    updateDoc(appInfo, {
+      visits: increment(1),
+    });
   }
 
   _tryOutCookies() {
