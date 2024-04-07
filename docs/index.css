@@ -1440,15 +1440,17 @@ p {
 
 /* sr23 start */
 #sr23 {
-  gap: 24px;
+  gap: 32px;
 }
 #sr23-accounts-con {
   display: flex;
-  width: 390px;
+  /* width: 390px; */
   flex-direction: column;
   justify-content: center;
   align-items: center;
-  gap: 12px;
+  gap: 24px;
+  padding: 0 12px;
+  align-self: stretch;
 }
 
 .sr23-account-con {
@@ -1460,6 +1462,7 @@ p {
   align-self: stretch;
   border-bottom: 1px solid var(--color-blue-100);
   background: var(--color-white);
+  box-shadow: var(--contbx-shadow-2);
 }
 .sr23-account-top-con {
   display: flex;
