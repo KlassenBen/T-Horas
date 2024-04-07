@@ -400,24 +400,68 @@ class App {
 
   constructor() {
     this._events();
+    this._init("sr1");
 
     // TODO: ALSO NEED IN INIT, CHECK IF THE LOCAL STORED ACCOUNT STILL EXISTS IN THE CLOUD
     // this._removeFromLocal("curData");
     // this._tryOutCookies();
-    this._init("sr1");
     // this._onSnapshot("accounts", "cn25uwg629tb9143");
     // console.log(sr21TimePickerInOutText.textContent);
-    // this._srGetStartedDispChoose("sr24", "sr1", "left");
+    // this._srGetStartedDispChoose("sr27", "sr1", "left");
     // this._srGetStartedDispChoose("sr29", "sr1", "none");
     // this._srGetStartedDispChoose("sr30", "sr1", "none");
+    this._transactionsTry();
+  }
+  _transactionsTry() {
+    // import { runTransaction } from "firebase/firestore";
+
+    try {
+      runTransaction(db, async (transaction) => {
+        const docRefs = [];
+
+        const q = query(collection(db, `appInfo`), where("type", "==", "info"));
+        getDocs(q).then((docSnap) => {
+          docSnap.forEach((doc) => {
+            docRefs.push(doc.ref);
+
+            console.log(
+              "this is how to get an id of a document in firestore:",
+              doc.ref.id
+            );
+          });
+        });
+
+        // (await firestore.collection("collectionName").limit(100).get()).forEach(
+        //   (doc) => {
+        //     docRefs.push(doc.ref);
+        //   }
+        // ); //This is reading the Database for 100 docs
+
+        // const users = await transaction.getAll(...docRefs);
+
+        // const q = query(collection(db, `appInfo`), where("type", "==", "info"));
+
+        // TODO: transaction don't work
+        // console.log(docRefs);
+        // const sfDoc = await transaction.get(docRefs);
+        // if (!sfDoc.exists()) {
+        //   throw "Document does not exist!";
+        // }
+        // const newPopulation = sfDoc.data().population + 1;
+        // transaction.update(docRefs, { users: newPopulation });
+      });
+      console.log("Transaction successfully committed!");
+    } catch (e) {
+      console.log("Transaction failed: ", e);
+    }
   }
 
   _visitsToApp() {
-    const appInfo = doc(db, "appInfo", "KOsv4lbS42vJWlejpTFn");
-
-    updateDoc(appInfo, {
-      visits: increment(1),
-    });
+    // TODO: Activate this before comminting
+    // const appInfo = doc(db, "appInfo", "KOsv4lbS42vJWlejpTFn");
+    // updateDoc(appInfo, {
+    //   visits: increment(1),
+    // });
   }
 
   _tryOutCookies() {
@@ -4591,7 +4635,7 @@ class App {
     // <-- CREATE TEAM
     // --> ahead
     btnCreateTeamSr1.addEventListener("click", () => {
-      this._srGetStartedDispChoose("sr2", "sr1", "left");
+      this._srGetStartedDispChoose("sr3", "sr1", "left");
     });
     btnLoginSr2.addEventListener("click", () => {
       this._srGetStartedDispChoose("sr18", "sr2", "left");
@@ -4655,7 +4699,7 @@ class App {
       this._srGetStartedDispChoose("sr1", "sr18", "right");
     });
     btnBackSr3.addEventListener("click", () => {
-      this._srGetStartedDispChoose("sr2", "sr3", "right");
+      this._srGetStartedDispChoose("sr1", "sr3", "right");
     });
     btnBackSr4.addEventListener("click", () => {
       this._srGetStartedDispChoose("sr3", "sr4", "right");
@@ -5179,45 +5223,4 @@ class App {
           sr16SwiPunchIn2.classList.remove("switch-inner-off");
           sr16SwiPunchIn3.classList.add("switch-text-on");
           sr16SwiPunchIn3.classList.remove("switch-text-off");
-          sr16SwiPunchIn.dataset.on = "true";
-          sr16SwiPunchInText.textContent = "permitido";
-        }
-        if (datanow === "true") {
-          sr16SwiPunchIn.classList.remove("switch-on");
-          sr16SwiPunchIn.classList.add("switch-off");
-          sr16SwiPunchIn2.classList.remove("switch-inner-on");
-          sr16SwiPunchIn2.classList.add("switch-inner-off");
-          sr16SwiPunchIn3.classList.remove("switch-text-on");
-          sr16SwiPunchIn3.classList.add("switch-text-off");
-          sr16SwiPunchIn.dataset.on = "false";
-          sr16SwiPunchInText.textContent = "negado";
-        }
-      }
-    });
-    sr16SwiAssis.addEventListener("click", function () {
-      const datanow = sr16SwiAssis.dataset.on;
-      if (datanow === "false") {
-        sr16SwiAssis.classList.add("switch-on");
-        sr16SwiAssis.classList.remove("switch-off");
-        sr16SwiAssis2.classList.add("switch-inner-on");
-        sr16SwiAssis2.classList.remove("switch-inner-off");
-        sr16SwiAssis3.classList.add("switch-text-on");
-        sr16SwiAssis3.classList.remove("switch-text-off");
-        sr16SwiAssis.dataset.on = "true";
-        sr16SwiAssisText.textContent = "asistente";
-      }
-      if (datanow === "true") {
-        sr16SwiAssis.classList.remove("switch-on");
-        sr16SwiAssis.classList.add("switch-off");
-        sr16SwiAssis2.classList.remove("switch-inner-on");
-        sr16SwiAssis2.classList.add("switch-inner-off");
-        sr16SwiAssis3.classList.remove("switch-text-on");
-        sr16SwiAssis3.classList.add("switch-text-off");
-        sr16SwiAssis.dataset.on = "false";
-        sr16SwiAssisText.textContent = "miembro";
-      }
-    });
-  }
-}
-
-const app = new App();
+          sr16Swi

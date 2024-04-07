@@ -60,7 +60,7 @@
           />
           <div id="header-names-con">
             <p id="app-name" class="app-name-only">T Horas</p>
-            <p id="team-name">Equipo Jaguares</p>
+            <p id="team-name">sin nombre</p>
           </div>
           <div class="admin-mode-ind"></div>
         </div>
@@ -92,14 +92,19 @@
               </div>
             </div>
             <div id="sr1-btn-con">
-              <div id="sr1-btn-con-2">
-                <button id="sr1-btn-join-team">Unirme a un equipo</button>
-                <button id="sr1-btn-create-team">Crear un equipo</button>
-              </div>
               <div id="sr1-btn-con-3">
-                <p id="sr1-btn-con-text">o,</p>
-                <button id="sr1-btn-login">Inicia sesión aquí</button>
+                <p id="sr1-btn-con-header">Escoge una opción para empezar</p>
+                <div id="sr1-btn-con-2">
+                  <button id="sr1-btn-create-team">Crear una cuenta</button>
+                  <div id="sr1-btn-con-3">
+                    <p id="sr1-btn-con-text">o,</p>
+                    <button id="sr1-btn-login">Inicia sesión aquí</button>
+                  </div>
+                </div>
               </div>
+              <button id="sr1-btn-join-team">
+                Unirme a un equipo existente
+              </button>
             </div>
           </div>
 
@@ -234,7 +239,7 @@
           </div>
           <div id="sr4-contbx" class="contbx">
             <p id="sr4-contbx-paso-tx" class="paso-tx">Paso 2 de 2</p>
-            <div id="sr4-cont-con" class="contbx-con">
+            <div id="sr4-cont-con" class="">
               <div id="sr3-inp-con">
                 <div id="sr3-inp-con-2">
                   <p id="sr3-inp-lab" class="input-label">
@@ -845,7 +850,7 @@
             <!-- member contruction ends here -->
           </div>
 
-          <button id="sr7-btn-add-member">Nuevo miembro</button>
+          <button id="sr7-btn-add-member">Agregar nuevo trabajador</button>
         </div>
 
         <!-- sr8 -->
@@ -1167,9 +1172,9 @@
             <p id="sr11-time-sheet-name-text">Nombre de miembro</p>
           </div>
           <div id="new-time-sheet-message-con">
-            <p id="new-time-sheet-message-text">
+            <!-- <p id="new-time-sheet-message-text">
               Para empezar usa el botón <span>Nueva tabla de horas</span>
-            </p>
+            </p> -->
           </div>
 
           <div id="sr11-daily-hours-con">
@@ -1241,16 +1246,18 @@
                 >
                   0:00
                 </p>
-                <p
-                  id="sr11-daily-hours-monday-end"
-                  class="daily-hours-end"
-                  data-do="open-time-picker"
-                  data-day="monday"
-                  data-type="day"
-                  data-stnd="end"
-                >
-                  0:00
-                </p>
+                <div id="sr11-daily-hours-sunday-end-con">
+                  <p
+                    id="sr11-daily-hours-monday-end"
+                    class="daily-hours-end"
+                    data-do="open-time-picker"
+                    data-day="monday"
+                    data-type="day"
+                    data-stnd="end"
+                  >
+                    0:00
+                  </p>
+                </div>
               </div>
               <p
                 id="sr11-daily-hours-monday-time-total"
@@ -1275,16 +1282,18 @@
                 >
                   0:00
                 </p>
-                <p
-                  id="sr11-daily-hours-tuesday-end"
-                  class="daily-hours-end"
-                  data-do="open-time-picker"
-                  data-day="tuesday"
-                  data-type="day"
-                  data-stnd="end"
-                >
-                  0:00
-                </p>
+                <div id="sr11-daily-hours-sunday-end-con">
+                  <p
+                    id="sr11-daily-hours-tuesday-end"
+                    class="daily-hours-end"
+                    data-do="open-time-picker"
+                    data-day="tuesday"
+                    data-type="day"
+                    data-stnd="end"
+                  >
+                    0:00
+                  </p>
+                </div>
               </div>
               <p
                 id="sr11-daily-hours-tuesday-time-total"
@@ -1312,16 +1321,18 @@
                 >
                   0:00
                 </p>
-                <p
-                  id="sr11-daily-hours-wednesday-end"
-                  class="daily-hours-end"
-                  data-do="open-time-picker"
-                  data-day="wednesday"
-                  data-type="day"
-                  data-stnd="end"
-                >
-                  0:00
-                </p>
+                <div id="sr11-daily-hours-sunday-end-con">
+                  <p
+                    id="sr11-daily-hours-wednesday-end"
+                    class="daily-hours-end"
+                    data-do="open-time-picker"
+                    data-day="wednesday"
+                    data-type="day"
+                    data-stnd="end"
+                  >
+                    0:00
+                  </p>
+                </div>
               </div>
               <p
                 id="sr11-daily-hours-wednesday-time-total"
@@ -1346,16 +1357,18 @@
                 >
                   0:00
                 </p>
-                <p
-                  id="sr11-daily-hours-thursday-end"
-                  class="daily-hours-end"
-                  data-do="open-time-picker"
-                  data-day="thursday"
-                  data-type="day"
-                  data-stnd="end"
-                >
-                  0:00
-                </p>
+                <div id="sr11-daily-hours-sunday-end-con">
+                  <p
+                    id="sr11-daily-hours-thursday-end"
+                    class="daily-hours-end"
+                    data-do="open-time-picker"
+                    data-day="thursday"
+                    data-type="day"
+                    data-stnd="end"
+                  >
+                    0:00
+                  </p>
+                </div>
               </div>
               <p
                 id="sr11-daily-hours-thursday-time-total"
@@ -1378,16 +1391,18 @@
                 >
                   0:00
                 </p>
-                <p
-                  id="sr11-daily-hours-friday-end"
-                  class="daily-hours-end"
-                  data-do="open-time-picker"
-                  data-day="friday"
-                  data-type="day"
-                  data-stnd="end"
-                >
-                  0:00
-                </p>
+                <div id="sr11-daily-hours-sunday-end-con">
+                  <p
+                    id="sr11-daily-hours-friday-end"
+                    class="daily-hours-end"
+                    data-do="open-time-picker"
+                    data-day="friday"
+                    data-type="day"
+                    data-stnd="end"
+                  >
+                    0:00
+                  </p>
+                </div>
               </div>
               <p
                 id="sr11-daily-hours-friday-time-total"
@@ -1412,16 +1427,18 @@
                 >
                   0:00
                 </p>
-                <p
-                  id="sr11-daily-hours-saturday-end"
-                  class="daily-hours-end"
-                  data-do="open-time-picker"
-                  data-day="saturday"
-                  data-type="day"
-                  data-stnd="end"
-                >
-                  0:00
-                </p>
+                <div id="sr11-daily-hours-sunday-end-con">
+                  <p
+                    id="sr11-daily-hours-saturday-end"
+                    class="daily-hours-end"
+                    data-do="open-time-picker"
+                    data-day="saturday"
+                    data-type="day"
+                    data-stnd="end"
+                  >
+                    0:00
+                  </p>
+                </div>
               </div>
               <p
                 id="sr11-daily-hours-saturday-time-total"
@@ -1444,16 +1461,18 @@
                 >
                   0:00
                 </p>
-                <p
-                  id="sr11-daily-hours-sunday-end"
-                  class="daily-hours-end"
-                  data-do="open-time-picker"
-                  data-day="sunday"
-                  data-type="day"
-                  data-stnd="end"
-                >
-                  0:00
-                </p>
+                <div id="sr11-daily-hours-sunday-end-con">
+                  <p
+                    id="sr11-daily-hours-sunday-end"
+                    class="daily-hours-end"
+                    data-do="open-time-picker"
+                    data-day="sunday"
+                    data-type="day"
+                    data-stnd="end"
+                  >
+                    0:00
+                  </p>
+                </div>
               </div>
               <p
                 id="sr11-daily-hours-sunday-time-total"
@@ -2511,14 +2530,20 @@
               <div class="sr26-cont-con-2">
                 <p class="sr26-cont-con-2-header">Set admin level</p>
                 <div class="sr26-cont-con-3">
-                  <div class="sr26-cont-con-3-tx">
-                    <p>Admin level:</p>
-                  </div>
-                  <div class="sr26-cont-con-4-val">
-                    <select name="" id="sr26-select-Admin-level" class="input">
-                      <option value="admin">admin</option>
-                      <option value="top admin">top admin</option>
-                    </select>
+                  <div id="sr26-cont-con-5">
+                    <div class="sr26-cont-con-3-tx">
+                      <p>Admin level:</p>
+                    </div>
+                    <div class="sr26-cont-con-4-val">
+                      <select
+                        name=""
+                        id="sr26-select-Admin-level"
+                        class="input"
+                      >
+                        <option value="admin">admin</option>
+                        <option value="top admin">top admin</option>
+                      </select>
+                    </div>
                   </div>
                   <button id="sr26-btn-set-admin-level">Set</button>
                 </div>
@@ -2531,7 +2556,7 @@
             </div>
             <div class="sr26-inf-con">
               <p id="sr26-info-email" class="sr26-inf-con-info">
-                Email: <span>benklassen19@icloud.com</span>
+                Email: <span></span>
               </p>
             </div>
             <div class="sr26-inf-con">

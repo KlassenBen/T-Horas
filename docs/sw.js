@@ -22,7 +22,8 @@ self.addEventListener("fetch", async (e) => {
   } else {
     const url = new URL(req.url);
     if (url.origin === location.origin) {
-      e.respondWith(cacheFirst(req));
+      // e.respondWith(cacheFirst(req));
+      e.respondWith(networkAndCache(req));
     } else {
       e.respondWith(networkAndCache(req));
     }
