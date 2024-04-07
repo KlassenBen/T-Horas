@@ -2500,7 +2500,7 @@ class App {
       } else {
         const HTML = `<div id="new-member-message-con">
         <p id="new-member-message-text">
-        Usa el botón <span>Nuevo miembro</span> para añadir miembros a tu equipo
+        Usa el botón  <br /> <span data-linkbtn="new-member">Agregar nuevo trabajador</span>  <br /> para añadir miembros a tu equipo
         </p>
         </div>`;
         conMemberDisplay.insertAdjacentHTML("beforeend", HTML);
@@ -4597,8 +4597,6 @@ class App {
     });
     btnAddMemberSr7.addEventListener("click", () => {
       this._checkPro();
-
-      // this._srGetStartedDispChoose("sr8", "sr7", "left");
     });
     btnAheadSr8.addEventListener("click", () => {
       this._createMemberStep1();
@@ -4839,6 +4837,9 @@ class App {
         console.log();
 
         this._srGetStartedDispChoose("sr16", "sr7", "left");
+      }
+      if (e.target.dataset.linkbtn === "new-member") {
+        this._checkPro();
       }
     });
 
