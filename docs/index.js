@@ -407,7 +407,7 @@ class App {
     // this._tryOutCookies();
     // this._onSnapshot("accounts", "cn25uwg629tb9143");
     // console.log(sr21TimePickerInOutText.textContent);
-    // this._srGetStartedDispChoose("sr22", "sr1", "left");
+    // this._srGetStartedDispChoose("sr25", "sr1", "left");
     // this._srGetStartedDispChoose("sr29", "sr1", "none");
     // this._srGetStartedDispChoose("sr30", "sr1", "none");
     this._transactionsTry();
@@ -2495,8 +2495,8 @@ class App {
         const HTML = `<div id="no-member-message-con">
           <p id="no-member-message-header">Tus miembros aparecerán aqui</p>
           <p id="no-member-message-text">
-          Aún no tienes miembros en tu equipo. Empieza con crear un
-          <span>Nuevo miembro</span>.
+          Aún no tienes miembros en tu equipo. Empieza con <br />
+          <span data-linkbtn="new-member">Agregar nuevo trabajador</span>.
           </p>
           </div>`;
         conMemberDisplay.insertAdjacentHTML("beforeend", HTML);
