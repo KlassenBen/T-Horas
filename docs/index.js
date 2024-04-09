@@ -1657,8 +1657,6 @@ class App {
       return acc;
     }, 0);
     const sum = ((mins / 60) | 0) + ":" + ("0" + (mins % 60)).slice(-2);
-
-    console.log(sum);
     return sum;
   }
 
@@ -1820,20 +1818,30 @@ class App {
   }
 
   _punchInTimer(punch, time) {
-    const date = new Date();
-    const dayDate = date.getDay();
-    // const dayDate = 0;
-    const monthDate = date.getMonth();
-    const yearDate = date.getFullYear();
-    const hourDate = date.getHours();
-    const minutesDate = date.getMinutes();
-    const secondsDate = date.getSeconds();
-    const timeArrDate = [hourDate, minutesDate];
-    const timeDate = timeArrDate.join(":");
+    console.log("called");
+    let timeTimeInterval;
+    let date;
+    let hourDate;
+    let minutesDate;
+    let secondsDate;
+    let timeArrDate;
+    let timeDate;
+    const getCurTime = function () {
+      date = new Date();
+      hourDate = date.getHours();
+      minutesDate = date.getMinutes();
+      secondsDate = date.getSeconds();
+      timeArrDate = [hourDate, minutesDate];
+      timeDate = timeArrDate.join(":");
+    };
+    // getCurTime()
+
     let hour = 0;
     let min = 0;
     let sec = 0;
     if (time) {
+      // timeTimeInterval = setInterval(() => {
+      getCurTime();
       const timeInArr = this._calculateTimeBetween(time, timeDate).split(":");
       hour = Number(timeInArr[0]);
       if (Number(timeInArr[1]) < 10) {
@@ -1846,43 +1854,28 @@ class App {
       } else {
         sec = secondsDate;
       }
-      console.log(hour, min, sec);
       sr11punchInClockSeconds.textContent = `${sec}`;
-      console.log(min);
-      setTimeout(() => {
-        sr11punchInClockMinutes.textContent = min;
-        sr11punchInClockHours.textContent = hour;
-      }, 1000);
+      sr11punchInClockMinutes.textContent = min;
+      sr11punchInClockHours.textContent = hour;
+      // }, 1000);
     }
-    const setTime = function () {
-      if (sec < 60) {
-        let secc;
-        sec++;
-        if (sec < 10) {
-          secc = `0${sec}`;
-        } else {
-          secc = sec;
-        }
-        sr11punchInClockSeconds.textContent = `${secc}`;
+    const setTime = () => {
+      getCurTime();
+      const timeInArr = this._calculateTimeBetween(time, timeDate).split(":");
+      hour = Number(timeInArr[0]);
+      if (Number(timeInArr[1]) < 10) {
+        min = `0${Number(timeInArr[1])}`;
+      } else {
+        min = Number(timeInArr[1]);
       }
-      if (sec > 59) {
-        let minc;
-        sr11punchInClockSeconds.textContent = "00";
-        sec = 0;
-        min++;
-        if (min < 10) {
-          minc = `0${min}`;
-        } else {
-          minc = min;
-        }
-        sr11punchInClockMinutes.textContent = minc;
+      if (secondsDate < 10) {
+        sec = `0${secondsDate}`;
+      } else {
+        sec = secondsDate;
       }
-      if (min > 59) {
-        sr11punchInClockMinutes.textContent = "00";
-        min = 0;
-        hour++;
-        sr11punchInClockHours.textContent = hour;
-      }
+      sr11punchInClockSeconds.textContent = `${sec}`;
+      sr11punchInClockMinutes.textContent = min;
+      sr11punchInClockHours.textContent = hour;
     };
     if (punch === "in") {
       sr11punchInClockSeconds.textContent = "00";
@@ -1896,7 +1889,6 @@ class App {
     if (punch === "out") {
       sr11PunchInBtnOut.style.opacity = "10%";
       sr11PunchInBtnIn.style.opacity = "10%";
-      console.log("out now and here");
       clearInterval(this.clockInterval);
     }
   }
@@ -1942,11 +1934,9 @@ class App {
     } else {
       dayDateCor = dayDate;
     }
-    const monthDate = date.getMonth();
-    const yearDate = date.getFullYear();
     const hourDate = date.getHours();
     const minutesDate = date.getMinutes();
-    const secondsDate = date.getSeconds();
+
     let minCor;
     if (minutesDate < 10) {
       minCor = `0${minutesDate}`;
@@ -2023,11 +2013,16 @@ class App {
     } else {
       if (week.days[IndexDayValNum].out === "0:00") {
         this._punchInTimer("in", week.days[IndexDayValNum].in);
-        console.log();
       } else {
         const timeInArr = week.days[IndexDayValNum].totalTime.split(":");
         let hour = Number(timeInArr[0]);
-        let min = Number(timeInArr[1]);
+        let min;
+        if (Number(timeInArr[1]) < 10) {
+          min = `0${Number(timeInArr[1])}`;
+        } else {
+          min = Number(timeInArr[1]);
+        }
+
         sr11punchInClockMinutes.textContent = min;
         sr11punchInClockHours.textContent = hour;
         sr11PunchInBtnOut.style.opacity = "30%";
@@ -2226,9 +2221,6 @@ class App {
     console.log("time: ", time);
 
     const updateIn = () => {
-      if (dayNum) {
-        this._punchInTimer("in");
-      }
       console.log(curDataLocal.memberId);
       this._updateData(
         `accounts/${curDataLocal.teamCode}/team`,
@@ -2258,6 +2250,9 @@ class App {
         this.#curWeek.weekId,
         this.#curWeek
       );
+      if (dayNum) {
+        this._punchInTimer("in");
+      }
     };
 
     const updateOut = () => {
