@@ -406,7 +406,6 @@ class App {
     // this._removeFromLocal("curData");
     // this._tryOutCookies();
     // this._onSnapshot("accounts", "cn25uwg629tb9143");
-    // console.log(sr21TimePickerInOutText.textContent);
     // this._srGetStartedDispChoose("sr25", "sr1", "left");
     // this._srGetStartedDispChoose("sr29", "sr1", "none");
     // this._srGetStartedDispChoose("sr30", "sr1", "none");
@@ -4920,6 +4919,7 @@ class App {
 
     // <-- hour screen
     sr11.addEventListener("click", (e) => {
+      const timePicker = document.querySelector("#sr21-time-picker");
       if (e.target.dataset.do === "open-time-picker") {
         console.log(this.#curData.writePermision);
         if (this.#curData.writePermision !== "false") {
@@ -4932,15 +4932,46 @@ class App {
           this.#timePickerUpdateDay = e.target.dataset.day;
           this.#timePickerUpdatestnd = e.target.dataset.stnd;
           this.#timePickerUpdatetype = e.target.dataset.type;
+          console.log(this.#curWeek);
+          console.log();
+          const tapedTime = e.target.textContent;
+
+          if (tapedTime !== "0:00") {
+            let timeForTimePicker;
+            const splitTime = tapedTime.split(" ");
+            const timeHourMin = splitTime[0].split(":");
+
+            if (splitTime[1] === "pm") {
+              if (splitTime[0] === "12:00") {
+                timeForTimePicker = "23:59";
+              } else {
+                let hourMin = [Number(timeHourMin[0]) + 12, timeHourMin[1]];
+                timeForTimePicker = hourMin.join(":");
+              }
+            } else {
+              if (splitTime[0] === "12:00") {
+                timeForTimePicker = "00:00";
+              } else {
+                const splitTime = tapedTime.split(" ");
+                timeForTimePicker = splitTime[0];
+              }
+            }
+            timePicker.value = timeForTimePicker;
+          } else {
+            const date = new Date();
+            const timeArr = [date.getHours(), date.getMinutes()];
+
+            const time = timeArr.join(":");
+            timePicker.value = time;
+            console.log(time);
+          }
+
           this._srGetStartedDispChoose("sr21", "sr11", "none");
         } else {
           if (
             // this.#curData.writeTimePermisionStart +
             this.#curData.writeTimePermisionEnd >= this._getTimeStamp()
           ) {
-            console.log(
-              this.#curData.writeTimePermisionEnd - this._getTimeStamp()
-            );
             if (this.#curData.writePermisionRequest === "granted") {
               this._disdSuccessErrorMessage(
                 "Tu solicitud fue aceptado. Solo tienes un tiepo limitado para hacer tus cambios",
@@ -5152,7 +5183,6 @@ class App {
     // sr16SwiPunchInText
 
     sr16SwiPunchIn.addEventListener("click", function (e) {
-      console.log(sr16SwiPunchIn.dataset.active);
       if (sr16SwiPunchIn.dataset.active === "act") {
         const datanow = sr16SwiPunchIn.dataset.on;
         if (datanow === "false") {
