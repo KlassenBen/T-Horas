@@ -605,6 +605,8 @@ class App {
 
   // TODO: INIT STARTS HERE
 
+  _calcEverAppRatings() {}
+
   _init(srHide) {
     if (navigator.onLine) {
       this._setSupportInfo();
