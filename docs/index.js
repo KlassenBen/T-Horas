@@ -409,7 +409,7 @@ class App {
     // this._srGetStartedDispChoose("sr25", "sr1", "left");
     // this._srGetStartedDispChoose("sr29", "sr1", "none");
     // this._srGetStartedDispChoose("sr30", "sr1", "none");
-    this._transactionsTry();
+    // this._transactionsTry();
   }
   _transactionsTry() {
     // import { runTransaction } from "firebase/firestore";
@@ -606,6 +606,12 @@ class App {
 
   _calcEverAppRatings() {}
 
+  _setLastSeen(path, id) {
+    this._updateData(path, id, {
+      lastSeen: this._getTimeStamp(),
+    });
+  }
+
   _init(srHide) {
     if (navigator.onLine) {
       this._setSupportInfo();
@@ -632,6 +638,10 @@ class App {
               docSnap.forEach((doc) => {
                 const val = doc.data();
                 this._saveToLocal("curData", val);
+                this._setLastSeen(
+                  `accounts/${val.teamCode}/team`,
+                  val.memberId
+                );
               });
             });
           }
@@ -644,6 +654,7 @@ class App {
               docSnap.forEach((doc) => {
                 const val = doc.data();
                 this._saveToLocal("curData", val);
+                this._setLastSeen(`accounts`, val.teamCode);
               });
             });
           }
@@ -3956,8 +3967,9 @@ class App {
 
     whatsApp.textContent = this.#appSupportInfo.whatsApp;
     telegram.textContent = this.#appSupportInfo.telegram;
-    email.textContent = `Correo: ${this.#appSupportInfo.email}`;
-    email.href = this.#appSupportInfo.email;
+    email.textContent = ` ${this.#appSupportInfo.email}`;
+    email.href = `mailto:${this.#appSupportInfo.email}`;
+    console.log(this.#appSupportInfo.email);
     this._srGetStartedDispChoose("sr25", "sr24", "left");
   }
 
@@ -3969,8 +3981,8 @@ class App {
 
     whatsApp.textContent = this.#appSupportInfo.whatsApp;
     telegram.textContent = this.#appSupportInfo.telegram;
-    email.textContent = `Correo: ${this.#appSupportInfo.email}`;
-    email.href = this.#appSupportInfo.email;
+    email.textContent = ` ${this.#appSupportInfo.email}`;
+    email.href = `mailto:${this.#appSupportInfo.email}`;
   }
 
   _startTryApp() {
@@ -4907,11 +4919,6 @@ class App {
         accountCreated.textContent = dateAccountCreated.toLocaleDateString();
         lastPayment.textContent = this.#curAccountData.lastPayment;
         totalPayment.textContent = this.#curAccountData.totalPayment;
-
-        // console.log(dateAccountCreated.toLocaleDateString());
-        // console.log(dateProStart.toDateString());
-        // console.log(dateProEnd.toDateString());
-
         this._srGetStartedDispChoose("sr26", "sr23", "left");
       } else {
       }
