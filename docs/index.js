@@ -4245,7 +4245,7 @@ class App {
         ) {
           id = this.#curData.memberId;
           level = this.#curData.level;
-          name = this.#curData.memberName;
+          name = this.#curData.name;
           this._updateData(
             `accounts/${this.#curData.teamCode}/team`,
             this.#curData.memberId,
@@ -4276,14 +4276,18 @@ class App {
           ratedAt: this.#appRating,
           ratedText: text,
         };
+
+        console.log(
+          this.#curData.teamCode,
+          id,
+          level,
+          name,
+          this._getTimeStamp(),
+          this.#appRating,
+          text
+        );
         this._addData("appRatings", rating);
-        this._srGetStartedDispChoose("sr22", "sr30", "right");
-        setTimeout(() => {
-          const style = window.getComputedStyle(sr22);
-          const matrix = new WebKitCSSMatrix(style.transform);
-          const nowLocated = matrix.e;
-          sr22.style.transform = `translateX(${nowLocated + 390}px)`;
-        }, 500);
+        this._closeRatingScreen();
       }
     }
   }
