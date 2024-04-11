@@ -4960,17 +4960,27 @@ class App {
                 timeForTimePicker = "00:00";
               } else {
                 const splitTime = tapedTime.split(" ");
-                timeForTimePicker = splitTime[0];
+                const minHours2 = splitTime[0].split(":");
+                if (Number(minHours2[0]) < 10) {
+                  timeForTimePicker = `0${splitTime[0]}`;
+                } else {
+                  timeForTimePicker = splitTime[0];
+                }
               }
             }
+            console.log(timeForTimePicker);
             timePicker.value = timeForTimePicker;
           } else {
             const date = new Date();
             const timeArr = [date.getHours(), date.getMinutes()];
-
-            const time = timeArr.join(":");
+            let time;
+            const timeTrue = timeArr.join(":");
+            if (Number(date.getHours()) < 10) {
+              time = `0${timeTrue}`;
+            } else {
+              time = timeTrue;
+            }
             timePicker.value = time;
-            console.log(time);
           }
 
           this._srGetStartedDispChoose("sr21", "sr11", "none");
