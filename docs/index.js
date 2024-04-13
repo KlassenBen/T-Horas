@@ -1950,14 +1950,21 @@ class App {
     const minutesDate = date.getMinutes();
 
     let minCor;
+    let hourCor;
     if (minutesDate < 10) {
       minCor = `0${minutesDate}`;
     } else {
       minCor = minutesDate;
     }
+    if (hourDate < 10) {
+      hourCor = `0${hourDate}`;
+    } else {
+      hourCor = hourDate;
+    }
     const timeArrDate = [hourDate, minCor];
     const timeDate = timeArrDate.join(":");
 
+    console.log(timeDate);
     if (punch === "in") {
       this.#timePickerUpdatestnd = "start";
       this._updateEntries(timeDate, dayDateCor);
@@ -2086,12 +2093,14 @@ class App {
       if (curDay.in === "0:00") {
         updateDayStart.textContent = curDay.in;
       } else {
-        updateDayStart.textContent = this._timeFormator(curDay.in);
+        let zeroRidTime = curDay.in.replace(/^0+/, "");
+        updateDayStart.textContent = this._timeFormator(zeroRidTime);
       }
       if (curDay.out === "0:00") {
         updateDayEnd.textContent = curDay.out;
       } else {
-        updateDayEnd.textContent = this._timeFormator(curDay.out);
+        let zeroRidTime = curDay.out.replace(/^0+/, "");
+        updateDayEnd.textContent = this._timeFormator(zeroRidTime);
       }
       console.log(this.#curData.pro);
       if (this.#curData.pro !== "false") {
@@ -4962,25 +4971,53 @@ class App {
                 const splitTime = tapedTime.split(" ");
                 const minHours2 = splitTime[0].split(":");
                 if (Number(minHours2[0]) < 10) {
-                  timeForTimePicker = `0${splitTime[0]}`;
+                  const firstChar = splitTime[0].charAt(0);
+
+                  if (firstChar === "0") {
+                    timeForTimePicker = splitTime[0];
+                  } else {
+                    timeForTimePicker = `0${splitTime[0]}`;
+                  }
                 } else {
                   timeForTimePicker = splitTime[0];
                 }
               }
             }
+            const nulltime = "08:06".replace(/^0+/, "");
+
             console.log(timeForTimePicker);
             timePicker.value = timeForTimePicker;
           } else {
             const date = new Date();
-            const timeArr = [date.getHours(), date.getMinutes()];
+            const hourDate = date.getHours();
+            const minDate = date.getMinutes();
+            let corHour;
+            let corMin;
             let time;
-            const timeTrue = timeArr.join(":");
-            if (Number(date.getHours()) < 10) {
-              time = `0${timeTrue}`;
+
+            // let minCor;
+            // if (minutesDate < 10) {
+            //   minCor = `0${minutesDate}`;
+            // } else {
+            //   minCor = minutesDate;
+            // }
+            if (Number(hourDate) < 10) {
+              corHour = `0${hourDate}`;
             } else {
-              time = timeTrue;
+              corHour = hourDate;
             }
+            if (Number(minDate) < 10) {
+              corMin = `0${minDate}`;
+            } else {
+              corMin = minDate;
+            }
+            const timeArr = [corHour, corMin];
+
+            time = timeArr.join(":");
+
             timePicker.value = time;
+            const firchar = time.charAt(0);
+            console.log(firchar);
           }
 
           this._srGetStartedDispChoose("sr21", "sr11", "none");
