@@ -92,6 +92,7 @@ const stickyHeader = header.offsetTop;
 const appName = document.querySelector("#app-name");
 const teamImage = document.querySelector("#team-image");
 const sr29Image = document.querySelector("#sr29-image");
+const sr29ImageCon = document.querySelector("#sr29-img-con");
 const timePicker = document.querySelector("#sr21-time-picker");
 const inpPayPerHour = document.querySelector("#sr9-inp-pay--hour");
 const sr11TimeSheetHours = document.querySelector("#sr11-daily-hours-con");
@@ -137,6 +138,7 @@ const sr11punchInDay = document.querySelector("#sr11-punchin-day");
 const sr11punchInConMain = document.querySelector("#sr11-punchin-cont-con");
 const sr11SettingsPunchInCon = document.querySelector("#sr16-swi-punchin-con");
 const sr9CreateMemPunchInCon = document.querySelector("#sr9-swi-punchin-con");
+const sr1ImgCon = document.querySelector(".sr1-all-img-con");
 
 // <-- Screens
 const srsGetStarted = document.querySelector("#srs-get-started");
@@ -539,7 +541,7 @@ class App {
     getDocs(q).then((docSnap) => {
       docSnap.forEach((doc) => {
         this.#appExplainVideos.push(doc.data());
-        sr1OnboardingVid.src = this.#appExplainVideos[0].url;
+        // sr1OnboardingVid.src = this.#appExplainVideos[0].url;
       });
     });
   }
@@ -1640,14 +1642,17 @@ class App {
       srDisp === "sr17" ||
       srDisp === "sr19" ||
       srDisp === "sr20" ||
-      srDisp === "sr29" ||
       srDisp === "sr30"
     ) {
       appName.classList.add("app-name-not-only");
       teamImage.classList.remove("team-image-hidden");
     } else {
-      appName.classList.remove("app-name-not-only");
-      teamImage.classList.add("team-image-hidden");
+      // all sr that are specified here wil not change the header img or name
+      if (srDisp === "sr29") {
+      } else {
+        appName.classList.remove("app-name-not-only");
+        teamImage.classList.add("team-image-hidden");
+      }
     }
   }
 
@@ -4206,8 +4211,17 @@ class App {
     const perhide = nowLocated + 390;
     srhide.style.transform = `translateX(${perhide}px)`;
   }
-  _imgDispDisp(img) {
-    sr29Image.src = img.src;
+  _imgDispDisp(img, width, border, background) {
+    sr29Image.src = img;
+    if (width !== "none") {
+      sr29Image.style.width = `${width}px`;
+    }
+    if (border !== "none") {
+      sr29Image.style.border = `1px solid #0058ff`;
+    }
+    if (background !== "none") {
+      sr29ImageCon.style.background = background;
+    }
     this._srGetStartedDispChoose("sr29", "sr1", "none");
   }
 
@@ -4501,11 +4515,17 @@ class App {
 
     // <-- OTHER
 
+    sr1ImgCon.addEventListener("click", (e) => {
+      if (e.target.dataset.img === "true") {
+        console.log(e.target.src);
+        this._imgDispDisp(e.target.src, 370, "none", "#6d6d6d");
+      }
+    });
     sr31BtnReload.addEventListener("click", () => {
       this._init("sr31");
     });
     teamImage.addEventListener("click", () => {
-      this._imgDispDisp(teamImage);
+      this._imgDispDisp(teamImage.src, "none", "none");
     });
     btnsr29Back.addEventListener("click", () => {
       this._imgDispHide(sr29);
