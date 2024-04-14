@@ -139,6 +139,12 @@ const sr11punchInConMain = document.querySelector("#sr11-punchin-cont-con");
 const sr11SettingsPunchInCon = document.querySelector("#sr16-swi-punchin-con");
 const sr9CreateMemPunchInCon = document.querySelector("#sr9-swi-punchin-con");
 const sr1ImgCon = document.querySelector(".sr1-all-img-con");
+const sr1btnInstallApp = document.querySelector(
+  "#sr1-btn-open-install-app-instructions"
+);
+const sr1InstallAppInstructions = document.querySelector(
+  "#sr1-install-app-instructions"
+);
 
 // <-- Screens
 const srsGetStarted = document.querySelector("#srs-get-started");
@@ -4515,6 +4521,17 @@ class App {
 
     // <-- OTHER
 
+    sr1btnInstallApp.addEventListener("click", (e) => {
+      sr1InstallAppInstructions.style.display = "flex";
+      sr1InstallAppInstructions.style.border = "2px solid red";
+      setTimeout(() => {
+        sr1InstallAppInstructions.style.border = "none";
+      }, 2000);
+
+      const position = sr1InstallAppInstructions.offsetTop;
+
+      window.scrollTo(0, position);
+    });
     sr1ImgCon.addEventListener("click", (e) => {
       if (e.target.dataset.img === "true") {
         console.log(e.target.src);
