@@ -1905,6 +1905,7 @@ class App {
       sr11punchInClockMinutes.textContent = "00";
       sr11punchInClockHours.textContent = "0";
       sr11PunchInBtnIn.style.opacity = "50%";
+      sr11PunchInBtnIn.dataset.active = "no";
       sr11PunchInBtnOut.style.opacity = "100%";
       clearInterval(this.clockInterval);
       this.clockInterval = setInterval(setTime, 1000);
