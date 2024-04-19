@@ -408,6 +408,7 @@ class App {
 
   constructor() {
     this._events();
+    this._registerSW();
     this._init("sr1");
 
     // TODO: ALSO NEED IN INIT, CHECK IF THE LOCAL STORED ACCOUNT STILL EXISTS IN THE CLOUD
