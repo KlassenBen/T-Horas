@@ -82,7 +82,7 @@ body {
   align-items: flex-start;
   align-self: stretch;
   overflow-y: scroll;
-  transition: 700ms;
+  transition: 300ms;
   background: var(--color-white);
   /* background: var(--color-gray-9); */
 }
