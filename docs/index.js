@@ -1356,8 +1356,23 @@ class App {
 
     const xhr = new XMLHttpRequest();
     xhr.withCredentials = true;
+    const disSuccErrSub = (text, se, msTime) => {
+      this._disdSuccessErrorMessage(text, se, msTime);
+    };
     xhr.addEventListener("readystatechange", function () {
       if (this.readyState === this.DONE) {
+        const [error, direc] = this.responseText.split(",");
+
+        if (error.includes("true")) {
+          disSuccErrSub(
+            "Hubo un error con enviar el código. Estamos trabajando para solucionarlo.",
+            "er",
+            6000
+          );
+        }
+        if (error.includes("false")) {
+          disSuccErrSub("Código enviado", "ex", 3000);
+        }
         console.log(this.responseText);
       }
     });
