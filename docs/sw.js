@@ -18,7 +18,7 @@ self.addEventListener("activate", (e) => {
 
 self.addEventListener("fetch", async (e) => {
   const req = e.request;
-  if (req.url.includes("google")) {
+  if (req.url.includes("google") || req.url.includes("rapidapi")) {
   } else {
     const url = new URL(req.url);
     if (url.origin === location.origin) {
