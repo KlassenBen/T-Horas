@@ -2,8 +2,7 @@
 
 // <-- APP START HERE --> //
 
-import { initializeApp } from "https://www.gstatic.com/firebasejs/10.7.2/firebase-app.js";
-
+import { initializeApp } from "https://www.gstatic.com/firebasejs/10.11.0/firebase-app.js";
 import {
   getFirestore,
   getDoc,
@@ -19,7 +18,15 @@ import {
   deleteDoc,
   runTransaction,
   increment,
-} from "https://www.gstatic.com/firebasejs/10.7.2/firebase-firestore.js";
+} from "https://www.gstatic.com/firebasejs/10.11.0/firebase-firestore.js";
+
+import {
+  getDownloadURL,
+  getStorage,
+  ref,
+  uploadString,
+  uploadBytes,
+} from "https://www.gstatic.com/firebasejs/10.11.0/firebase-storage.js";
 
 // <-- Labels
 const hourSheetWeekNumber = document.querySelector(
@@ -298,8 +305,8 @@ const firebaseConfig = {
   appId: "1:720650529368:web:dd05407559ed23a0d7f82d",
   measurementId: "G-PLCKMJYMFB",
 };
-const fireApp = initializeApp(firebaseConfig);
-const db = getFirestore(fireApp);
+const firebaseApp = initializeApp(firebaseConfig);
+const db = getFirestore(firebaseApp);
 
 class App {
   #alfaNumDitch = [
@@ -368,6 +375,7 @@ class App {
   #email;
   #password;
   #oneDayInMillSec = 86400000;
+  #weekIdNumberCounter = 0;
 
   #curTeamName;
   #curTeam;
@@ -556,6 +564,8 @@ class App {
   // TODO: start here with team image upload
   _openImgUpload(sr) {
     const teamImgdisCh = document.querySelector(`#${sr}-img-con`);
+
+    //TODO: cloudinary sh**t
     this.#teamImgUrl = [];
     cloudinary
       .createUploadWidget(
@@ -972,7 +982,9 @@ class App {
                 this.#curData.teamName = val.teamName;
                 this._saveToLocal("curData", this.#curData);
                 this._getFromLocal("curData");
-                headerTeamImg.src = this.#curData.teamImg;
+
+                this._displayTeamImg(this.#curData.teamImg);
+                // headerTeamImg.src = this.#curData.teamImg;
                 headerTeamName.textContent = this.#curData.teamName;
               });
             }
@@ -1780,6 +1792,7 @@ class App {
 
   // TODO: start here with loading weeks ofline
   _readWeeks(name) {
+    // let weekIdNumberCounter = 0;
     this._srGetStartedDispChoose("sr22", "sr7", "left");
     this.#curData = this._getFromLocal("curData");
 
@@ -1805,8 +1818,14 @@ class App {
         return a.weekMadeTimeStamp - b.weekMadeTimeStamp;
       });
       console.log(this.#curWeekArrayOrg);
-      if (this.#curWeekArrayOrg.length === 0) {
+      console.log(this.#curMemberInfo.curWeekId);
+      if (
+        this.#curMemberInfo.curWeekId.length === 0 &&
+        this.#weekIdNumberCounter < 1
+      ) {
+        // if (this.#curWeekArrayOrg.length === 0) {
         if (navigator.onLine) {
+          this.#weekIdNumberCounter = 1;
           this._newWeek();
         }
         console.log("no weeks yet");
@@ -2513,7 +2532,52 @@ class App {
     }
   }
 
+  _displayTeamImg(name) {
+    const storage = getStorage();
+    const imageFolderRef = ref(storage, "team_images");
+    const sparkyRef = ref(storage, `team_images/${name}`);
+    getDownloadURL(sparkyRef)
+      .then((url) => {
+        const xhr = new XMLHttpRequest();
+        xhr.responseType = "blob";
+        xhr.onload = (event) => {
+          const blob = xhr.response;
+        };
+        xhr.open("GET", url);
+        xhr.send();
+        // const img = document.querySelector("#myimg");
+        // img.src = url;
+        headerTeamImg.src = url;
+      })
+      .catch((error) => {
+        console.log(error);
+      });
+  }
+
   _displayMembers(srHide) {
+    // const storage = getStorage();
+    // const imageFolderRef = ref(storage, "team_images");
+
+    // const displImg = function (name) {
+    //   const sparkyRef = ref(storage, `team_images/${name}`);
+    //   getDownloadURL(sparkyRef)
+    //     .then((url) => {
+    //       const xhr = new XMLHttpRequest();
+    //       xhr.responseType = "blob";
+    //       xhr.onload = (event) => {
+    //         const blob = xhr.response;
+    //       };
+    //       xhr.open("GET", url);
+    //       xhr.send();
+    //       // const img = document.querySelector("#myimg");
+    //       // img.src = url;
+    //       headerTeamImg.src = url;
+    //     })
+    //     .catch((error) => {
+    //       console.log(error);
+    //     });
+    // };
+
     let curDataLocal;
     this._srGetStartedDispChoose("sr22", srHide, "right");
     const conMemberDisplay = document.querySelector("#sr7-mem-con");
@@ -2553,11 +2617,14 @@ class App {
         </div>`;
         conMemberDisplay.insertAdjacentHTML("beforeend", HTML);
       }
+
       if (this.#curData.level === this.#adminLevel) {
-        headerTeamImg.src = this.#curAccountData.teamImg;
+        // headerTeamImg.src = this.#curAccountData.teamImg;
+        this._displayTeamImg(this.#curAccountData.teamImg);
         headerTeamName.textContent = this.#curAccountData.teamName;
       } else {
-        headerTeamImg.src = this.#curData.teamImg;
+        // headerTeamImg.src = this.#curData.teamImg;
+        this._displayTeamImg(this.#curData.teamImg);
         headerTeamName.textContent = this.#curData.teamName;
       }
 
@@ -3757,9 +3824,36 @@ class App {
   }
 
   _teamSaveInfoChanges() {
+    const storage = getStorage();
+    const imageFolderRef = ref(storage, "team_images");
     const inpTeamName = document.querySelector(
       "#sr12-2-contbx-2-inp-team-name"
     );
+    const inpImg = document.querySelector("#sr12-input-team-img");
+
+    let imgUrl;
+
+    const imgUploadFunction = function (e) {
+      console.log("change");
+
+      for (let i = 0; i < Object.keys(inpImg.files).length; i++) {
+        console.log(inpImg.files[i]);
+        console.log(inpImg.files[i]);
+        const storageRef = ref(imageFolderRef, inpImg.files[i].name);
+
+        uploadBytes(storageRef, inpImg.files[i]).then((snapshot) => {
+          console.log("Uploaded a file!");
+        });
+        if (i === Object.keys(inpImg.files).length - 1) {
+          imgUrl = inpImg.files[i].name;
+        }
+      }
+
+      // uploadThis.addEventListener("state_changed", (snapshot) => {
+      //   // uploadThis.on("state_changed", (snapshot) => {
+      //   console.log(snapshot);
+      // });
+    };
 
     let curDataLocal;
     if (this.#curData.level === this.#adminLevel) {
@@ -3770,11 +3864,15 @@ class App {
 
     if (inpTeamName.value.length > 2 && inpTeamName.value.length < 16) {
       this._srGetStartedDispChoose("sr22", "sr12", "right");
+      console.log(Object.keys(inpImg.files).length);
+      console.log(inpImg.files[0]);
       setTimeout(() => {
-        let imgUrl;
-        if (this.#teamImgUrl.length !== 0) {
-          imgUrl = this.#teamImgUrl[0];
+        if (Object.keys(inpImg.files).length !== 0) {
+          // imgUrl = this.#teamImgUrl[0];
+          imgUploadFunction();
+          console.error("error here");
         } else {
+          console.error("error here");
           imgUrl = curDataLocal.teamImg;
         }
 
@@ -4607,10 +4705,10 @@ class App {
       this._deleteAccount();
     });
     sr12UploadImgCon.addEventListener("click", () => {
-      this._openImgUpload("sr12");
+      // this._openImgUpload("sr12");
     });
     sr5UploadImgCon.addEventListener("click", () => {
-      this._openImgUpload("sr5");
+      // this._openImgUpload("sr5");
     });
     btnsr27Cancel.addEventListener("click", () => {
       this._srGetStartedDispChoose("sr11", "sr27", "right");
