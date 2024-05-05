@@ -131,6 +131,9 @@ const sr27PendingPermisionCon = document.querySelector(
   "#sr27-cont-con-pending-2"
 );
 const sr16InfoName = document.querySelector("#sr16-contbx-header span");
+const sr16QrDescriptionName = document.querySelector(
+  "#sr16-qr-gen-description-text span"
+);
 const sr16HeaderName = document.querySelector("#sr16-header");
 const sr11punchInClockHours = document.querySelector(
   "#sr11-punchin-clock-hours"
@@ -185,6 +188,8 @@ const sr28 = document.querySelector("#sr28");
 const sr29 = document.querySelector("#sr29");
 const sr30 = document.querySelector("#sr30");
 const sr31 = document.querySelector("#sr31");
+const sr32 = document.querySelector("#sr32");
+const sr33 = document.querySelector("#sr33");
 
 // <-- Buttons
 const btnWeekSelectForward = document.querySelector(
@@ -234,6 +239,10 @@ const sr3AceptTerms = document.querySelector("#sr3-terms-acept-text");
 const sr11PunchInBtnIn = document.querySelector("#sr11-punchin-btn-in");
 const sr11PunchInBtnOut = document.querySelector("#sr11-punchin-btn-out");
 const sr31BtnReload = document.querySelector("#sr31-btn-reload");
+const sr16BtnGenerateQrCode = document.querySelector(
+  "#sr16-btn-generate-qr-code"
+);
+const sr13BtnReadQrCode = document.querySelector("#sr13-btn-read-qr-code");
 
 // <-- Join Team
 const btnJoinTeamSr1 = document.querySelector("#sr1-btn-join-team");
@@ -295,6 +304,8 @@ const btnsr27BackPermisionPending = document.querySelector(
 );
 const btnsr28Back = document.querySelector("#sr28-tb-btn-back");
 const btnsr29Back = document.querySelector("#sr29-btn-back");
+const btnsr32Back = document.querySelector("#sr32-btn-back");
+const btnsr33Back = document.querySelector("#sr33-btn-back");
 
 const firebaseConfig = {
   apiKey: "AIzaSyA30VKmZDuM0Xv0z-CuG5o6C-4lU4Z-u64",
@@ -423,7 +434,7 @@ class App {
     // this._removeFromLocal("curData");
     // this._tryOutCookies();
     // this._onSnapshot("accounts", "cn25uwg629tb9143");
-    // this._srGetStartedDispChoose("sr25", "sr1", "left");
+    // this._srGetStartedDispChoose("sr13", "sr1", "left");
     // this._srGetStartedDispChoose("sr29", "sr1", "none");
     // this._srGetStartedDispChoose("sr30", "sr1", "none");
     // this._transactionsTry();
@@ -1051,27 +1062,41 @@ class App {
     }
   }
 
-  _joinAsMember() {
+  _joinAsMember(type, teamCode, name, password) {
     console.log("Using this");
     const inpTeamCode = document.querySelector("#sr15-inp-team-code");
     const inpTeamMemberName = document.querySelector("#sr15-inp-member-name");
     const inpTeamMemberPassword = document.querySelector(
       "#sr15-inp-member-pass"
     );
+    let finTeamCode;
+    let finMemberName;
+    let finPassword;
+    // let finSrHideForInit;
+
+    if (type) {
+      finTeamCode = teamCode;
+      finMemberName = name;
+      finPassword = password;
+      // finSrHideForInit;
+      ("sr33");
+    } else {
+      finTeamCode = inpTeamCode.value;
+      finMemberName = inpTeamMemberName.value;
+      finPassword = inpTeamMemberPassword.value;
+      // finSrHideForInit = "sr15";
+    }
 
     if (navigator.onLine) {
-      if (
-        inpTeamMemberName.value.length > 0 &&
-        inpTeamMemberPassword.value.length > 0
-      ) {
+      if (finMemberName.length > 0 && finPassword.length > 0) {
         const q = query(
           collection(db, "accounts"),
-          where("teamCode", "==", inpTeamCode.value)
+          where("teamCode", "==", finTeamCode)
         );
         getDocs(q).then((docSnap) => {
           if (docSnap.empty === true) {
             this._disdSuccessErrorMessage(
-              `No encontramos "${inpTeamMemberName.value}" este equipo. Revisa tu código de equipo e intentalo de nuevo.`,
+              `No encontramos "${finMemberName}" este equipo. Revisa tu código de equipo e intentalo de nuevo.`,
               "er",
               5900
             );
@@ -1082,13 +1107,13 @@ class App {
 
               // <-- secondary search start
               const q2 = query(
-                collection(db, `accounts/${inpTeamCode.value}/team`),
-                where("name", "==", inpTeamMemberName.value)
+                collection(db, `accounts/${finTeamCode}/team`),
+                where("name", "==", finMemberName)
               );
               getDocs(q2).then((docSnap) => {
                 if (docSnap.empty === true) {
                   this._disdSuccessErrorMessage(
-                    `No encontramos a "${inpTeamMemberName.value}" en este equipo.`,
+                    `No encontramos a "${finMemberName}" en este equipo.`,
                     "er",
                     3000
                   );
@@ -1096,7 +1121,7 @@ class App {
                   docSnap.forEach((doc) => {
                     const val = doc.data();
 
-                    if (inpTeamMemberPassword.value === val.password) {
+                    if (finPassword === val.password) {
                       // this._srGetStartedDispChoose("sr22", "sr18", "left");
 
                       this._disdSuccessErrorMessage(
@@ -1110,6 +1135,7 @@ class App {
                       this._setCookie("teamCode", val.teamCode, 86400000 * 400);
                       this._setCookie("memberId", val.memberId, 86400000 * 400);
                       this._setCookie("level", val.level, 86400000 * 400);
+                      // this._init(finSrHideForInit);
                       this._init("sr15");
                       btnBackTbSr11.style.display = "none";
                       // this._displayMembers("sr22");
@@ -1139,7 +1165,7 @@ class App {
       }
     } else {
       this._disdSuccessErrorMessage(
-        "Parece que no tienes conexión a internet. verifique tu conexión y vuelve a intentarlo.",
+        "Parece que no tienes conexión a internet. Verifique tu conexión y vuelve a intentarlo.",
         "er",
         7000
       );
@@ -1557,6 +1583,14 @@ class App {
       srdisp = sr31;
       perdisp = 390 * 29;
     }
+    if (srDisp === "sr32") {
+      srdisp = sr32;
+      perdisp = 390 * 30;
+    }
+    if (srDisp === "sr33") {
+      srdisp = sr33;
+      perdisp = 390 * 31;
+    }
 
     // <-- Hide
     if (srHide === "sr1") {
@@ -1648,6 +1682,12 @@ class App {
     }
     if (srHide === "sr31") {
       srhide = sr31;
+    }
+    if (srHide === "sr32") {
+      srhide = sr32;
+    }
+    if (srHide === "sr33") {
+      srhide = sr33;
     }
 
     const style = window.getComputedStyle(srhide);
@@ -4581,6 +4621,90 @@ class App {
 
   // RATING ends here
 
+  // TODO: QR START
+
+  _qrGenerator(teamCode, name, level, password) {
+    if (navigator.onLine) {
+      this._deleteAllChildren("sr32-qr-img-con");
+      this._deleteAllChildren("sr32-qr-con-2");
+      const teamInfo = [level, name, teamCode, password];
+
+      // const qrCodeGenerator = (text) => {
+      const sr32QrHeaderName = (document.querySelector(
+        "#sr32-qr-header-name span"
+      ).textContent = name);
+      // sr32qrForDisplay.img.remove();
+      var qrcode = new QRCode("sr32-qr-img-con", {
+        text: teamInfo.join("_j_o_i_n-t_e_a_m_"),
+        // text: text,
+
+        width: 300,
+        height: 300,
+        colorDark: "#0085FF",
+        colorLight: "#ffffff",
+        correctLevel: QRCode.CorrectLevel.H,
+      });
+
+      const savebtn = (saveURL) => {
+        const link = document.createElement("a");
+        // sr32-qr-dowload-img
+        link.href = saveURL;
+        link.download = `QR para ${name}`;
+        link.classList = "sr32-qr-dowload-img";
+        link.innerHTML = `Toca aquí para descargar el QR como una foto. Luego lo podrás
+      compartir con ${name}`;
+        document.querySelector("#sr32-qr-con-2").appendChild(link);
+      };
+      setTimeout(() => {
+        const qrCon = document.querySelector("#sr32-qr-img-con");
+        const urlOfQr = qrCon.querySelector("img").src;
+        savebtn(urlOfQr);
+      }, 100);
+      // };
+      this._srGetStartedDispChoose("sr32", "sr1", "left");
+    } else {
+      this._disdSuccessErrorMessage(
+        "Lo sentimos, pero tienes que tener una conexión a internet. Verifique tu conexión y vuelve a intentarlo.",
+        "er",
+        7000
+      );
+    }
+  }
+  _qrReader() {
+    if (navigator.onLine) {
+      const newQrReader = new Html5QrcodeScanner("sr33-qr-scanner-con", {
+        qrbox: { width: 250, height: 250 },
+        fps: 20,
+      });
+      this._srGetStartedDispChoose("sr33", "sr1", "left");
+
+      const success = (result) => {
+        console.log(result);
+        const [level, name, teamCode, password] =
+          result.split("_j_o_i_n-t_e_a_m_");
+
+        newQrReader.clear();
+        if (level === "member") {
+          this._joinAsMember("qr", teamCode, name, password);
+        }
+        this._imgDispHide(sr33);
+        console.log(name, teamCode);
+      };
+      const error = (err) => {
+        // console.error(err);
+      };
+      newQrReader.render(success, error);
+    } else {
+      this._disdSuccessErrorMessage(
+        "Lo sentimos, pero tienes que tener una conexión a internet. Verifique tu conexión y vuelve a intentarlo.",
+        "er",
+        7000
+      );
+    }
+  }
+
+  // TODO: QR END
+
   _events() {
     //rating starts
     sr30RateCard.addEventListener("click", (e) => {
@@ -4598,7 +4722,22 @@ class App {
     sr30RateLater.addEventListener("click", () => {
       this._rateLater();
     });
-    //rating ends
+
+    //rating ends…
+    //Qr starts...
+    sr16BtnGenerateQrCode.addEventListener("click", () => {
+      this._qrGenerator(
+        this.#curMemberInfo.teamCode,
+        this.#curMemberInfo.name,
+        "member",
+        this.#curMemberInfo.password
+      );
+    });
+    sr13BtnReadQrCode.addEventListener("click", () => {
+      this._qrReader();
+    });
+
+    //Qr ends...
 
     // <-- LIVE Listeners
     window.onscroll = function () {
@@ -4662,6 +4801,12 @@ class App {
     });
     btnsr29Back.addEventListener("click", () => {
       this._imgDispHide(sr29);
+    });
+    btnsr32Back.addEventListener("click", () => {
+      this._imgDispHide(sr32);
+    });
+    btnsr33Back.addEventListener("click", () => {
+      this._imgDispHide(sr33);
     });
     btnsr28Back.addEventListener("click", () => {
       this._hideTermsCond();
@@ -5003,6 +5148,7 @@ class App {
             console.log(val);
             sr16HeaderName.textContent = val.name;
             sr16InfoName.textContent = val.name;
+            sr16QrDescriptionName.textContent = val.name;
             this._setSwiChangeMemberInfo(
               val.writePermision,
               val.level,
