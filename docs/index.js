@@ -3956,7 +3956,8 @@ class App {
               lastModified: this._getTimeStamp(),
             }
           );
-          this._displayMembers("sr16");
+          // this._displayMembers("sr16");
+          this._srGetStartedDispChoose("sr7", "sr16", "right");
           this._hideSpinner();
         }, 1000);
       } else {
@@ -3981,7 +3982,8 @@ class App {
                     lastModified: this._getTimeStamp(),
                   }
                 );
-                this._displayMembers("sr16");
+                // this._displayMembers("sr16");
+                this._srGetStartedDispChoose("sr7", "sr16", "right");
                 this._hideSpinner();
               }, 1000);
             } else {
@@ -4055,7 +4057,8 @@ class App {
               lastModified: this._getTimeStamp(),
             }
           );
-          this._displayMembers("sr16");
+          // this._displayMembers("sr16");
+          this._srGetStartedDispChoose("sr7", "sr16", "right");
           this._hideSpinner();
         }, 1000);
       } else {

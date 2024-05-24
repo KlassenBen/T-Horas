@@ -1893,6 +1893,10 @@ p {
   line-height: normal;
   letter-spacing: 0.32px;
 }
+/* TODO: so the menu btn don't disapears on small screens*/
+/* #sr23-search-account {
+  display: block;
+} */
 #sr23-search-account {
   display: flex;
   width: 100%;
@@ -2995,10 +2999,8 @@ p {
   gap: 24px;
   align-self: stretch;
   border-radius: 10px;
-  border: 1px solid #0eaa00;
   box-shadow: var(--contbx-shadow-2);
-  background: rgba(255, 255, 255, 0.724);
-  backdrop-filter: blur(6px);
+  background: var(--color-blue-100);
 }
 #sr34-alert-con-2 {
   display: flex;
@@ -3009,7 +3011,7 @@ p {
   align-self: stretch;
 }
 #sr34-alert-header {
-  color: var(--color-blue-100);
+  color: var(--color-white);
   text-align: center;
   font-family: Inter;
   font-size: 32px;
@@ -3020,13 +3022,14 @@ p {
   align-self: stretch;
 }
 #sr34-alert-body {
-  color: var(--color-blue-100);
+  color: var(--color-white);
   text-align: center;
   font-family: Inter;
   font-size: 24px;
   font-style: normal;
   font-weight: 400;
   line-height: normal;
+  letter-spacing: 1.2px;
   align-self: stretch;
 }
 #sr34-btn-alert-understand {
