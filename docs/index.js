@@ -921,7 +921,7 @@ class App {
         // });
         if (
           sr7.classList.contains("sr") &&
-          Number(sr7.dataset.when) + 10 < this._getTimeStamp()
+          Number(sr7.dataset.when) + 100 < this._getTimeStamp()
         ) {
           this._displayMembers("sr7");
         }
