@@ -156,6 +156,19 @@ const sr1InstallAppInstructions = document.querySelector(
   "#sr1-install-app-instructions"
 );
 
+//For images upload starts here
+//sr12
+const inpImgSr12 = document.querySelector("#sr12-input-team-img");
+const SVGImgConSr12 = document.querySelector("#sr12-svg-for-img");
+const ImgConSr12 = document.querySelector("#sr12-img-con");
+
+//sr5
+const inpImgSr5 = document.querySelector("#sr5-input-team-img");
+const SVGImgConSr5 = document.querySelector("#sr5-svg-for-img");
+const ImgConSr5 = document.querySelector("#sr5-img-con");
+
+//For images upload ends here
+
 // <-- Screens
 const srsGetStarted = document.querySelector("#srs-get-started");
 const sr1 = document.querySelector("#sr1");
@@ -190,6 +203,7 @@ const sr30 = document.querySelector("#sr30");
 const sr31 = document.querySelector("#sr31");
 const sr32 = document.querySelector("#sr32");
 const sr33 = document.querySelector("#sr33");
+const sr34 = document.querySelector("#sr34");
 
 // <-- Buttons
 const btnWeekSelectForward = document.querySelector(
@@ -243,6 +257,7 @@ const sr16BtnGenerateQrCode = document.querySelector(
   "#sr16-btn-generate-qr-code"
 );
 const sr13BtnReadQrCode = document.querySelector("#sr13-btn-read-qr-code");
+const sr34BtnUnderstand = document.querySelector("#sr34-btn-alert-understand");
 
 // <-- Join Team
 const btnJoinTeamSr1 = document.querySelector("#sr1-btn-join-team");
@@ -429,6 +444,8 @@ class App {
     this._events();
     this._registerSW();
     this._init("sr1");
+    // this._displaySpinner();
+    // this._displayAlert("Comfirmado", "Esto ya es confirmado");
 
     // TODO: ALSO NEED IN INIT, CHECK IF THE LOCAL STORED ACCOUNT STILL EXISTS IN THE CLOUD
     // this._removeFromLocal("curData");
@@ -439,6 +456,8 @@ class App {
     // this._srGetStartedDispChoose("sr30", "sr1", "none");
     // this._transactionsTry();
   }
+
+  _opacityDimScreen(srHide, srDisp) {}
   _transactionsTry() {
     // import { runTransaction } from "firebase/firestore";
 
@@ -643,12 +662,20 @@ class App {
   }
 
   _init(srHide) {
+    // this._deleteCookie("teamCode");
+    // this._deleteCookie("memberId");
+    // this._deleteCookie("level");
+    // this._removeFromLocal("curData");
+    this._displaySpinner();
+    sr1.classList.remove("sr-none");
+    sr1.classList.add("sr");
     if (navigator.onLine) {
       this._setSupportInfo();
       this._setExplainVideo();
       console.log("contact info:", this.#appSupportInfo);
       this.#curData = this._getFromLocal("curData");
-      this._srGetStartedDispChoose("sr22", srHide, "left");
+      this._srGetStartedDispChoose("sr1", srHide, "left");
+      this._displaySpinner();
       console.log("Your App is initializing");
 
       this.#cTeamCode = this._readCokie("teamCode");
@@ -660,20 +687,34 @@ class App {
       if (this.#cTeamCode !== "" && this.#cTeamCode !== undefined) {
         if (this.#cLevel !== "" && this.#cLevel !== undefined) {
           if (this.#cLevel === "miembro" || this.#cLevel === "asistente") {
+            // TODO: FOR NOW THE SAME AS ADMIN
             const q = query(
-              collection(db, `accounts/${this.#cTeamCode}/team`),
-              where("memberId", "==", this.#cMemberId)
+              collection(db, `accounts`),
+              where("teamCode", "==", this.#cTeamCode)
             );
             getDocs(q).then((docSnap) => {
               docSnap.forEach((doc) => {
                 const val = doc.data();
                 this._saveToLocal("curData", val);
-                this._setLastSeen(
-                  `accounts/${val.teamCode}/team`,
-                  val.memberId
-                );
+                this._setLastSeen(`accounts`, val.teamCode);
               });
             });
+
+            // TODO: AS BEFORE, BUT IT DEOS NOT WORK CORECTLY
+            // const q = query(
+            //   collection(db, `accounts/${this.#cTeamCode}/team`),
+            //   where("memberId", "==", this.#cMemberId)
+            // );
+            // getDocs(q).then((docSnap) => {
+            //   docSnap.forEach((doc) => {
+            //     const val = doc.data();
+            //     this._saveToLocal("curData", val);
+            //     this._setLastSeen(
+            //       `accounts/${val.teamCode}/team`,
+            //       val.memberId
+            //     );
+            //   });
+            // });
           }
           if (this.#cLevel === "admin" || this.#cLevel === "top admin") {
             const q = query(
@@ -700,29 +741,45 @@ class App {
         if (this.#curData.level === "admin") {
           this._onSnapshot("accounts", this.#curData.teamCode);
           if (this.#curData.teamName.length < 1) {
-            // this._srGetStartedDispChoose("sr5", "sr1", "right");
-            this._srGetStartedDispChoose("sr5", "sr22", "right");
+            this._srGetStartedDispChoose("sr5", "sr1", "right");
+            this._hideSpinner();
+            // this._srGetStartedDispChoose("sr5", "sr22", "right");
             this._eventTeamCodeDisp(); //TODO:
           } else {
-            // this._displayMembers("sr22");
+            this._displayMembers("sr1");
             this._accountProCheck();
             btnBackTbSr11.style.display = "flex";
             this._onSnapshotCollectoion();
           }
         } else if (this.#curData.level === "asistente") {
-          this._onSnapshot(
-            `accounts/${this.#curData.teamCode}/team`,
-            this.#curData.memberId
-          );
-          this._displayMembers("sr22");
+          // TODO: FOR NOW THE SAME AS ADMIN
+          this._onSnapshot("accounts", this.#curData.teamCode);
+          // if (this.#curData.teamName.length < 1) {
+          //   this._srGetStartedDispChoose("sr5", "sr1", "right");
+          //   this._hideSpinner();
+          //   // this._srGetStartedDispChoose("sr5", "sr22", "right");
+          //   this._eventTeamCodeDisp(); //TODO:
+          // } else {
+          this._displayMembers("sr1");
+          this._accountProCheck();
           btnBackTbSr11.style.display = "flex";
+          this._onSnapshotCollectoion();
+          // }
+
+          // TODO: AS BEFORE, BUT IT DEOS NOT WORK CORECTLY
+          // this._onSnapshot(
+          //   `accounts/${this.#curData.teamCode}/team`,
+          //   this.#curData.memberId
+          // );
+          // this._displayMembers("sr1");
+          // btnBackTbSr11.style.display = "flex";
         } else if (this.#curData.level === "miembro") {
           console.log("member now");
           // this._onSnapshot(
           //   `accounts/${this.#curData.teamCode}/team`,
           //   this.#curData.memberId
           // );
-          this._displayMemberOnly();
+          this._displayMemberOnly("sr1");
         } else {
           const q = query(
             collection(db, "appSettings"),
@@ -736,7 +793,7 @@ class App {
                 this._onSnapshot("accounts", this.#curData.teamCode);
                 console.log("admin is top");
                 this.#curAccountData = this.#curData;
-                // this._displayMembers("sr22");
+                this._displayMembers("sr1");
                 sr20AppAdmin.style.display = "block";
                 sr20AppAdminNorm.style.display = "block";
                 this._accountProCheck();
@@ -751,16 +808,50 @@ class App {
         // this._registerSW();
       } else {
         console.log("Log in or create an account");
-        this._srGetStartedDispChoose("sr1", "sr22", "left");
+        // this._srGetStartedDispChoose("sr1", "sr22", "left");
+        setTimeout(this._hideSpinner, 100);
       }
       // }, 100);
       this._visitsToApp();
     } else {
-      this._srGetStartedDispChoose("sr22", srHide, "right");
+      // this._srGetStartedDispChoose("sr22", srHide, "right");
+      this._displaySpinner();
       setTimeout(() => {
-        this._srGetStartedDispChoose("sr31", "sr22", "right");
+        this._hideSpinner();
+        this._srGetStartedDispChoose("sr31", "sr1", "right");
       }, 5000);
     }
+  }
+
+  _displaySpinner(text) {
+    const spinnerText = document.querySelector("#sr22-wait-text");
+    if (text) {
+      spinnerText.textContent = text;
+    } else {
+      spinnerText.textContent = "Espera...";
+    }
+    sr22.style.display = "flex";
+  }
+  _hideSpinner() {
+    sr22.style.display = "none";
+  }
+  _displayAlert(header, body) {
+    const alertHeader = document.querySelector("#sr34-alert-header");
+    const alertText = document.querySelector("#sr34-alert-body");
+
+    alertHeader.textContent = header;
+    alertText.textContent = body;
+
+    sr34.style.display = "flex";
+  }
+  _hideAlert() {
+    sr34.style.display = "none";
+  }
+  _displayRatingScreen() {
+    sr30.style.display = "flex";
+  }
+  _hideRatingScreen() {
+    sr30.style.display = "none";
   }
   // TODO: INIT ENDS HERE
 
@@ -771,28 +862,41 @@ class App {
     onSnapshot(
       collection(db, `accounts/${this.#curData.teamCode}/team`),
       () => {
-        const style = window.getComputedStyle(sr7);
-        const matrix = new WebKitCSSMatrix(style.transform);
-        const nowLocated = matrix.e;
-        console.log(nowLocated);
+        // const style = window.getComputedStyle(sr7);
+        // const matrix = new WebKitCSSMatrix(style.transform);
+        // const nowLocated = matrix.e;
+        // console.log(nowLocated);
 
-        const style2 = window.getComputedStyle(sr22);
-        const matrix2 = new WebKitCSSMatrix(style2.transform);
-        const nowLocated2 = matrix2.e;
-        console.log(nowLocated2);
+        // if (sr7.classList.contains("sr") || sr1.classList.contains("sr")) {
+        //   if (sr7.classList.contains("sr")) {
+        //     // this._deleteAllChildren("sr7-mem-con");
+        //     this._displayMembers("sr7");
+        //   }
+        //   if (sr1.classList.contains("sr")) {
+        //     // this._deleteAllChildren("sr7-mem-con");
+        //     this._displayMembers("sr1");
+        //   }
 
-        const style3 = window.getComputedStyle(sr11);
-        const matrix3 = new WebKitCSSMatrix(style3.transform);
-        const nowLocated3 = matrix3.e;
-        console.log(nowLocated3);
+        //   // this._deleteAllChildren("sr7-mem-con");
+        //   // this._displayMembers("sr7");
+        // }
+        // if (sr11.classList==="sr") {
+        //   if (sr7.classList.contains("sr")) {
+        //     // this._deleteAllChildren("sr7-mem-con");
+        //     this._displayMembers("sr7");
+        //   }
+        //   if (sr1.classList.contains("sr")) {
+        //     // this._deleteAllChildren("sr7-mem-con");
+        //     this._displayMembers("sr1");
+        //   }
 
-        if (nowLocated === -3900) {
-          // this._deleteAllChildren("sr7-mem-con");
-          this._displayMembers("sr7");
-        } else if (nowLocated2 === -7800) {
-          // this._deleteAllChildren("sr7-mem-con");
-          this._displayMembers("sr22");
-        }
+        //   // this._deleteAllChildren("sr7-mem-con");
+        //   // this._displayMembers("sr7");
+        // }
+        //  else if (nowLocated2 === -7800) {
+        //   // this._deleteAllChildren("sr7-mem-con");
+        //   this._displayMembers("sr22");
+        // }
         //  else if (nowLocated3 === -5070) {
         //   // this._deleteAllChildren("sr7-mem-con");
         //   this._displayMembers("sr11");
@@ -815,7 +919,12 @@ class App {
         //     const notifi = new Notification("THoras");
         //   }
         // });
-
+        if (
+          sr7.classList.contains("sr") &&
+          Number(sr7.dataset.when) + 10 < this._getTimeStamp()
+        ) {
+          this._displayMembers("sr7");
+        }
         console.log("new stuff");
       }
     );
@@ -950,7 +1059,7 @@ class App {
     }
   }
 
-  _displayMemberOnly() {
+  _displayMemberOnly(srHide) {
     btnBackTbSr11.style.display = "none";
 
     this.#curMemberId = this.#curData.memberId;
@@ -977,7 +1086,14 @@ class App {
               this.#curData.pro = doc.data().pro;
             });
           });
-          this._readWeeks();
+
+          if (
+            sr11.classList.contains("sr") ||
+            sr1.classList.contains("sr") ||
+            sr22.classList.contains("sr")
+          ) {
+            this._readWeeks(srHide);
+          }
 
           const q5 = query(
             collection(db, `accounts`),
@@ -997,6 +1113,7 @@ class App {
                 this._displayTeamImg(this.#curData.teamImg);
                 // headerTeamImg.src = this.#curData.teamImg;
                 headerTeamName.textContent = this.#curData.teamName;
+                this._hideSpinner();
               });
             }
           });
@@ -1029,7 +1146,7 @@ class App {
             docSnap.forEach((doc) => {
               const val = doc.data();
               if (inpPassword.value === val.accountPassword) {
-                this._srGetStartedDispChoose("sr22", "sr18", "left");
+                // this._srGetStartedDispChoose("sr22", "sr18", "left");
                 this.#curData = val;
                 this._deleteCookie("teamCode");
                 this._deleteCookie("memberId");
@@ -1037,7 +1154,7 @@ class App {
                 this._setCookie("teamCode", val.teamCode, 86400000 * 400);
                 this._setCookie("level", val.level, 86400000 * 400);
                 this._saveToLocal("curData", this.#curData);
-                this._init("sr22");
+                this._init("sr18");
               } else {
                 document.querySelector(
                   "#sr18-inp-password-errmess"
@@ -1062,7 +1179,10 @@ class App {
     }
   }
 
-  _joinAsMember(type, teamCode, name, password) {
+  // 0h54tc988ry5pf76
+
+  _joinAsMember(type, teamCode, name, password, srHide) {
+    this._displaySpinner();
     console.log("Using this");
     const inpTeamCode = document.querySelector("#sr15-inp-team-code");
     const inpTeamMemberName = document.querySelector("#sr15-inp-member-name");
@@ -1075,6 +1195,7 @@ class App {
     // let finSrHideForInit;
 
     if (type) {
+      console.log("it is here");
       finTeamCode = teamCode;
       finMemberName = name;
       finPassword = password;
@@ -1136,7 +1257,15 @@ class App {
                       this._setCookie("memberId", val.memberId, 86400000 * 400);
                       this._setCookie("level", val.level, 86400000 * 400);
                       // this._init(finSrHideForInit);
-                      this._init("sr15");
+                      this._hideSpinner();
+                      // this._init("sr15");
+                      console.log(srHide);
+                      if (sr33.classList.contains("sr")) {
+                        this._init("sr33");
+                      } else {
+                        this._init("sr15");
+                      }
+                      // this._displayMemberOnly(srHide);
                       btnBackTbSr11.style.display = "none";
                       // this._displayMembers("sr22");
                     } else {
@@ -1172,23 +1301,23 @@ class App {
     }
   }
 
-  _query() {
-    const q = query(collection(db, "accounts/iPhwge99VPFMSYMPkvxF/weeks"));
-    let users = [];
-    const tr = async function () {
-      let id;
-      await getDocs(q).then((docSnap) => {
-        docSnap.forEach((doc) => {
-          users.push({ ...doc.data() });
-        });
-        console.log("All data: ", users);
-        // id = users[0].id;
-        id = users;
-      });
-      return id;
-    };
-    return tr();
-  }
+  // _query() {
+  //   const q = query(collection(db, "accounts/iPhwge99VPFMSYMPkvxF/weeks"));
+  //   let users = [];
+  //   const tr = async function () {
+  //     let id;
+  //     await getDocs(q).then((docSnap) => {
+  //       docSnap.forEach((doc) => {
+  //         users.push({ ...doc.data() });
+  //       });
+  //       console.log("All data: ", users);
+  //       // id = users[0].id;
+  //       id = users;
+  //     });
+  //     return id;
+  //   };
+  //   return tr();
+  // }
   _getUserWekksQuery(path, var1, equal, var2) {
     const q = query(
       // "accounts/iPhwge99VPFMSYMPkvxF/weeks"
@@ -1382,6 +1511,7 @@ class App {
     whatsAppPhoneNumber,
     telegramPhoneNumber
   ) {
+    console.log(this.#otp);
     this.#otp = otp;
     const data = JSON.stringify({
       ishtml: "false",
@@ -1395,7 +1525,14 @@ class App {
     const xhr = new XMLHttpRequest();
     xhr.withCredentials = true;
     const disSuccErrSub = (text, se, msTime) => {
+      this._hideSpinner();
       this._disdSuccessErrorMessage(text, se, msTime);
+      if (se === "ex") {
+        this._displayAlert(
+          "Código enviado.",
+          `Hemos enviado un código de verificación a: ${sendTo}. Asegúrate que tienes acceso a este correo para recibir el código.`
+        );
+      }
     };
     xhr.addEventListener("readystatechange", function () {
       if (this.readyState === this.DONE) {
@@ -1431,10 +1568,14 @@ class App {
 
     const disp = function () {
       mesText.textContent = text;
-      mesCon.style.transform = `translateY(300px)`;
+      // mesCon.style.transform = `translateY(300px)`;
+      // mesCon.style.transform = `translateX(-50%)`;
+      mesCon.style.transform = `translate(-50%, 300px)`;
 
       setTimeout(() => {
-        mesCon.style.transform = `translateY(0px)`;
+        // mesCon.style.transform = `translateY(0px)`;
+        // mesCon.style.transform = `translateX(-50%)`;
+        mesCon.style.transform = `translate(-50%, 0px)`;
       }, msTime);
     };
 
@@ -1456,6 +1597,9 @@ class App {
 
   // TODO: srHide only works if = to sr active
   _srGetStartedDispChoose(srDisp, srHide, whereTo) {
+    console.log(srDisp);
+    // sr29.dataset.fromWhere = srDisp;
+    // console.log(sr29.dataset.fromWhere);
     window.scrollTo(0, 0);
 
     let perdisp;
@@ -1463,250 +1607,335 @@ class App {
     let srdisp;
     let srhide;
 
-    if (srDisp === "sr1") {
-      srdisp = sr1;
-      perdisp = 0;
-    }
-    if (srDisp === "sr2") {
-      srdisp = sr2;
-      perdisp = 390;
-    }
-    if (srDisp === "sr3") {
-      srdisp = sr3;
-      perdisp = 390 * 2;
-    }
-    if (srDisp === "sr4") {
-      srdisp = sr4;
-      perdisp = 390 * 3;
-    }
-    if (srDisp === "sr5") {
-      srdisp = sr5;
-      perdisp = 390 * 4;
-    }
-    if (srDisp === "sr6") {
-      srdisp = sr6;
-      perdisp = 390 * 5;
-    }
-    if (srDisp === "sr13") {
-      srdisp = sr13;
-      perdisp = 390 * 6;
-    }
-    if (srDisp === "sr14") {
-      srdisp = sr14;
-      perdisp = 390 * 7;
-    }
-    if (srDisp === "sr15") {
-      srdisp = sr15;
-      perdisp = 390 * 8;
-    }
-    if (srDisp === "sr18") {
-      srdisp = sr18;
-      perdisp = 390 * 9;
-    }
-    if (srDisp === "sr7") {
-      srdisp = sr7;
-      perdisp = 390 * 10;
-    }
-    if (srDisp === "sr8") {
-      srdisp = sr8;
-      perdisp = 390 * 11;
-    }
-    if (srDisp === "sr9") {
-      srdisp = sr9;
-      perdisp = 390 * 12;
-    }
-    if (srDisp === "sr11") {
-      srdisp = sr11;
-      perdisp = 390 * 13;
-    }
-    if (srDisp === "sr12") {
-      srdisp = sr12;
-      perdisp = 390 * 14;
-    }
-    if (srDisp === "sr16") {
-      srdisp = sr16;
-      perdisp = 390 * 15;
-    }
-    if (srDisp === "sr17") {
-      srdisp = sr17;
-      perdisp = 390 * 16;
-    }
-    if (srDisp === "sr19") {
-      srdisp = sr19;
-      perdisp = 390 * 17;
-    }
-    if (srDisp === "sr20") {
-      srdisp = sr20;
-      perdisp = 390 * 18;
-    }
-    if (srDisp === "sr21") {
-      srdisp = sr21;
-      perdisp = 390 * 19;
-    }
-    if (srDisp === "sr22") {
-      srdisp = sr22;
-      perdisp = 390 * 20;
-    }
-    if (srDisp === "sr23") {
-      srdisp = sr23;
-      perdisp = 390 * 21;
-    }
-    if (srDisp === "sr24") {
-      srdisp = sr24;
-      perdisp = 390 * 22;
-    }
-    if (srDisp === "sr25") {
-      srdisp = sr25;
-      perdisp = 390 * 23;
-    }
-    if (srDisp === "sr26") {
-      srdisp = sr26;
-      perdisp = 390 * 24;
-    }
-    if (srDisp === "sr27") {
-      srdisp = sr27;
-      perdisp = 390 * 25;
-    }
-    if (srDisp === "sr28") {
-      srdisp = sr28;
-      perdisp = 390 * 26;
-    }
-    if (srDisp === "sr29") {
-      srdisp = sr29;
-      perdisp = 390 * 27;
-    }
-    if (srDisp === "sr30") {
-      srdisp = sr30;
-      perdisp = 390 * 28;
-    }
-    if (srDisp === "sr31") {
-      srdisp = sr31;
-      perdisp = 390 * 29;
-    }
-    if (srDisp === "sr32") {
-      srdisp = sr32;
-      perdisp = 390 * 30;
-    }
-    if (srDisp === "sr33") {
-      srdisp = sr33;
-      perdisp = 390 * 31;
-    }
+    // if (srDisp === "sr1") {
+    //   srdisp = sr1;
+    //   perdisp = 0;
+    // }
+    // if (srDisp === "sr2") {
+    //   srdisp = sr2;
+    //   perdisp = 390;
+    // }
+    // if (srDisp === "sr3") {
+    //   srdisp = sr3;
+    //   perdisp = 390 * 2;
+    // }
+    // if (srDisp === "sr4") {
+    //   srdisp = sr4;
+    //   perdisp = 390 * 3;
+    // }
+    // if (srDisp === "sr5") {
+    //   srdisp = sr5;
+    //   perdisp = 390 * 4;
+    // }
+    // if (srDisp === "sr6") {
+    //   srdisp = sr6;
+    //   perdisp = 390 * 5;
+    // }
+    // if (srDisp === "sr13") {
+    //   srdisp = sr13;
+    //   perdisp = 390 * 6;
+    // }
+    // if (srDisp === "sr14") {
+    //   srdisp = sr14;
+    //   perdisp = 390 * 7;
+    // }
+    // if (srDisp === "sr15") {
+    //   srdisp = sr15;
+    //   perdisp = 390 * 8;
+    // }
+    // if (srDisp === "sr18") {
+    //   srdisp = sr18;
+    //   perdisp = 390 * 9;
+    // }
+    // if (srDisp === "sr7") {
+    //   srdisp = sr7;
+    //   perdisp = 390 * 10;
+    // }
+    // if (srDisp === "sr8") {
+    //   srdisp = sr8;
+    //   perdisp = 390 * 11;
+    // }
+    // if (srDisp === "sr9") {
+    //   srdisp = sr9;
+    //   perdisp = 390 * 12;
+    // }
+    // if (srDisp === "sr11") {
+    //   srdisp = sr11;
+    //   perdisp = 390 * 13;
+    // }
+    // if (srDisp === "sr12") {
+    //   srdisp = sr12;
+    //   perdisp = 390 * 14;
+    // }
+    // if (srDisp === "sr16") {
+    //   srdisp = sr16;
+    //   perdisp = 390 * 15;
+    // }
+    // if (srDisp === "sr17") {
+    //   srdisp = sr17;
+    //   perdisp = 390 * 16;
+    // }
+    // if (srDisp === "sr19") {
+    //   srdisp = sr19;
+    //   perdisp = 390 * 17;
+    // }
+    // if (srDisp === "sr20") {
+    //   srdisp = sr20;
+    //   perdisp = 390 * 18;
+    // }
+    // if (srDisp === "sr21") {
+    //   srdisp = sr21;
+    //   perdisp = 390 * 19;
+    // }
+    // if (srDisp === "sr22") {
+    //   srdisp = sr22;
+    //   perdisp = 390 * 20;
+    // }
+    // if (srDisp === "sr23") {
+    //   srdisp = sr23;
+    //   perdisp = 390 * 21;
+    // }
+    // if (srDisp === "sr24") {
+    //   srdisp = sr24;
+    //   perdisp = 390 * 22;
+    // }
+    // if (srDisp === "sr25") {
+    //   srdisp = sr25;
+    //   perdisp = 390 * 23;
+    // }
+    // if (srDisp === "sr26") {
+    //   srdisp = sr26;
+    //   perdisp = 390 * 24;
+    // }
+    // if (srDisp === "sr27") {
+    //   srdisp = sr27;
+    //   perdisp = 390 * 25;
+    // }
+    // if (srDisp === "sr28") {
+    //   srdisp = sr28;
+    //   perdisp = 390 * 26;
+    // }
+    // if (srDisp === "sr29") {
+    //   srdisp = sr29;
+    //   perdisp = 390 * 27;
+    // }
+    // if (srDisp === "sr30") {
+    //   srdisp = sr30;
+    //   perdisp = 390 * 28;
+    // }
+    // if (srDisp === "sr31") {
+    //   srdisp = sr31;
+    //   perdisp = 390 * 29;
+    // }
+    // if (srDisp === "sr32") {
+    //   srdisp = sr32;
+    //   perdisp = 390 * 30;
+    // }
+    // if (srDisp === "sr33") {
+    //   srdisp = sr33;
+    //   perdisp = 390 * 31;
+    // }
 
-    // <-- Hide
-    if (srHide === "sr1") {
-      srhide = sr1;
-    }
-    if (srHide === "sr2") {
-      srhide = sr2;
-    }
-    if (srHide === "sr3") {
-      srhide = sr3;
-    }
-    if (srHide === "sr4") {
-      srhide = sr4;
-    }
-    if (srHide === "sr5") {
-      srhide = sr5;
-    }
-    if (srHide === "sr6") {
-      srhide = sr6;
-    }
-    if (srHide === "sr13") {
-      srhide = sr13;
-    }
-    if (srHide === "sr14") {
-      srhide = sr14;
-    }
-    if (srHide === "sr15") {
-      srhide = sr15;
-    }
-    if (srHide === "sr18") {
-      srhide = sr18;
-    }
-    if (srHide === "sr7") {
-      srhide = sr7;
-    }
-    if (srHide === "sr8") {
-      srhide = sr8;
-    }
-    if (srHide === "sr9") {
-      srhide = sr9;
-    }
-    if (srHide === "sr11") {
-      srhide = sr11;
-    }
-    if (srHide === "sr12") {
-      srhide = sr12;
-    }
-    if (srHide === "sr16") {
-      srhide = sr16;
-    }
-    if (srHide === "sr17") {
-      srhide = sr17;
-    }
-    if (srHide === "sr19") {
-      srhide = sr19;
-    }
-    if (srHide === "sr20") {
-      srhide = sr20;
-    }
-    if (srHide === "sr21") {
-      srhide = sr21;
-    }
-    if (srHide === "sr22") {
-      srhide = sr22;
-    }
-    if (srHide === "sr23") {
-      srhide = sr23;
-    }
-    if (srHide === "sr24") {
-      srhide = sr24;
-    }
-    if (srHide === "sr25") {
-      srhide = sr25;
-    }
-    if (srHide === "sr26") {
-      srhide = sr26;
-    }
-    if (srHide === "sr27") {
-      srhide = sr27;
-    }
-    if (srHide === "sr28") {
-      srhide = sr28;
-    }
-    if (srHide === "sr29") {
-      srhide = sr29;
-    }
-    if (srHide === "sr30") {
-      srhide = sr30;
-    }
-    if (srHide === "sr31") {
-      srhide = sr31;
-    }
-    if (srHide === "sr32") {
-      srhide = sr32;
-    }
-    if (srHide === "sr33") {
-      srhide = sr33;
-    }
+    // // <-- Hide
+    // if (srHide === "sr1") {
+    //   srhide = sr1;
+    // }
+    // if (srHide === "sr2") {
+    //   srhide = sr2;
+    // }
+    // if (srHide === "sr3") {
+    //   srhide = sr3;
+    // }
+    // if (srHide === "sr4") {
+    //   srhide = sr4;
+    // }
+    // if (srHide === "sr5") {
+    //   srhide = sr5;
+    // }
+    // if (srHide === "sr6") {
+    //   srhide = sr6;
+    // }
+    // if (srHide === "sr13") {
+    //   srhide = sr13;
+    // }
+    // if (srHide === "sr14") {
+    //   srhide = sr14;
+    // }
+    // if (srHide === "sr15") {
+    //   srhide = sr15;
+    // }
+    // if (srHide === "sr18") {
+    //   srhide = sr18;
+    // }
+    // if (srHide === "sr7") {
+    //   srhide = sr7;
+    // }
+    // if (srHide === "sr8") {
+    //   srhide = sr8;
+    // }
+    // if (srHide === "sr9") {
+    //   srhide = sr9;
+    // }
+    // if (srHide === "sr11") {
+    //   srhide = sr11;
+    // }
+    // if (srHide === "sr12") {
+    //   srhide = sr12;
+    // }
+    // if (srHide === "sr16") {
+    //   srhide = sr16;
+    // }
+    // if (srHide === "sr17") {
+    //   srhide = sr17;
+    // }
+    // if (srHide === "sr19") {
+    //   srhide = sr19;
+    // }
+    // if (srHide === "sr20") {
+    //   srhide = sr20;
+    // }
+    // if (srHide === "sr21") {
+    //   srhide = sr21;
+    // }
+    // if (srHide === "sr22") {
+    //   srhide = sr22;
+    // }
+    // if (srHide === "sr23") {
+    //   srhide = sr23;
+    // }
+    // if (srHide === "sr24") {
+    //   srhide = sr24;
+    // }
+    // if (srHide === "sr25") {
+    //   srhide = sr25;
+    // }
+    // if (srHide === "sr26") {
+    //   srhide = sr26;
+    // }
+    // if (srHide === "sr27") {
+    //   srhide = sr27;
+    // }
+    // if (srHide === "sr28") {
+    //   srhide = sr28;
+    // }
+    // if (srHide === "sr29") {
+    //   srhide = sr29;
+    // }
+    // if (srHide === "sr30") {
+    //   srhide = sr30;
+    // }
+    // if (srHide === "sr31") {
+    //   srhide = sr31;
+    // }
+    // if (srHide === "sr32") {
+    //   srhide = sr32;
+    // }
+    // if (srHide === "sr33") {
+    //   srhide = sr33;
+    // }
 
-    const style = window.getComputedStyle(srhide);
-    const matrix = new WebKitCSSMatrix(style.transform);
-    const nowLocated = matrix.e;
+    // const style = window.getComputedStyle(srhide);
+    // const matrix = new WebKitCSSMatrix(style.transform);
+    // const nowLocated = matrix.e;
 
-    if (whereTo === "right") {
-      perhide = nowLocated + 390;
-    }
-    if (whereTo === "left") {
-      perhide = nowLocated - 390;
-    }
-    if (whereTo === "none") {
-      perhide = nowLocated;
-    }
+    // if (whereTo === "right") {
+    //   perhide = nowLocated + 390;
+    // }
+    // if (whereTo === "left") {
+    //   perhide = nowLocated - 390;
+    // }
+    // if (whereTo === "none") {
+    //   perhide = nowLocated;
+    // }
 
-    srhide.style.transform = `translateX(${perhide}px)`;
-    srdisp.style.transform = `translateX(-${perdisp}px)`;
+    // srhide.style.transform = `translateX(${perhide}px)`;
+    // srdisp.style.transform = `translateX(-${perdisp}px)`;
 
+    console.log(srHide);
+    console.log(srDisp);
+    const srhideNew = document.querySelector(`#${srHide}`);
+    const srdispNew = document.querySelector(`#${srDisp}`);
+
+    // _opacityDimScreen(srDisp,srHide){
+
+    // const dimmer = (srDisp, srHide) => {
+    //   let numBright = 0;
+    //   let numDim = 100;
+    //   const timeIntervalDimmer = setInterval(() => {
+    //     if (numDim <= 0) {
+    //       clearInterval(timeIntervalDimmer);
+    //       srhideNew.classList.remove("sr");
+    //       srhideNew.classList.add("sr-none");
+    //     } else {
+    //       numDim -= 5;
+    //     }
+    //     console.log(numDim);
+    //   }, 100);
+    //   const timeIntervalBrighter = setInterval(() => {
+    //     if (numBright >= 100) {
+    //       clearInterval(timeIntervalBrighter);
+    //       srdispNew.style.opacity = numBright;
+    //       srdispNew.classList.add("sr");
+    //       srdispNew.classList.remove("sr-none");
+    //     } else {
+    //       numBright += 5;
+    //     }
+    //     console.log(numBright);
+    //   }, 100);
+    // };
+    // dimmer();
+
+    const dimmer = () => {
+      let numBright = 0;
+      let numDim = 100;
+
+      const srdispNew = document.getElementById(srDisp);
+      const srhideNew = document.getElementById(srHide);
+
+      if (!srdispNew || !srhideNew) {
+        console.error("Elements not found");
+        return;
+      }
+
+      const timeIntervalDimmer = setInterval(() => {
+        if (numDim <= 0) {
+          clearInterval(timeIntervalDimmer);
+          srhideNew.classList.remove("sr");
+          srhideNew.classList.add("sr-none");
+        } else {
+          numDim -= 5;
+          srhideNew.style.opacity = numDim / 100;
+        }
+        console.log("Dimming:", numDim);
+      }, 1);
+
+      const timeIntervalBrighter = setInterval(() => {
+        if (numBright >= 100) {
+          clearInterval(timeIntervalBrighter);
+          srdispNew.style.opacity = 1;
+          srdispNew.classList.add("sr");
+          srdispNew.classList.remove("sr-none");
+        } else {
+          numBright += 5;
+          srdispNew.style.opacity = numBright / 100;
+        }
+        console.log("Brightening:", numBright);
+      }, 1);
+    };
+
+    // Example usage
+    // dimmer();
+
+    // }
+
+    srhideNew.classList.remove("sr");
+    srhideNew.classList.add("sr-none");
+    // srdispNew.style.opacity = `0%`;
+    srdispNew.classList.add("sr");
+    srdispNew.classList.remove("sr-none");
+    if (srDisp !== "sr29") {
+      headerTeamImg.dataset.fromWhere = srDisp;
+    }
     if (
       srDisp === "sr7" ||
       srDisp === "sr8" ||
@@ -1831,9 +2060,10 @@ class App {
   }
 
   // TODO: start here with loading weeks ofline
-  _readWeeks(name) {
+  _readWeeks(srHide) {
+    this._displaySpinner();
     // let weekIdNumberCounter = 0;
-    this._srGetStartedDispChoose("sr22", "sr7", "left");
+    // this._srGetStartedDispChoose("sr1", "sr7", "left");
     this.#curData = this._getFromLocal("curData");
 
     let curDataLocal;
@@ -1872,10 +2102,10 @@ class App {
         sr11TimeSheetHours.style.display = "none";
         sr11TimeSheetSumary.style.display = "none";
         sr11NewTimeSheetMessage.style.display = "block";
-        this._srGetStartedDispChoose("sr11", "sr22", "left");
+        this._srGetStartedDispChoose("sr11", srHide, "left");
         sr11TimeSheetName.textContent = this.#curMemberInfo.name;
       } else {
-        this._srGetStartedDispChoose("sr11", "sr22", "left");
+        this._srGetStartedDispChoose("sr11", srHide, "left");
         sr11TimeSheetHours.style.display = "block";
         sr11TimeSheetSumary.style.display = "block";
         sr11NewTimeSheetMessage.style.display = "none";
@@ -1887,6 +2117,7 @@ class App {
         sr11TimeSheetName.textContent = this.#curMemberInfo.name;
       }
     });
+    this._hideSpinner();
   }
 
   _daySp(dayNum) {
@@ -2002,27 +2233,19 @@ class App {
     // 604,800,000 one week in milliseconds
     if (this._getTimeStamp() - weekTimeStamp > 604800000) {
       this._newWeek();
-      console.log("new week needed");
     } else {
-      console.log("skip");
       if (dayNow < day) {
         console.log("skip");
         this._newWeek();
-        console.log("new week needed");
       }
       if (dayNow === day) {
-        console.log("skip");
         const millBetween = 604800000 - (weekTimeStamp - this._getTimeStamp());
         if (millBetween < 86400000) {
-          console.log("skip");
-          console.log("new week needed");
           this._newWeek();
         } else {
-          console.log(`it's today`);
         }
       }
     }
-    console.log(day, dayNow);
   }
 
   _punchIn(punch) {
@@ -2080,7 +2303,6 @@ class App {
     if (arr === "arr") {
       setTimeout(this._checkForNewWeek(week.weekMadeTimeStamp), 2000);
     }
-    console.log(week);
 
     const date = new Date();
     const dayDate = date.getDay();
@@ -2112,7 +2334,6 @@ class App {
       sr11punchInConMain.style.display = "none";
     }
     IndexDayValNum = dayDateCor - 1;
-    console.log(week.days);
 
     if (week.days[IndexDayValNum].in === "0:00") {
       sr11PunchInBtnIn.dataset.active = "act";
@@ -2190,14 +2411,12 @@ class App {
         let zeroRidTime = curDay.out.replace(/^0+/, "");
         updateDayEnd.textContent = this._timeFormator(zeroRidTime);
       }
-      console.log(this.#curData.pro);
       if (this.#curData.pro !== "false") {
         updateDayTotalTime.textContent = curDay.totalTime;
       } else {
         updateDayTotalTime.textContent = "-:--";
       }
     });
-    console.log(i, this.#curWeekArrayOrg.length);
     if (
       this.#curWeekArrayOrg.length === i &&
       this.#curMemberInfo.salary !== week.salary
@@ -2243,14 +2462,15 @@ class App {
       sr11WeekPayPerHour.textContent = `$ ${week.salary}`;
     }
 
-    const style = window.getComputedStyle(sr11);
-    const matrix = new WebKitCSSMatrix(style.transform);
-    const nowLocated = matrix.e;
-    console.log(nowLocated);
-    if (nowLocated === -5070) {
-    } else {
-      this._srGetStartedDispChoose("sr11", "sr22", "left");
-    }
+    // const style = window.getComputedStyle(sr11);
+    // const matrix = new WebKitCSSMatrix(style.transform);
+    // const nowLocated = matrix.e;
+    // console.log(nowLocated);
+    // if (nowLocated === -5070) {
+    //   // this._srGetStartedDispChoose("sr11", "sr22", "left");
+    // } else {
+    // }
+    console.log("here it is");
   }
 
   _timeFormator(time) {
@@ -2595,6 +2815,7 @@ class App {
   }
 
   _displayMembers(srHide) {
+    console.log(srHide);
     // const storage = getStorage();
     // const imageFolderRef = ref(storage, "team_images");
 
@@ -2619,7 +2840,8 @@ class App {
     // };
 
     let curDataLocal;
-    this._srGetStartedDispChoose("sr22", srHide, "right");
+    this._displaySpinner();
+    // this._srGetStartedDispChoose("sr22", srHide, "right");
     const conMemberDisplay = document.querySelector("#sr7-mem-con");
     this.#curData = this._getFromLocal("curData");
 
@@ -2639,6 +2861,7 @@ class App {
     const q = query(collection(db, `accounts/${curDataLocal.teamCode}/team`));
     getDocs(q).then((docSnap) => {
       this._deleteAllChildren("sr7-mem-con");
+      sr7.dataset.when = this._getTimeStamp();
 
       if (docSnap.empty === true) {
         const HTML = `<div id="no-member-message-con">
@@ -2659,11 +2882,9 @@ class App {
       }
 
       if (this.#curData.level === this.#adminLevel) {
-        // headerTeamImg.src = this.#curAccountData.teamImg;
         this._displayTeamImg(this.#curAccountData.teamImg);
         headerTeamName.textContent = this.#curAccountData.teamName;
       } else {
-        // headerTeamImg.src = this.#curData.teamImg;
         this._displayTeamImg(this.#curData.teamImg);
         headerTeamName.textContent = this.#curData.teamName;
       }
@@ -2683,7 +2904,7 @@ class App {
         let totalPay;
         let totalTime;
 
-        // TODO:start here wtih granting or denying permision Already designed in figma
+        // TODO: starts granting or denying permision Already designed in figma
 
         if (val.writePermisionRequest === "pending") {
           btnPermision = `          
@@ -2919,7 +3140,8 @@ class App {
 
     // console.log(content[0]);
 
-    this._srGetStartedDispChoose("sr7", "sr22", "left");
+    this._srGetStartedDispChoose("sr7", srHide, "left");
+    this._hideSpinner();
   }
 
   _createMemberStep2() {
@@ -3151,8 +3373,7 @@ class App {
               curWeekId: this.#curUseId,
             }
           );
-
-          this._readWeeks();
+          this._readWeeks("sr11");
           this._disdSuccessErrorMessage(
             "Éxito. Una nueva semana ha comenzado.",
             "ex",
@@ -3368,6 +3589,7 @@ class App {
   }
 
   _createTeamStep1() {
+    this._displaySpinner();
     this.#curData = this._getFromLocal("curData");
     const inpTeamName = document.querySelector("#sr5-inp-team-name");
 
@@ -3377,27 +3599,84 @@ class App {
     } else {
       curDataLocal = this.#curData;
     }
+
     let imgUrl;
-    if (this.#teamImgUrl.length !== 0) {
-      imgUrl = this.#teamImgUrl[0];
-    } else {
-      imgUrl = "";
-    }
+
+    const imgUploadFunction = function (e) {
+      const storage = getStorage();
+      const imageFolderRef = ref(storage, "team_images");
+      console.log("change");
+
+      for (let i = 0; i < Object.keys(inpImgSr5.files).length; i++) {
+        console.log(inpImgSr5.files[i]);
+        console.log(inpImgSr5.files[i]);
+        const storageRef = ref(imageFolderRef, inpImgSr5.files[i].name);
+
+        uploadBytes(storageRef, inpImgSr5.files[i]).then((snapshot) => {
+          console.log("Uploaded a file!");
+        });
+        if (i === Object.keys(inpImgSr5.files).length - 1) {
+          imgUrl = inpImgSr5.files[i].name;
+        }
+      }
+    };
+
+    // if (inpTeamName.value.length > 2 && inpTeamName.value.length < 16) {
+    //   this._srGetStartedDispChoose("sr22", "sr12", "right");
+    //   // console.log(Object.keys(inpImgSr12.files).length);
+    //   // console.log(inpImgSr12.files[0]);
+    //   setTimeout(() => {
+    //     if (Object.keys(inpImgSr12.files).length !== 0) {
+    //       // imgUrl = this.#teamImgUrl[0];
+    //       imgUploadFunction();
+    //       console.error("error here");
+    //     } else {
+    //       console.error("error here");
+    //       imgUrl = curDataLocal.teamImg;
+    //     }
+
+    //     this._updateData(`accounts`, curDataLocal.teamCode, {
+    //       teamName: inpTeamName.value,
+    //       teamImg: imgUrl,
+    //     });
+    //     // this._updateData("accounts", curDataLocal.teamCode, {
+    //     //   teamImg: mov,
+    //     // });
+    //     setTimeout(() => {
+    //       this._displayMembers("sr22");
+    //     }, 1000);
+    //   }, 1000);
+    // } else {
+    //   console.error("not valid data");
+    // }
 
     if (inpTeamName.value.length > 2 && inpTeamName.value.length < 17) {
-      this._updateData("accounts", curDataLocal.teamCode, {
-        teamName: inpTeamName.value,
-        teamImg: imgUrl,
-      });
+      if (Object.keys(inpImgSr5.files).length !== 0) {
+        // imgUrl = this.#teamImgUrl[0];
+        imgUploadFunction();
+        console.error("success here");
+      } else {
+        console.error("error here");
+        imgUrl = curDataLocal.teamImg;
+      }
 
-      console.log("right length", inpTeamName.value.length);
-      this._srGetStartedDispChoose("sr6", "sr5", "left");
+      setTimeout(() => {
+        this._updateData("accounts", curDataLocal.teamCode, {
+          teamName: inpTeamName.value,
+          teamImg: imgUrl,
+        });
+
+        console.log("right length", inpTeamName.value.length);
+        this._srGetStartedDispChoose("sr6", "sr5", "left");
+        this._hideSpinner();
+      }, 2000);
     } else {
       this._disdSuccessErrorMessage(
         "El nombre de equipo no puede tener menos de 3 o mas de 16 caráteres.",
         "er",
         3300
       );
+      this._hideSpinner();
     }
 
     // const dispTeamCode = document.querySelector("#sr5-generate-team-code");
@@ -3519,6 +3798,9 @@ class App {
                     this.#appSupportInfo.email,
                     this.#appSupportInfo.whatsApp,
                     this.#appSupportInfo.telegram
+                  );
+                  this._displaySpinner(
+                    `Estamos anviando un código de verificación a tu correo.`
                   );
                   this._srGetStartedDispChoose("sr4", "sr3", "left");
                   this._countdownResendOTP();
@@ -3661,11 +3943,10 @@ class App {
       sr16InpMemberPassword.value === this.#curMemberInfo.password
     ) {
       console.log("all right");
-      this._srGetStartedDispChoose("sr22", "sr16", "right");
-      this._displayMembers("sr22");
+      this._srGetStartedDispChoose("sr7", "sr16", "right");
     } else {
       if (sr16InpMemberName.value === this.#curMemberInfo.name) {
-        this._srGetStartedDispChoose("sr22", "sr16", "right");
+        this._displaySpinner();
         setTimeout(() => {
           this._updateData(
             `accounts/${curDataLocal.teamCode}/team`,
@@ -3675,6 +3956,8 @@ class App {
               lastModified: this._getTimeStamp(),
             }
           );
+          this._displayMembers("sr16");
+          this._hideSpinner();
         }, 1000);
       } else {
         const q = query(
@@ -3687,7 +3970,7 @@ class App {
               sr16InpMemberName.value.length > 2 &&
               sr16InpMemberPassword.value.length > 5
             ) {
-              this._srGetStartedDispChoose("sr22", "sr16", "right");
+              this._displaySpinner();
               setTimeout(() => {
                 this._updateData(
                   `accounts/${curDataLocal.teamCode}/team`,
@@ -3698,6 +3981,8 @@ class App {
                     lastModified: this._getTimeStamp(),
                   }
                 );
+                this._displayMembers("sr16");
+                this._hideSpinner();
               }, 1000);
             } else {
               console.error("not valid data");
@@ -3733,11 +4018,31 @@ class App {
       this.#curMemberInfo.punchInPermision === sr16SwiPunchIn.dataset.on &&
       this.#curMemberInfo.level === level
     ) {
-      this._srGetStartedDispChoose("sr22", "sr16", "right");
-      this._displayMembers("sr22");
+      // this._displayMembers("sr16");
+      this._srGetStartedDispChoose("sr7", "sr16", "right");
     } else {
       if (sr16InpMemberPay.value > 0) {
-        this._srGetStartedDispChoose("sr22", "sr16", "right");
+        this._displaySpinner();
+
+        if (this.#curMemberInfo.level === "asistente" && level === "miembro") {
+          this._displayAlert(
+            `Acerca de ${this.#curMemberInfo.name}`,
+            `Para quitarle el derecho de admin y poner a ${
+              this.#curMemberInfo.name
+            } como un miembro otra vez, ${
+              this.#curMemberInfo.name
+            } tendrá que cerrar sesión y vicularse otra vez a tu equipo como un miembro.`
+          );
+        }
+
+        if (this.#curMemberInfo.level === "miembro" && level === "asistente") {
+          this._displayAlert(
+            `Acerca de ${this.#curMemberInfo.name}`,
+            `Ahora ${this.#curMemberInfo.name} es un asistente. ${
+              this.#curMemberInfo.name
+            } automáticamente iniciará sesión como un admin y tendrá todos los derechos de un admin. Incluso padrá cambiar detalles de tu cuenta y los ajustes de tu equipo.`
+          );
+        }
         setTimeout(() => {
           this._updateData(
             `accounts/${curDataLocal.teamCode}/team`,
@@ -3750,6 +4055,8 @@ class App {
               lastModified: this._getTimeStamp(),
             }
           );
+          this._displayMembers("sr16");
+          this._hideSpinner();
         }, 1000);
       } else {
         console.error("not valid data");
@@ -3869,30 +4176,25 @@ class App {
     const inpTeamName = document.querySelector(
       "#sr12-2-contbx-2-inp-team-name"
     );
-    const inpImg = document.querySelector("#sr12-input-team-img");
+    // const inpImg = document.querySelector("#sr12-input-team-img");
 
     let imgUrl;
 
     const imgUploadFunction = function (e) {
       console.log("change");
 
-      for (let i = 0; i < Object.keys(inpImg.files).length; i++) {
-        console.log(inpImg.files[i]);
-        console.log(inpImg.files[i]);
-        const storageRef = ref(imageFolderRef, inpImg.files[i].name);
+      for (let i = 0; i < Object.keys(inpImgSr12.files).length; i++) {
+        console.log(inpImgSr12.files[i]);
+        console.log(inpImgSr12.files[i]);
+        const storageRef = ref(imageFolderRef, inpImgSr12.files[i].name);
 
-        uploadBytes(storageRef, inpImg.files[i]).then((snapshot) => {
+        uploadBytes(storageRef, inpImgSr12.files[i]).then((snapshot) => {
           console.log("Uploaded a file!");
         });
-        if (i === Object.keys(inpImg.files).length - 1) {
-          imgUrl = inpImg.files[i].name;
+        if (i === Object.keys(inpImgSr12.files).length - 1) {
+          imgUrl = inpImgSr12.files[i].name;
         }
       }
-
-      // uploadThis.addEventListener("state_changed", (snapshot) => {
-      //   // uploadThis.on("state_changed", (snapshot) => {
-      //   console.log(snapshot);
-      // });
     };
 
     let curDataLocal;
@@ -3904,10 +4206,10 @@ class App {
 
     if (inpTeamName.value.length > 2 && inpTeamName.value.length < 16) {
       this._srGetStartedDispChoose("sr22", "sr12", "right");
-      console.log(Object.keys(inpImg.files).length);
-      console.log(inpImg.files[0]);
+      // console.log(Object.keys(inpImgSr12.files).length);
+      // console.log(inpImgSr12.files[0]);
       setTimeout(() => {
-        if (Object.keys(inpImg.files).length !== 0) {
+        if (Object.keys(inpImgSr12.files).length !== 0) {
           // imgUrl = this.#teamImgUrl[0];
           imgUploadFunction();
           console.error("error here");
@@ -4117,6 +4419,7 @@ class App {
       }
       console.log(membersCheckpro.length);
       console.log(membersCheckpro);
+      console.log(this.#curData);
       if (this.#curData.pro === "false") {
         this._getProScreen();
       }
@@ -4150,6 +4453,7 @@ class App {
   }
 
   _displayTermsCondition() {
+    sr28.dataset.fromWhere = "sr3";
     this._srGetStartedDispChoose("sr28", "sr3", "none");
     const whatsApp = document.querySelector("#sr28-opt-contact-whats span");
     const telegram = document.querySelector("#sr28-opt-contact-telegram span");
@@ -4360,20 +4664,72 @@ class App {
     }
   }
   //Start Up End
-  _hideTermsCond() {
-    const style = window.getComputedStyle(sr28);
-    const matrix = new WebKitCSSMatrix(style.transform);
-    const nowLocated = matrix.e;
-    sr28.style.transform = `translateX(${nowLocated + 390}px)`;
+  _hideTermsCond(fromWhere) {
+    const srDisp = document.querySelector(`#${fromWhere}`);
+    sr28.classList.remove("sr");
+    sr28.classList.add("sr-none");
+
+    srDisp.classList.add("sr");
+    srDisp.classList.remove("sr-none");
   }
-  _imgDispHide(srhide) {
-    const style = window.getComputedStyle(srhide);
-    const matrix = new WebKitCSSMatrix(style.transform);
-    const nowLocated = matrix.e;
-    const perhide = nowLocated + 390;
-    srhide.style.transform = `translateX(${perhide}px)`;
+  _imgDispHide(fromWhere) {
+    console.log(fromWhere);
+    const srDisp = document.querySelector(`#${fromWhere}`);
+    console.log(srDisp);
+    sr29.classList.remove("sr");
+    sr29.classList.add("sr-none");
+
+    srDisp.classList.add("sr");
+    srDisp.classList.remove("sr-none");
+
+    // const style = window.getComputedStyle(srhide);
+    // const matrix = new WebKitCSSMatrix(style.transform);
+    // const nowLocated = matrix.e;
+    // const perhide = nowLocated + 390;
+    // srhide.style.transform = `translateX(${perhide}px)`;
   }
-  _imgDispDisp(img, width, border, background) {
+  _qrImgDispHide(fromWhere) {
+    console.log(fromWhere);
+    const srDisp = document.querySelector(`#${fromWhere}`);
+    console.log(srDisp);
+    sr32.classList.remove("sr");
+    sr32.classList.add("sr-none");
+
+    srDisp.classList.add("sr");
+    srDisp.classList.remove("sr-none");
+
+    // const style = window.getComputedStyle(srhide);
+    // const matrix = new WebKitCSSMatrix(style.transform);
+    // const nowLocated = matrix.e;
+    // const perhide = nowLocated + 390;
+    // srhide.style.transform = `translateX(${perhide}px)`;
+  }
+  _qrDispHide(fromWhere) {
+    console.log(fromWhere);
+    const srDisp = document.querySelector(`#${fromWhere}`);
+    console.log(srDisp);
+    sr33.classList.remove("sr");
+    sr33.classList.add("sr-none");
+
+    srDisp.classList.add("sr");
+    srDisp.classList.remove("sr-none");
+
+    // const style = window.getComputedStyle(srhide);
+    // const matrix = new WebKitCSSMatrix(style.transform);
+    // const nowLocated = matrix.e;
+    // const perhide = nowLocated + 390;
+    // srhide.style.transform = `translateX(${perhide}px)`;
+  }
+
+  _imgDispDisp(img, width, border, background, fromWhere) {
+    const newStuffHereSrFromWhere = headerTeamImg.dataset.fromWhere;
+    if (fromWhere) {
+      sr29.dataset.fromWhere = fromWhere;
+    } else {
+      sr29.dataset.fromWhere = newStuffHereSrFromWhere;
+    }
+    console.log(headerTeamImg.dataset.fromWhere);
+
     sr29Image.src = img;
     if (width !== "none") {
       sr29Image.style.width = `${width}px`;
@@ -4384,17 +4740,17 @@ class App {
     if (background !== "none") {
       sr29ImageCon.style.background = background;
     }
-    this._srGetStartedDispChoose("sr29", "sr1", "none");
+    this._srGetStartedDispChoose("sr29", newStuffHereSrFromWhere, "none");
   }
 
   // TODO: RATING
   // RATING start here
-  _closeRatingScreen() {
-    const style = window.getComputedStyle(sr30);
-    const matrix = new WebKitCSSMatrix(style.transform);
-    const nowLocated = matrix.e;
-    sr30.style.transform = `translateX(${nowLocated + 390}px)`;
-  }
+  // _closeRatingScreen() {
+  //   const style = window.getComputedStyle(sr30);
+  //   const matrix = new WebKitCSSMatrix(style.transform);
+  //   const nowLocated = matrix.e;
+  //   sr30.style.transform = `translateX(${nowLocated + 390}px)`;
+  // }
   _rateLater() {
     console.log("Rate later");
     if (
@@ -4415,7 +4771,8 @@ class App {
         lastRated: this._getTimeStamp(),
       });
     }
-    this._closeRatingScreen();
+    // this._closeRatingScreen();
+    this._hideRatingScreen();
   }
 
   _rateNow() {
@@ -4425,7 +4782,8 @@ class App {
         "er",
         4000
       );
-      this._closeRatingScreen();
+      // this._closeRatingScreen();
+      this._hideRatingScreen();
     } else {
       let id;
       let level;
@@ -4485,7 +4843,8 @@ class App {
           text
         );
         this._addData("appRatings", rating);
-        this._closeRatingScreen();
+        // this._closeRatingScreen();
+        this._hideRatingScreen();
       }
     }
   }
@@ -4526,7 +4885,8 @@ class App {
                 this._getTimeStamp() - this.#curData.lastRated >
                 val.requestRatingLaterIn
               ) {
-                this._srGetStartedDispChoose("sr30", "sr1", "none");
+                // this._srGetStartedDispChoose("sr30", "sr1", "none");
+                this._displayRatingScreen();
               }
             });
           });
@@ -4540,7 +4900,8 @@ class App {
           docSnap.forEach((doc) => {
             const val = doc.data();
             if (this._getTimeStamp() - timeCreated > val.requestRatingIn) {
-              this._srGetStartedDispChoose("sr30", "sr1", "none");
+              // this._srGetStartedDispChoose("sr30", "sr1", "none");
+              this._displayRatingScreen();
             }
           });
         });
@@ -4661,7 +5022,8 @@ class App {
         savebtn(urlOfQr);
       }, 100);
       // };
-      this._srGetStartedDispChoose("sr32", "sr1", "left");
+      sr32.dataset.fromWhere = "sr16";
+      this._srGetStartedDispChoose("sr32", "sr16", "left");
     } else {
       this._disdSuccessErrorMessage(
         "Lo sentimos, pero tienes que tener una conexión a internet. Verifique tu conexión y vuelve a intentarlo.",
@@ -4672,11 +5034,11 @@ class App {
   }
   _qrReader() {
     if (navigator.onLine) {
-      const newQrReader = new Html5QrcodeScanner("sr33-qr-scanner-con", {
+      const newQrReader = new Html5QrcodeScanner("reader", {
         qrbox: { width: 250, height: 250 },
         fps: 20,
       });
-      this._srGetStartedDispChoose("sr33", "sr1", "left");
+      this._srGetStartedDispChoose("sr33", "sr13", "left");
 
       const success = (result) => {
         console.log(result);
@@ -4685,9 +5047,9 @@ class App {
 
         newQrReader.clear();
         if (level === "member") {
-          this._joinAsMember("qr", teamCode, name, password);
+          this._joinAsMember("qr", teamCode, name, password, "sr33");
         }
-        this._imgDispHide(sr33);
+        this._imgDispHide(sr29.dataset.fromWhere);
         console.log(name, teamCode);
       };
       const error = (err) => {
@@ -4701,6 +5063,39 @@ class App {
         7000
       );
     }
+
+    // Example function to translate UI to Spanish
+    function translateToSpanish() {
+      const elArr = [
+        "html5-qrcode-button-camera-permission",
+        "html5-qrcode-button-camera-stop",
+        "html5-qrcode-button-camera-start",
+        "html5-qrcode-anchor-scan-type-change",
+        "html5-qrcode-button-file-selection",
+        "reader__header_message",
+      ];
+
+      const translations = [
+        "Dar permiso para usar la cámara",
+        "Terminar de escanear",
+        "Empezar a escanear",
+        "Cambiar el tipo de escaneo 'foto de galeria/Cámara'",
+        "Escanear una foto de tu galería",
+        "No podimos escanear un código válido", // Added a translation for the last element as an example
+      ];
+
+      elArr.forEach((el, i) => {
+        const curEl = document.getElementById(el);
+        if (curEl) {
+          curEl.innerHTML = translations[i];
+        } else {
+          console.log(`Element with id ${el} not found`);
+        }
+      });
+    }
+    sr33.addEventListener("click", translateToSpanish);
+
+    translateToSpanish(); // Call the function to apply the translations
   }
 
   // TODO: QR END
@@ -4735,9 +5130,70 @@ class App {
     });
     sr13BtnReadQrCode.addEventListener("click", () => {
       this._qrReader();
+      sr33.dataset.fromWhere = "sr13";
     });
 
     //Qr ends...
+    sr34BtnUnderstand.addEventListener("click", () => {
+      this._hideAlert();
+    });
+
+    // function displayImage() {
+    //   const input = document.getElementById("sr12-input-img");
+    //   const container = document.getElementById("img-con");
+
+    //   if (input.files && input.files[0]) {
+    //     const reader = new FileReader();
+
+    //     reader.onload = function (e) {
+    //       container.innerHTML = `<img src="${e.target.result}" alt="Selected Image">`;
+    //     };
+
+    //     reader.readAsDataURL(input.files[0]);
+    //   }
+    // }
+
+    inpImgSr12.addEventListener("change", () => {
+      if (inpImgSr12.files && inpImgSr12.files[0]) {
+        const reader = new FileReader();
+        SVGImgConSr12.style.display = "none";
+        ImgConSr12.style.height = "120px";
+        ImgConSr12.style.width = "120px";
+        console.log("img ready");
+
+        reader.onload = function (e) {
+          ImgConSr12.innerHTML = `<img class="sr12-display-team-img" src="${e.target.result}" alt="Selected Image">`;
+        };
+
+        reader.readAsDataURL(inpImgSr12.files[0]);
+      }
+    });
+    inpImgSr5.addEventListener("change", () => {
+      if (inpImgSr5.files && inpImgSr5.files[0]) {
+        const reader = new FileReader();
+        SVGImgConSr5.style.display = "none";
+        ImgConSr5.style.height = "120px";
+        ImgConSr5.style.width = "120px";
+        console.log("img ready");
+
+        reader.onload = function (e) {
+          ImgConSr5.innerHTML = `<img class="sr12-display-team-img" src="${e.target.result}" alt="Selected Image">`;
+        };
+
+        reader.readAsDataURL(inpImgSr5.files[0]);
+      }
+    });
+
+    // inpImgSr12.addEventListener("change", () => {
+    //   const imgUrlAdevent = inpImgSr12;
+    //   // const imgUrlAdevent = inpImgSr12.files[0];
+    //   // console.log(imgUrlAdevent);
+    //   // console.log(imgUrlAdevent.url);
+
+    //   // ImgConSr12Img.style.display = "block";
+    //   // ImgConSr12Img.src = imgUrlAdevent.value;
+    //   // console.log(ImgConSr12Img);
+    // });
 
     // <-- LIVE Listeners
     window.onscroll = function () {
@@ -4790,7 +5246,8 @@ class App {
     sr1ImgCon.addEventListener("click", (e) => {
       if (e.target.dataset.img === "true") {
         console.log(e.target.src);
-        this._imgDispDisp(e.target.src, 370, "none", "#6d6d6d");
+        sr29.dataset.fromWhere = "sr1";
+        this._imgDispDisp(e.target.src, 370, "none", "none", "sr1");
       }
     });
     sr31BtnReload.addEventListener("click", () => {
@@ -4800,16 +5257,16 @@ class App {
       this._imgDispDisp(teamImage.src, "none", "none");
     });
     btnsr29Back.addEventListener("click", () => {
-      this._imgDispHide(sr29);
+      this._imgDispHide(sr29.dataset.fromWhere);
     });
     btnsr32Back.addEventListener("click", () => {
-      this._imgDispHide(sr32);
+      this._qrImgDispHide(sr32.dataset.fromWhere);
     });
     btnsr33Back.addEventListener("click", () => {
-      this._imgDispHide(sr33);
+      this._qrDispHide(sr33.dataset.fromWhere);
     });
     btnsr28Back.addEventListener("click", () => {
-      this._hideTermsCond();
+      this._hideTermsCond(sr28.dataset.fromWhere);
     });
     sr3AceptTerms.addEventListener("click", () => {
       this._displayTermsCondition();
@@ -5036,7 +5493,7 @@ class App {
       this._leaveTeam();
     });
     btnJoinNowSr15.addEventListener("click", (e) => {
-      this._joinAsMember();
+      this._joinAsMember(undefined, "none", "none", "none", "sr15");
     });
     btnsr11NewTimeTable.addEventListener("click", (e) => {
       this._newWeek();
@@ -5092,7 +5549,7 @@ class App {
             const val = doc.data();
             this.#curMemberInfo = val;
             console.log(this.#curMemberInfo);
-            this._readWeeks();
+            this._readWeeks("sr7");
           });
         });
       }
@@ -5237,7 +5694,7 @@ class App {
       const timePicker = document.querySelector("#sr21-time-picker");
       if (e.target.dataset.do === "open-time-picker") {
         console.log(this.#curData.writePermision);
-        if (this.#curData.writePermision !== "false") {
+        const openTimePickerFunction = () => {
           if (e.target.dataset.stnd === "start") {
             sr21TimePickerInOutText.textContent = "entrada";
           }
@@ -5320,11 +5777,12 @@ class App {
           }
 
           this._srGetStartedDispChoose("sr21", "sr11", "none");
+        };
+        if (this.#curData.writePermision !== "false") {
+          openTimePickerFunction();
         } else {
-          if (
-            // this.#curData.writeTimePermisionStart +
-            this.#curData.writeTimePermisionEnd >= this._getTimeStamp()
-          ) {
+          // TODO: Change so timer starts to count when the member make first change to his hours
+          if (this.#curData.writeTimePermisionEnd >= this._getTimeStamp()) {
             if (this.#curData.writePermisionRequest === "granted") {
               this._disdSuccessErrorMessage(
                 "Tu solicitud fue aceptado. Solo tienes un tiepo limitado para hacer tus cambios",
@@ -5339,16 +5797,17 @@ class App {
                 }
               );
             }
-            if (e.target.dataset.stnd === "start") {
-              sr21TimePickerInOutText.textContent = "entrada";
-            }
-            if (e.target.dataset.stnd === "end") {
-              sr21TimePickerInOutText.textContent = "salida";
-            }
-            this.#timePickerUpdateDay = e.target.dataset.day;
-            this.#timePickerUpdatestnd = e.target.dataset.stnd;
-            this.#timePickerUpdatetype = e.target.dataset.type;
-            this._srGetStartedDispChoose("sr21", "sr11", "none");
+            // if (e.target.dataset.stnd === "start") {
+            //   sr21TimePickerInOutText.textContent = "entrada";
+            // }
+            // if (e.target.dataset.stnd === "end") {
+            //   sr21TimePickerInOutText.textContent = "salida";
+            // }
+            // this.#timePickerUpdateDay = e.target.dataset.day;
+            // this.#timePickerUpdatestnd = e.target.dataset.stnd;
+            // this.#timePickerUpdatetype = e.target.dataset.type;
+            // this._srGetStartedDispChoose("sr21", "sr11", "none");
+            openTimePickerFunction();
           } else {
             if (this.#curData.writePermisionRequest === "denied") {
               this._disdSuccessErrorMessage(

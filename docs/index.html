@@ -59,6 +59,7 @@
   <body>
     <div id="app">
       <!-- app header -->
+      <!-- TODO: comnet in -->
       <div id="app-header" class="sticky-app-header app-header-border-bottom">
         <div id="app-header-cont-con">
           <img
@@ -66,12 +67,16 @@
             src="images/THoras App logo 2-2.png"
             alt=""
           />
-          <img
-            id="team-image"
-            class="team-image-hidden"
-            src="images/team image.png"
-            alt=""
-          />
+          <div id="team-img-con">
+            <img
+              id="team-image"
+              class="team-image-hidden"
+              src="images/team image.png"
+              alt=""
+              data-fromWhere="sr1"
+            />
+          </div>
+
           <div id="header-names-con">
             <p id="app-name" class="app-name-only">T Horas</p>
             <p id="team-name">sin nombre</p>
@@ -85,7 +90,7 @@
       <div id="srs-get-started">
         <!-- sr1 -->
 
-        <div id="sr1" class="sr">
+        <div id="sr1" class="sr-none">
           <div id="sr1-cont-con">
             <div id="sr1-header-con">
               <p id="sr1-header-con-text">Bienvenido a T Horas</p>
@@ -197,7 +202,7 @@
           <!-- Next down-->
         </div>
         <!-- sr2 -->
-        <div id="sr2" class="sr">
+        <div id="sr2" class="sr-none">
           <div id="sr2-tb" class="tb tb-no-backg">
             <div class="tb-cont-con">
               <svg
@@ -245,7 +250,7 @@
         </div>
 
         <!-- sr3 -->
-        <div id="sr3" class="sr">
+        <div id="sr3" class="sr-none">
           <div id="sr3-header" class="info-con">
             <p id="sr3-header-text" class="sr-header">Crea una cuenta</p>
           </div>
@@ -319,7 +324,7 @@
           </p>
         </div>
         <!-- sr4 -->
-        <div id="sr4" class="sr">
+        <div id="sr4" class="sr-none">
           <div id="sr4-info-con">
             <p id="sr4-header" class="sr-header">
               Nesecitamos confirmar tu correo
@@ -375,7 +380,7 @@
           </p>
         </div>
         <!-- sr5 -->
-        <div id="sr5" class="sr">
+        <div id="sr5" class="sr-none">
           <div id="sr5-info-con" class="info-con">
             <p id="sr5-header" class="sr-header">Crea un equipo</p>
             <p id="sr5-header-2" class="sr-header-2">
@@ -402,6 +407,7 @@
                 >
                   <div class="sr12-img-con" id="sr5-img-con">
                     <svg
+                      id="sr5-svg-for-img"
                       xmlns="http://www.w3.org/2000/svg"
                       width="32"
                       height="32"
@@ -468,7 +474,7 @@
           </p>
         </div>
         <!-- sr6 -->
-        <div id="sr6" class="sr">
+        <div id="sr6" class="sr-none">
           <div id="sr6-info-con" class="info-con">
             <p id="sr6-header" class="sr-header">Ajustes de tu equipo</p>
             <p id="sr6-header-2" class="sr-header-2">
@@ -557,7 +563,7 @@
           </p>
         </div>
         <!-- sr13 -->
-        <div id="sr13" class="sr">
+        <div id="sr13" class="sr-none">
           <div id="sr13-tb" class="tb tb-no-backg">
             <div class="tb-cont-con">
               <!-- <button id="sr13-tb-btn-back">🔙</button> -->
@@ -618,7 +624,7 @@
           </div>
         </div>
         <!-- sr14 -->
-        <div id="sr14" class="sr">
+        <div id="sr14" class="sr-none">
           <div id="sr14-info-con" class="info-con">
             <p id="sr14-header" class="sr-header">
               Únete como un administrador
@@ -683,7 +689,7 @@
           </div>
         </div>
         <!-- sr15 -->
-        <div id="sr15" class="sr">
+        <div id="sr15" class="sr-none">
           <div id="sr15-info-con" class="info-con">
             <p id="sr15-header" class="sr-header">Únete como trabajador</p>
             <p id="sr15-header-2" class="sr-header-2">
@@ -754,7 +760,7 @@
           </div>
         </div>
         <!-- sr18 -->
-        <div id="sr18" class="sr">
+        <div id="sr18" class="sr-none">
           <div id="sr18-info-con" class="info-con">
             <p id="sr18-header" class="sr-header">Inicia sesión</p>
           </div>
@@ -808,7 +814,7 @@
 
         <!-- Other seccion of screens start here-->
         <!-- sr7 -->
-        <div id="sr7" class="sr">
+        <div id="sr7" class="sr-none" data-when="1716521072483">
           <div id="sr7-tb" class="tb">
             <div class="tb-cont-con">
               <svg
@@ -1004,7 +1010,7 @@
           <button id="sr7-btn-add-member">Agregar nuevo trabajador</button>
         </div>
         <!-- sr8 -->
-        <div id="sr8" class="sr">
+        <div id="sr8" class="sr-none">
           <div id="sr8-info-con" class="info-con">
             <p id="sr8-header" class="sr-header">Añadir trabajador</p>
             <p id="sr8-header-2" class="sr-header-2">
@@ -1093,7 +1099,7 @@
           </p>
         </div>
         <!-- sr9 -->
-        <div id="sr9" class="sr">
+        <div id="sr9" class="sr-none">
           <div id="sr9-info-con" class="info-con">
             <p id="sr9-header" class="sr-header">Añadir trabajador</p>
             <p id="sr9-header-2" class="sr-header-2">Ajustes del trabajador</p>
@@ -1263,7 +1269,7 @@
           </p>
         </div>
         <!-- sr11 -->
-        <div id="sr11" class="sr">
+        <div id="sr11" class="sr-none">
           <div id="sr11-tb" class="tb">
             <div class="tb-cont-con">
               <!-- <button id="sr11-tb-btn-back">🔙</button> -->
@@ -1336,359 +1342,381 @@
           </div>
 
           <div id="new-time-sheet-message-con"></div>
+          <div class="sr-main-con-for-padding">
+            <div id="sr11-daily-hours-con">
+              <div id="sr11-daily-hours-header">
+                <svg
+                  id="sr11-daily-hours-btn-week-back"
+                  class="btn-dim-full"
+                  xmlns="http://www.w3.org/2000/svg"
+                  width="16"
+                  height="24"
+                  viewBox="0 0 16 24"
+                  fill="none"
+                >
+                  <rect width="16" height="24" fill="white" />
+                  <path
+                    d="M16 21.16L6.11066 12L16 2.82L12.9555 0L0 12L12.9555 24L16 21.16Z"
+                    fill="#0085FF"
+                  />
+                </svg>
 
-          <div id="sr11-daily-hours-con">
-            <div id="sr11-daily-hours-header">
-              <svg
-                id="sr11-daily-hours-btn-week-back"
-                class="btn-dim-full"
-                xmlns="http://www.w3.org/2000/svg"
-                width="16"
-                height="24"
-                viewBox="0 0 16 24"
-                fill="none"
-              >
-                <rect width="16" height="24" fill="white" />
-                <path
-                  d="M16 21.16L6.11066 12L16 2.82L12.9555 0L0 12L12.9555 24L16 21.16Z"
-                  fill="#0085FF"
-                />
-              </svg>
+                <div></div>
+                <p id="sr11-daily-hours-week-number">Semana 0</p>
+                <div></div>
 
-              <div></div>
-              <p id="sr11-daily-hours-week-number">Semana 0</p>
-              <div></div>
+                <svg
+                  id="sr11-daily-hours-btn-week-forward"
+                  class="btn-dim-dim"
+                  xmlns="http://www.w3.org/2000/svg"
+                  width="16"
+                  height="24"
+                  viewBox="0 0 16 24"
+                  fill="none"
+                >
+                  <path
+                    d="M0 21.16L9.88934 12L0 2.82L3.04453 0L16 12L3.04453 24L0 21.16Z"
+                    fill="#0085FF"
+                  />
+                </svg>
+              </div>
 
-              <svg
-                id="sr11-daily-hours-btn-week-forward"
-                class="btn-dim-dim"
-                xmlns="http://www.w3.org/2000/svg"
-                width="16"
-                height="24"
-                viewBox="0 0 16 24"
-                fill="none"
-              >
-                <path
-                  d="M0 21.16L9.88934 12L0 2.82L3.04453 0L16 12L3.04453 24L0 21.16Z"
-                  fill="#0085FF"
-                />
-              </svg>
-            </div>
-
-            <div id="sr11-daily-hours-header-con">
-              <p id="sr11-daily-hours-header-day" class="sr11-header-2-tx">
-                Día
-              </p>
-              <div id="sr11-daily-hours-header-2-con">
-                <p id="sr11-daily-hours-header-start" class="sr11-header-2-tx">
-                  Entrada
+              <div id="sr11-daily-hours-header-con">
+                <p id="sr11-daily-hours-header-day" class="sr11-header-2-tx">
+                  Día
                 </p>
-                <p id="sr11-daily-hours-header-end" class="sr11-header-2-tx">
-                  Salida
+                <div id="sr11-daily-hours-header-2-con">
+                  <p
+                    id="sr11-daily-hours-header-start"
+                    class="sr11-header-2-tx"
+                  >
+                    Entrada
+                  </p>
+                  <p id="sr11-daily-hours-header-end" class="sr11-header-2-tx">
+                    Salida
+                  </p>
+                </div>
+                <p id="sr11-daily-hours-header-time" class="sr11-header-2-tx">
+                  Horas
                 </p>
               </div>
-              <p id="sr11-daily-hours-header-time" class="sr11-header-2-tx">
-                Horas
-              </p>
-            </div>
 
-            <!-- TODO: Hour lines start here -->
-            <div id="sr11-daily-hours-monday" class="daily-hours-con">
-              <p id="sr11-daily-hours-monday-day" class="daily-hours-day">Lu</p>
-              <div id="sr11-daily-hours-monday-con" class="daily-hours-con-2">
-                <p
-                  id="sr11-daily-hours-monday-start"
-                  class="daily-hours-start"
-                  data-do="open-time-picker"
-                  data-day="monday"
-                  data-type="day"
-                  data-stnd="start"
-                >
-                  0:00
+              <!-- TODO: Hour lines start here -->
+              <div id="sr11-daily-hours-monday" class="daily-hours-con">
+                <p id="sr11-daily-hours-monday-day" class="daily-hours-day">
+                  Lu
                 </p>
-                <div id="sr11-daily-hours-sunday-end-con">
+                <div id="sr11-daily-hours-monday-con" class="daily-hours-con-2">
                   <p
-                    id="sr11-daily-hours-monday-end"
-                    class="daily-hours-end"
+                    id="sr11-daily-hours-monday-start"
+                    class="daily-hours-start"
                     data-do="open-time-picker"
                     data-day="monday"
                     data-type="day"
-                    data-stnd="end"
+                    data-stnd="start"
                   >
                     0:00
                   </p>
+                  <div id="sr11-daily-hours-sunday-end-con">
+                    <p
+                      id="sr11-daily-hours-monday-end"
+                      class="daily-hours-end"
+                      data-do="open-time-picker"
+                      data-day="monday"
+                      data-type="day"
+                      data-stnd="end"
+                    >
+                      0:00
+                    </p>
+                  </div>
                 </div>
-              </div>
-              <p
-                id="sr11-daily-hours-monday-time-total"
-                class="daily-hours-total"
-              >
-                0:00
-              </p>
-            </div>
-
-            <div id="sr11-daily-hours-tuesday" class="daily-hours-con">
-              <p id="sr11-daily-hours-tuesday-day" class="daily-hours-day">
-                Ma
-              </p>
-              <div id="sr11-daily-hours-tuesday-con" class="daily-hours-con-2">
                 <p
-                  id="sr11-daily-hours-tuesday-start"
-                  class="daily-hours-start"
-                  data-do="open-time-picker"
-                  data-day="tuesday"
-                  data-type="day"
-                  data-stnd="start"
+                  id="sr11-daily-hours-monday-time-total"
+                  class="daily-hours-total"
                 >
                   0:00
                 </p>
-                <div id="sr11-daily-hours-sunday-end-con">
+              </div>
+
+              <div id="sr11-daily-hours-tuesday" class="daily-hours-con">
+                <p id="sr11-daily-hours-tuesday-day" class="daily-hours-day">
+                  Ma
+                </p>
+                <div
+                  id="sr11-daily-hours-tuesday-con"
+                  class="daily-hours-con-2"
+                >
                   <p
-                    id="sr11-daily-hours-tuesday-end"
-                    class="daily-hours-end"
+                    id="sr11-daily-hours-tuesday-start"
+                    class="daily-hours-start"
                     data-do="open-time-picker"
                     data-day="tuesday"
                     data-type="day"
-                    data-stnd="end"
+                    data-stnd="start"
                   >
                     0:00
                   </p>
+                  <div id="sr11-daily-hours-sunday-end-con">
+                    <p
+                      id="sr11-daily-hours-tuesday-end"
+                      class="daily-hours-end"
+                      data-do="open-time-picker"
+                      data-day="tuesday"
+                      data-type="day"
+                      data-stnd="end"
+                    >
+                      0:00
+                    </p>
+                  </div>
                 </div>
-              </div>
-              <p
-                id="sr11-daily-hours-tuesday-time-total"
-                class="daily-hours-total"
-              >
-                0:00
-              </p>
-            </div>
-
-            <div id="sr11-daily-hours-wednesday" class="daily-hours-con">
-              <p id="sr11-daily-hours-wednesday-day" class="daily-hours-day">
-                Mi
-              </p>
-              <div
-                id="sr11-daily-hours-wednesday-con"
-                class="daily-hours-con-2"
-              >
                 <p
-                  id="sr11-daily-hours-wednesday-start"
-                  class="daily-hours-start"
-                  data-do="open-time-picker"
-                  data-day="wednesday"
-                  data-type="day"
-                  data-stnd="start"
+                  id="sr11-daily-hours-tuesday-time-total"
+                  class="daily-hours-total"
                 >
                   0:00
                 </p>
-                <div id="sr11-daily-hours-sunday-end-con">
+              </div>
+
+              <div id="sr11-daily-hours-wednesday" class="daily-hours-con">
+                <p id="sr11-daily-hours-wednesday-day" class="daily-hours-day">
+                  Mi
+                </p>
+                <div
+                  id="sr11-daily-hours-wednesday-con"
+                  class="daily-hours-con-2"
+                >
                   <p
-                    id="sr11-daily-hours-wednesday-end"
-                    class="daily-hours-end"
+                    id="sr11-daily-hours-wednesday-start"
+                    class="daily-hours-start"
                     data-do="open-time-picker"
                     data-day="wednesday"
                     data-type="day"
-                    data-stnd="end"
+                    data-stnd="start"
                   >
                     0:00
                   </p>
+                  <div id="sr11-daily-hours-sunday-end-con">
+                    <p
+                      id="sr11-daily-hours-wednesday-end"
+                      class="daily-hours-end"
+                      data-do="open-time-picker"
+                      data-day="wednesday"
+                      data-type="day"
+                      data-stnd="end"
+                    >
+                      0:00
+                    </p>
+                  </div>
                 </div>
-              </div>
-              <p
-                id="sr11-daily-hours-wednesday-time-total"
-                class="daily-hours-total"
-              >
-                0:00
-              </p>
-            </div>
-
-            <div id="sr11-daily-hours-thursday" class="daily-hours-con">
-              <p id="sr11-daily-hours-thursday-day" class="daily-hours-day">
-                Ju
-              </p>
-              <div id="sr11-daily-hours-thursday-con" class="daily-hours-con-2">
                 <p
-                  id="sr11-daily-hours-thursday-start"
-                  class="daily-hours-start"
-                  data-do="open-time-picker"
-                  data-day="thursday"
-                  data-type="day"
-                  data-stnd="start"
+                  id="sr11-daily-hours-wednesday-time-total"
+                  class="daily-hours-total"
                 >
                   0:00
                 </p>
-                <div id="sr11-daily-hours-sunday-end-con">
+              </div>
+
+              <div id="sr11-daily-hours-thursday" class="daily-hours-con">
+                <p id="sr11-daily-hours-thursday-day" class="daily-hours-day">
+                  Ju
+                </p>
+                <div
+                  id="sr11-daily-hours-thursday-con"
+                  class="daily-hours-con-2"
+                >
                   <p
-                    id="sr11-daily-hours-thursday-end"
-                    class="daily-hours-end"
+                    id="sr11-daily-hours-thursday-start"
+                    class="daily-hours-start"
                     data-do="open-time-picker"
                     data-day="thursday"
                     data-type="day"
-                    data-stnd="end"
+                    data-stnd="start"
                   >
                     0:00
                   </p>
+                  <div id="sr11-daily-hours-sunday-end-con">
+                    <p
+                      id="sr11-daily-hours-thursday-end"
+                      class="daily-hours-end"
+                      data-do="open-time-picker"
+                      data-day="thursday"
+                      data-type="day"
+                      data-stnd="end"
+                    >
+                      0:00
+                    </p>
+                  </div>
                 </div>
-              </div>
-              <p
-                id="sr11-daily-hours-thursday-time-total"
-                class="daily-hours-total"
-              >
-                0:00
-              </p>
-            </div>
-
-            <div id="sr11-daily-hours-friday" class="daily-hours-con">
-              <p id="sr11-daily-hours-friday-day" class="daily-hours-day">Vi</p>
-              <div id="sr11-daily-hours-friday-con" class="daily-hours-con-2">
                 <p
-                  id="sr11-daily-hours-friday-start"
-                  class="daily-hours-start"
-                  data-do="open-time-picker"
-                  data-day="friday"
-                  data-type="day"
-                  data-stnd="start"
+                  id="sr11-daily-hours-thursday-time-total"
+                  class="daily-hours-total"
                 >
                   0:00
                 </p>
-                <div id="sr11-daily-hours-sunday-end-con">
+              </div>
+
+              <div id="sr11-daily-hours-friday" class="daily-hours-con">
+                <p id="sr11-daily-hours-friday-day" class="daily-hours-day">
+                  Vi
+                </p>
+                <div id="sr11-daily-hours-friday-con" class="daily-hours-con-2">
                   <p
-                    id="sr11-daily-hours-friday-end"
-                    class="daily-hours-end"
+                    id="sr11-daily-hours-friday-start"
+                    class="daily-hours-start"
                     data-do="open-time-picker"
                     data-day="friday"
                     data-type="day"
-                    data-stnd="end"
+                    data-stnd="start"
                   >
                     0:00
                   </p>
+                  <div id="sr11-daily-hours-sunday-end-con">
+                    <p
+                      id="sr11-daily-hours-friday-end"
+                      class="daily-hours-end"
+                      data-do="open-time-picker"
+                      data-day="friday"
+                      data-type="day"
+                      data-stnd="end"
+                    >
+                      0:00
+                    </p>
+                  </div>
                 </div>
-              </div>
-              <p
-                id="sr11-daily-hours-friday-time-total"
-                class="daily-hours-total"
-              >
-                0:00
-              </p>
-            </div>
-
-            <div id="sr11-daily-hours-saturday" class="daily-hours-con">
-              <p id="sr11-daily-hours-saturday-day" class="daily-hours-day">
-                Sa
-              </p>
-              <div id="sr11-daily-hours-saturday-con" class="daily-hours-con-2">
                 <p
-                  id="sr11-daily-hours-saturday-start"
-                  class="daily-hours-start"
-                  data-do="open-time-picker"
-                  data-day="saturday"
-                  data-type="day"
-                  data-stnd="start"
+                  id="sr11-daily-hours-friday-time-total"
+                  class="daily-hours-total"
                 >
                   0:00
                 </p>
-                <div id="sr11-daily-hours-sunday-end-con">
+              </div>
+
+              <div id="sr11-daily-hours-saturday" class="daily-hours-con">
+                <p id="sr11-daily-hours-saturday-day" class="daily-hours-day">
+                  Sa
+                </p>
+                <div
+                  id="sr11-daily-hours-saturday-con"
+                  class="daily-hours-con-2"
+                >
                   <p
-                    id="sr11-daily-hours-saturday-end"
-                    class="daily-hours-end"
+                    id="sr11-daily-hours-saturday-start"
+                    class="daily-hours-start"
                     data-do="open-time-picker"
                     data-day="saturday"
                     data-type="day"
-                    data-stnd="end"
+                    data-stnd="start"
                   >
                     0:00
                   </p>
+                  <div id="sr11-daily-hours-sunday-end-con">
+                    <p
+                      id="sr11-daily-hours-saturday-end"
+                      class="daily-hours-end"
+                      data-do="open-time-picker"
+                      data-day="saturday"
+                      data-type="day"
+                      data-stnd="end"
+                    >
+                      0:00
+                    </p>
+                  </div>
                 </div>
-              </div>
-              <p
-                id="sr11-daily-hours-saturday-time-total"
-                class="daily-hours-total"
-              >
-                0:00
-              </p>
-            </div>
-
-            <div id="sr11-daily-hours-sunday" class="daily-hours-con">
-              <p id="sr11-daily-hours-sunday-day" class="daily-hours-day">Do</p>
-              <div id="sr11-daily-hours-sunday-con" class="daily-hours-con-2">
                 <p
-                  id="sr11-daily-hours-sunday-start"
-                  class="daily-hours-start"
-                  data-do="open-time-picker"
-                  data-day="sunday"
-                  data-type="day"
-                  data-stnd="start"
+                  id="sr11-daily-hours-saturday-time-total"
+                  class="daily-hours-total"
                 >
                   0:00
                 </p>
-                <div id="sr11-daily-hours-sunday-end-con">
+              </div>
+
+              <div id="sr11-daily-hours-sunday" class="daily-hours-con">
+                <p id="sr11-daily-hours-sunday-day" class="daily-hours-day">
+                  Do
+                </p>
+                <div id="sr11-daily-hours-sunday-con" class="daily-hours-con-2">
                   <p
-                    id="sr11-daily-hours-sunday-end"
-                    class="daily-hours-end"
+                    id="sr11-daily-hours-sunday-start"
+                    class="daily-hours-start"
                     data-do="open-time-picker"
                     data-day="sunday"
                     data-type="day"
-                    data-stnd="end"
+                    data-stnd="start"
                   >
                     0:00
                   </p>
+                  <div id="sr11-daily-hours-sunday-end-con">
+                    <p
+                      id="sr11-daily-hours-sunday-end"
+                      class="daily-hours-end"
+                      data-do="open-time-picker"
+                      data-day="sunday"
+                      data-type="day"
+                      data-stnd="end"
+                    >
+                      0:00
+                    </p>
+                  </div>
                 </div>
+                <p
+                  id="sr11-daily-hours-sunday-time-total"
+                  class="daily-hours-total"
+                >
+                  0:00
+                </p>
               </div>
-              <p
-                id="sr11-daily-hours-sunday-time-total"
-                class="daily-hours-total"
-              >
-                0:00
-              </p>
             </div>
-          </div>
-          <div id="sr11-sumary">
-            <div id="sr11-summary-hearder">
-              <p id="sr11-summary-header-text">Resumen de esta semana</p>
-            </div>
-            <div id="sr11-summary-time-total" class="sr11-summary-data-colum">
-              <p
-                id="sr11-summary-time-total-label"
-                class="sr11-summary-description-tx"
-              >
-                Horas total
-              </p>
-              <p id="sr11-summary-time-total-time" class="sr11-summary-data-tx">
-                0:00
-              </p>
-            </div>
-            <div id="sr11-summary-pay--hour" class="sr11-summary-data-colum">
-              <p
-                id="sr11-summary-pay--hour-label"
-                class="sr11-summary-description-tx"
-              >
-                Sueldo por hora
-              </p>
-              <button id="sr11-btn-change-salary" style="display: none">
-                Cambiar
-              </button>
-              <p id="sr11-summary-pay--hour-pay" class="sr11-summary-data-tx">
-                00
-              </p>
-            </div>
-            <div id="sr11-summary-pay-total" class="sr11-summary-data-colum">
-              <p
-                id="sr11-summary-pay-total-label"
-                class="sr11-summary-description-tx"
-              >
-                Pago total
-              </p>
-              <p
-                id="sr11-summary-pay-total-total-pay"
-                class="sr11-summary-data-tx"
-              >
-                0000
-              </p>
+            <div id="sr11-sumary">
+              <div id="sr11-summary-hearder">
+                <p id="sr11-summary-header-text">Resumen de esta semana</p>
+              </div>
+              <div id="sr11-summary-time-total" class="sr11-summary-data-colum">
+                <p
+                  id="sr11-summary-time-total-label"
+                  class="sr11-summary-description-tx"
+                >
+                  Horas total
+                </p>
+                <p
+                  id="sr11-summary-time-total-time"
+                  class="sr11-summary-data-tx"
+                >
+                  0:00
+                </p>
+              </div>
+              <div id="sr11-summary-pay--hour" class="sr11-summary-data-colum">
+                <p
+                  id="sr11-summary-pay--hour-label"
+                  class="sr11-summary-description-tx"
+                >
+                  Sueldo por hora
+                </p>
+                <button id="sr11-btn-change-salary" style="display: none">
+                  Cambiar
+                </button>
+                <p id="sr11-summary-pay--hour-pay" class="sr11-summary-data-tx">
+                  00
+                </p>
+              </div>
+              <div id="sr11-summary-pay-total" class="sr11-summary-data-colum">
+                <p
+                  id="sr11-summary-pay-total-label"
+                  class="sr11-summary-description-tx"
+                >
+                  Pago total
+                </p>
+                <p
+                  id="sr11-summary-pay-total-total-pay"
+                  class="sr11-summary-data-tx"
+                >
+                  0000
+                </p>
+              </div>
             </div>
           </div>
         </div>
         <!-- sr12 -->
-        <div id="sr12" class="sr">
+        <div id="sr12" class="sr-none">
           <div id="sr12-tb" class="tb tb-no-backg">
             <div class="tb-cont-con">
               <svg
@@ -1707,7 +1735,7 @@
             </div>
           </div>
 
-          <div class="sr12-content-con">
+          <div class="sr12-content-con sr-main-con-for-padding">
             <div id="sr12-info-con" class="info-con">
               <p id="sr12-header" class="sr-header">Ajustes de tu equipo</p>
             </div>
@@ -1731,7 +1759,9 @@
                     id="sr12-img-upload-con"
                   >
                     <div class="sr12-img-con" id="sr12-img-con">
+                      <!-- <img src="" alt="" /> -->
                       <svg
+                        id="sr12-svg-for-img"
                         xmlns="http://www.w3.org/2000/svg"
                         width="32"
                         height="32"
@@ -1892,7 +1922,7 @@
           </div>
         </div>
         <!-- sr16 -->
-        <div id="sr16" class="sr">
+        <div id="sr16" class="sr-none">
           <div id="sr16-tb" class="tb tb-no-backg">
             <div class="tb-cont-con">
               <svg
@@ -2148,7 +2178,8 @@
                   class="switch-description-tx"
                 >
                   Como asistente podrá ver y editar las tablas de horas de todos
-                  los miembros (como un admin)
+                  los miembros. Esto conveirte a tu trabajador a un admin del
+                  equipo. <strong>Tendrá todo los derechos de un admin.</strong>
                 </p>
               </div>
             </div>
@@ -2169,7 +2200,7 @@
           </div>
         </div>
         <!-- sr17 -->
-        <div id="sr17" class="sr">
+        <div id="sr17" class="sr-none">
           <div id="sr17-tb" class="tb tb-no-backg">
             <div class="tb-cont-con">
               <svg
@@ -2232,7 +2263,7 @@
           </div>
         </div>
         <!-- sr19 -->
-        <div id="sr19" class="sr">
+        <div id="sr19" class="sr-none">
           <div id="sr19-tb" class="tb tb-no-backg">
             <div class="tb-cont-con">
               <svg
@@ -2251,104 +2282,106 @@
               <!-- <button id="sr19-tb-btn-back">🔙</button> -->
             </div>
           </div>
-          <div id="sr19-info-con" class="info-con">
-            <p id="sr19-header" class="sr-header">Información de tu cuenta</p>
-            <!-- <p id="sr19-header-2" class="sr-header-2">De tu cuenta</p> -->
-          </div>
-          <div id="sr19-contbx" class="contbx">
-            <div id="sr19-contbx-cont-con" class="contbx-con">
-              <p id="sr19-contbx-header" class="sr-header-2">
-                Has tus cambios aqui
-              </p>
-              <div id="sr19-inp-email-con" class="input-con-main">
-                <div id="sr19-inp-email-con-2" class="input-con-secd">
-                  <p id="sr19-inp-email-lab" class="input-label"></p>
-                  <input
-                    id="sr19-inp-email"
-                    class="input"
-                    type="email"
-                    placeholder="probarthoras24@icloud.com"
-                  />
+          <div class="sr-main-con-for-padding">
+            <div id="sr19-info-con" class="info-con">
+              <p id="sr19-header" class="sr-header">Información de tu cuenta</p>
+              <!-- <p id="sr19-header-2" class="sr-header-2">De tu cuenta</p> -->
+            </div>
+            <div id="sr19-contbx" class="contbx">
+              <div id="sr19-contbx-cont-con" class="contbx-con">
+                <p id="sr19-contbx-header" class="sr-header-2">
+                  Has tus cambios aqui
+                </p>
+                <div id="sr19-inp-email-con" class="input-con-main">
+                  <div id="sr19-inp-email-con-2" class="input-con-secd">
+                    <p id="sr19-inp-email-lab" class="input-label"></p>
+                    <input
+                      id="sr19-inp-email"
+                      class="input"
+                      type="email"
+                      placeholder="probarthoras24@icloud.com"
+                    />
+                  </div>
                 </div>
-              </div>
 
-              <div id="sr19-inp-password-con" class="input-con-main">
-                <div id="sr19-inp-password-con-2" class="input-con-secd">
-                  <p id="sr19-inp-password-lab" class="input-label"></p>
-                  <input
-                    id="sr19-inp-password"
-                    class="input"
-                    type="text"
-                    placeholder="***********"
-                  />
+                <div id="sr19-inp-password-con" class="input-con-main">
+                  <div id="sr19-inp-password-con-2" class="input-con-secd">
+                    <p id="sr19-inp-password-lab" class="input-label"></p>
+                    <input
+                      id="sr19-inp-password"
+                      class="input"
+                      type="text"
+                      placeholder="***********"
+                    />
+                  </div>
                 </div>
               </div>
+              <div id="sr19-contbx-btn-con" class="contbx-btn-con">
+                <button id="sr19-contbx-btn-cancel" class="contbx-btn-back">
+                  Cancelar
+                </button>
+                <button
+                  id="sr19-contbx-btn-save-changes"
+                  class="contbx-btn-ahead"
+                >
+                  Guardar cambios
+                </button>
+              </div>
             </div>
-            <div id="sr19-contbx-btn-con" class="contbx-btn-con">
-              <button id="sr19-contbx-btn-cancel" class="contbx-btn-back">
-                Cancelar
-              </button>
-              <button
-                id="sr19-contbx-btn-save-changes"
-                class="contbx-btn-ahead"
-              >
-                Guardar cambios
-              </button>
-            </div>
-          </div>
-          <div class="sr26-cont-con-2-2">
-            <div class="sr26-header-con">
-              <p class="sr26-header-text">Mas información</p>
-            </div>
-            <div class="sr26-inf-con">
-              <p id="sr19-info-email" class="sr26-inf-con-info">
-                Correo: <span></span>
-              </p>
-            </div>
-            <div class="sr26-inf-con">
-              <p id="sr19-info-team-name" class="sr26-inf-con-info">
-                Nombre de equipo: <span></span>
-              </p>
-            </div>
-            <div class="sr26-inf-con">
-              <p id="sr19-info-level" class="sr26-inf-con-info">
-                Usuario: <span></span>
-              </p>
-            </div>
-            <div class="sr26-inf-con">
-              <p id="sr19-info-pro" class="sr26-inf-con-info">
-                Plan: <span></span>
-              </p>
-            </div>
-            <div class="sr26-inf-con">
-              <p id="sr19-info-pro-start" class="sr26-inf-con-info">
-                Tu plan empezó el: <span></span>
-              </p>
-            </div>
-            <div class="sr26-inf-con">
-              <p id="sr19-info-pro-end" class="sr26-inf-con-info">
-                Tu plan vence el: <span></span>
-              </p>
-            </div>
-            <div class="sr26-inf-con">
-              <p id="sr19-info-account-created" class="sr26-inf-con-info">
-                Tu cuenta fue creada el: <span></span>
-              </p>
-            </div>
-            <div class="sr26-inf-con">
-              <p id="sr19-info-last-payment" class="sr26-inf-con-info">
-                Ultimo paga: <span></span>
-              </p>
-            </div>
-            <div class="sr26-inf-con">
-              <p id="sr19-info-total-paid" class="sr26-inf-con-info">
-                En total pagaste: <span></span>
-              </p>
+            <div class="sr26-cont-con-2-2">
+              <div class="sr26-header-con">
+                <p class="sr26-header-text">Mas información</p>
+              </div>
+              <div class="sr26-inf-con">
+                <p id="sr19-info-email" class="sr26-inf-con-info">
+                  Correo: <span></span>
+                </p>
+              </div>
+              <div class="sr26-inf-con">
+                <p id="sr19-info-team-name" class="sr26-inf-con-info">
+                  Nombre de equipo: <span></span>
+                </p>
+              </div>
+              <div class="sr26-inf-con">
+                <p id="sr19-info-level" class="sr26-inf-con-info">
+                  Usuario: <span></span>
+                </p>
+              </div>
+              <div class="sr26-inf-con">
+                <p id="sr19-info-pro" class="sr26-inf-con-info">
+                  Plan: <span></span>
+                </p>
+              </div>
+              <div class="sr26-inf-con">
+                <p id="sr19-info-pro-start" class="sr26-inf-con-info">
+                  Tu plan empezó el: <span></span>
+                </p>
+              </div>
+              <div class="sr26-inf-con">
+                <p id="sr19-info-pro-end" class="sr26-inf-con-info">
+                  Tu plan vence el: <span></span>
+                </p>
+              </div>
+              <div class="sr26-inf-con">
+                <p id="sr19-info-account-created" class="sr26-inf-con-info">
+                  Tu cuenta fue creada el: <span></span>
+                </p>
+              </div>
+              <div class="sr26-inf-con">
+                <p id="sr19-info-last-payment" class="sr26-inf-con-info">
+                  Ultimo pago: <span></span>
+                </p>
+              </div>
+              <div class="sr26-inf-con">
+                <p id="sr19-info-total-paid" class="sr26-inf-con-info">
+                  En total pagaste: <span></span>
+                </p>
+              </div>
             </div>
           </div>
         </div>
 
-        <div id="sr20" class="sr">
+        <div id="sr20" class="sr-none">
           <div id="sr20-choose-con">
             <div id="sr20-tb" class="tb tb-no-backg">
               <div class="tb-cont-con">
@@ -2396,7 +2429,7 @@
             </div>
           </div>
         </div>
-        <div id="sr21" class="sr">
+        <div id="sr21" class="sr-none">
           <div class="info-con">
             <p id="sr21-time-picker-header" class="sr-header">
               Hora de <span>entrada</span>
@@ -2436,7 +2469,7 @@
           </form>
         </div>
 
-        <div id="sr22" class="">
+        <!-- <div id="sr22" class="sr-none">
           <div id="sr22-cont-con">
             <div id="sr22-spinner-con">
               <svg
@@ -2488,8 +2521,8 @@
               <p id="sr22-wait-text">Espera...</p>
             </div>
           </div>
-        </div>
-        <div id="sr23" class="sr">
+        </div> -->
+        <div id="sr23" class="sr-none">
           <div id="sr7-tb" class="tb">
             <div class="tb-cont-con">
               <svg
@@ -2563,7 +2596,7 @@
           </div> -->
           </div>
         </div>
-        <div id="sr24" class="sr">
+        <div id="sr24" class="sr-none">
           <div class="tb tb-no-backg">
             <div class="tb-cont-con">
               <svg
@@ -2605,7 +2638,7 @@
           </div>
           <button id="sr24-btn-buy-plan">Comprar ahora</button>
         </div>
-        <div id="sr25" class="sr">
+        <div id="sr25" class="sr-none">
           <div class="tb tb-no-backg">
             <div class="tb-cont-con">
               <svg
@@ -2674,14 +2707,15 @@
                     electrónico, código de equipo.
                   </li>
                   <li class="sr25-cont-con-5-opt">
-                    ¡Listo! Activamos tu plan PREMIUM
+                    ¡Listo! Activamos tu plan
+                    <span id="sr25-cont-con-5-opt-premium">PREMIUM</span>
                   </li>
                 </ul>
               </div>
             </div>
           </div>
         </div>
-        <div id="sr26" class="sr">
+        <div id="sr26" class="sr-none">
           <div class="tb tb-no-backg">
             <div class="tb-cont-con">
               <svg
@@ -2699,128 +2733,130 @@
               </svg>
             </div>
           </div>
-          <div id="sr26-cont-con">
-            <div class="sr26-header-con">
-              <p class="sr26-header-text">Account admin settings</p>
-            </div>
-            <div id="sr26-con">
-              <div class="sr26-cont-con-2">
-                <p class="sr26-cont-con-2-header">Set app plan</p>
-                <div class="sr26-cont-con-3">
-                  <div class="sr26-cont-con-4">
-                    <p class="sr26-cont-con-4-tx">time</p>
-                    <input
-                      class="sr26-cont-con-4-val"
-                      type="number"
-                      name=""
-                      id="sr26-inp-number-of"
-                      placeholder="set"
-                    />
-                  </div>
-                  <div class="sr26-cont-con-4">
-                    <p class="sr26-cont-con-4-tx">var</p>
-                    <select name="" id="sr26-select-time-var" class="input">
-                      <option value="set">set</option>
-                      <option value="ever">no end</option>
-                      <option value="days">day/s</option>
-                      <option value="months">month/s</option>
-                      <option value="years">year/s</option>
-                    </select>
-                    <!-- <p class="sr26-cont-con-4-val">days</p> -->
-                  </div>
-                  <div class="sr26-cont-con-4">
-                    <p class="sr26-cont-con-4-tx">price</p>
-                    <input
-                      id="sr26-inp-price"
-                      class="sr26-cont-con-4-val"
-                      type="number"
-                      placeholder="$ 000"
-                    />
-                    <!-- <p class="sr26-cont-con-4-val">$180</p> -->
-                  </div>
-                  <button id="sr26-btn-set-plan">Set</button>
-                </div>
+          <div class="sr-main-con-for-padding">
+            <div id="sr26-cont-con">
+              <div class="sr26-header-con">
+                <p class="sr26-header-text">Account admin settings</p>
               </div>
-              <div class="sr26-cont-con-2">
-                <p class="sr26-cont-con-2-header">Set admin level</p>
-                <div class="sr26-cont-con-3">
-                  <div id="sr26-cont-con-5">
-                    <div class="sr26-cont-con-3-tx">
-                      <p>Admin level:</p>
-                    </div>
-                    <div class="sr26-cont-con-4-val">
-                      <select
+              <div id="sr26-con">
+                <div class="sr26-cont-con-2">
+                  <p class="sr26-cont-con-2-header">Set app plan</p>
+                  <div class="sr26-cont-con-3">
+                    <div class="sr26-cont-con-4">
+                      <p class="sr26-cont-con-4-tx">time</p>
+                      <input
+                        class="sr26-cont-con-4-val"
+                        type="number"
                         name=""
-                        id="sr26-select-Admin-level"
-                        class="input"
-                      >
-                        <option value="admin">admin</option>
-                        <option value="top admin">top admin</option>
-                      </select>
+                        id="sr26-inp-number-of"
+                        placeholder="set"
+                      />
                     </div>
+                    <div class="sr26-cont-con-4">
+                      <p class="sr26-cont-con-4-tx">var</p>
+                      <select name="" id="sr26-select-time-var" class="input">
+                        <option value="set">set</option>
+                        <option value="ever">no end</option>
+                        <option value="days">day/s</option>
+                        <option value="months">month/s</option>
+                        <option value="years">year/s</option>
+                      </select>
+                      <!-- <p class="sr26-cont-con-4-val">days</p> -->
+                    </div>
+                    <div class="sr26-cont-con-4">
+                      <p class="sr26-cont-con-4-tx">price</p>
+                      <input
+                        id="sr26-inp-price"
+                        class="sr26-cont-con-4-val"
+                        type="number"
+                        placeholder="$ 000"
+                      />
+                      <!-- <p class="sr26-cont-con-4-val">$180</p> -->
+                    </div>
+                    <button id="sr26-btn-set-plan">Set</button>
                   </div>
-                  <button id="sr26-btn-set-admin-level">Set</button>
+                </div>
+                <div class="sr26-cont-con-2">
+                  <p class="sr26-cont-con-2-header">Set admin level</p>
+                  <div class="sr26-cont-con-3">
+                    <div id="sr26-cont-con-5">
+                      <div class="sr26-cont-con-3-tx">
+                        <p>Admin level:</p>
+                      </div>
+                      <div class="sr26-cont-con-4-val">
+                        <select
+                          name=""
+                          id="sr26-select-Admin-level"
+                          class="input"
+                        >
+                          <option value="admin">admin</option>
+                          <option value="top admin">top admin</option>
+                        </select>
+                      </div>
+                    </div>
+                    <button id="sr26-btn-set-admin-level">Set</button>
+                  </div>
                 </div>
               </div>
             </div>
-          </div>
-          <div class="sr26-cont-con-2-2">
-            <div class="sr26-header-con">
-              <p class="sr26-header-text">Account info</p>
-            </div>
-            <div class="sr26-inf-con">
-              <p id="sr26-info-email" class="sr26-inf-con-info">
-                Email: <span></span>
-              </p>
-            </div>
-            <div class="sr26-inf-con">
-              <p id="sr26-info-team-name" class="sr26-inf-con-info">
-                Team name: <span></span>
-              </p>
-            </div>
-            <div class="sr26-inf-con">
-              <p id="sr26-info-password" class="sr26-inf-con-info">
-                Password: <span></span>
-              </p>
-            </div>
-            <div class="sr26-inf-con">
-              <p id="sr26-info-level" class="sr26-inf-con-info">
-                Admin level: <span></span>
-              </p>
-            </div>
-            <div class="sr26-inf-con">
-              <p id="sr26-info-pro" class="sr26-inf-con-info">
-                Pro status: <span></span>
-              </p>
-            </div>
-            <div class="sr26-inf-con">
-              <p id="sr26-info-pro-start" class="sr26-inf-con-info">
-                Pro start: <span></span>
-              </p>
-            </div>
-            <div class="sr26-inf-con">
-              <p id="sr26-info-pro-end" class="sr26-inf-con-info">
-                Pro end: <span></span>
-              </p>
-            </div>
-            <div class="sr26-inf-con">
-              <p id="sr26-info-account-created" class="sr26-inf-con-info">
-                Account created on: <span></span>
-              </p>
-            </div>
-            <div class="sr26-inf-con">
-              <p id="sr26-info-last-payment" class="sr26-inf-con-info">
-                Last payment: <span></span>
-              </p>
-            </div>
-            <div class="sr26-inf-con">
-              <p id="sr26-info-total-paid" class="sr26-inf-con-info">
-                Total amount paid: <span></span>
-              </p>
+            <div class="sr26-cont-con-2-2">
+              <div class="sr26-header-con">
+                <p class="sr26-header-text">Account info</p>
+              </div>
+              <div class="sr26-inf-con">
+                <p id="sr26-info-email" class="sr26-inf-con-info">
+                  Email: <span></span>
+                </p>
+              </div>
+              <div class="sr26-inf-con">
+                <p id="sr26-info-team-name" class="sr26-inf-con-info">
+                  Team name: <span></span>
+                </p>
+              </div>
+              <div class="sr26-inf-con">
+                <p id="sr26-info-password" class="sr26-inf-con-info">
+                  Password: <span></span>
+                </p>
+              </div>
+              <div class="sr26-inf-con">
+                <p id="sr26-info-level" class="sr26-inf-con-info">
+                  Admin level: <span></span>
+                </p>
+              </div>
+              <div class="sr26-inf-con">
+                <p id="sr26-info-pro" class="sr26-inf-con-info">
+                  Pro status: <span></span>
+                </p>
+              </div>
+              <div class="sr26-inf-con">
+                <p id="sr26-info-pro-start" class="sr26-inf-con-info">
+                  Pro start: <span></span>
+                </p>
+              </div>
+              <div class="sr26-inf-con">
+                <p id="sr26-info-pro-end" class="sr26-inf-con-info">
+                  Pro end: <span></span>
+                </p>
+              </div>
+              <div class="sr26-inf-con">
+                <p id="sr26-info-account-created" class="sr26-inf-con-info">
+                  Account created on: <span></span>
+                </p>
+              </div>
+              <div class="sr26-inf-con">
+                <p id="sr26-info-last-payment" class="sr26-inf-con-info">
+                  Last payment: <span></span>
+                </p>
+              </div>
+              <div class="sr26-inf-con">
+                <p id="sr26-info-total-paid" class="sr26-inf-con-info">
+                  Total amount paid: <span></span>
+                </p>
+              </div>
             </div>
           </div>
         </div>
-        <div id="sr27" class="sr">
+        <div id="sr27" class="sr-none">
           <div id="sr27-cont-con">
             <div id="sr27-cont-con-2">
               <p id="sr27-cont-con-text">
@@ -2871,7 +2907,7 @@
             </div>
           </div>
         </div>
-        <div id="sr28" class="sr">
+        <div id="sr28" class="sr-none" data-fromWhere="sr28">
           <div id="sr28-tb" class="tb tb-no-backg">
             <div class="tb-cont-con">
               <!-- <button id="sr13-tb-btn-back">🔙</button> -->
@@ -2944,7 +2980,7 @@
             </div>
           </div>
         </div>
-        <div id="sr29" class="sr">
+        <div id="sr29" class="sr-none" data-fromWhere="sr29">
           <div id="sr29-tb" class="tb tb-no-backg">
             <div class="tb-cont-con">
               <svg
@@ -2971,7 +3007,7 @@
             <img id="sr29-image" src="images/team image.png" alt="" />
           </div>
         </div>
-        <div id="sr30" class="sr">
+        <!-- <div id="sr30" class="sr-none">
           <div id="sr30">
             <div id="sr30-main-rate-con">
               <div id="sr30-rate-con-2">
@@ -3045,8 +3081,8 @@
               </div>
             </div>
           </div>
-        </div>
-        <div id="sr31" class="sr">
+        </div> -->
+        <div id="sr31" class="sr-none">
           <div id="sr31-messages-container">
             <p id="sr31-message-text">
               Hubo un error. Parece que no hay conexión a internet. Verifícalo e
@@ -3055,7 +3091,7 @@
           </div>
           <button id="sr31-btn-reload">Volver a intentar</button>
         </div>
-        <div id="sr32" class="sr">
+        <div id="sr32" class="sr-none" data-fromWhere="sr32">
           <div id="sr32-tb" class="tb tb-no-backg">
             <div class="tb-cont-con">
               <svg
@@ -3087,25 +3123,35 @@
             <div id="sr32-qr-con-2"></div>
           </div>
         </div>
-        <div id="sr33" class="sr">
+        <script
+          src="https://unpkg.com/html5-qrcode"
+          type="text/javascript"
+        ></script>
+        <div id="sr33" class="sr-none">
           <div id="sr33-tb" class="tb tb-no-backg">
             <div class="tb-cont-con">
-              <svg
-                id="sr33-btn-back"
-                xmlns="http://www.w3.org/2000/svg"
-                width="24"
-                height="24"
-                viewBox="0 0 24 24"
-                fill="none"
-              >
-                <path
-                  d="M14.5029 12L24 21.4971V24H21.4971L12 14.5029L2.50286 24H0V21.4971L9.49714 12L0 2.50286V0H2.50286L12 9.49714L21.4971 0H24V2.50286L14.5029 12Z"
-                  fill="#0085FF"
-                />
-              </svg>
+              <label for="html5-qrcode-button-camera-stop">
+                <svg
+                  id="sr33-btn-back"
+                  xmlns="http://www.w3.org/2000/svg"
+                  width="24"
+                  height="24"
+                  viewBox="0 0 24 24"
+                  fill="none"
+                >
+                  <path
+                    d="M14.5029 12L24 21.4971V24H21.4971L12 14.5029L2.50286 24H0V21.4971L9.49714 12L0 2.50286V0H2.50286L12 9.49714L21.4971 0H24V2.50286L14.5029 12Z"
+                    fill="#0085FF"
+                  />
+                </svg>
+              </label>
             </div>
           </div>
-          <div id="sr33-qr-scanner-con">
+          <div id="reader">
+            <!-- <script
+              src="https://unpkg.com/html5-qrcode"
+              type="text/javascript"
+            ></script> -->
             <!-- <p id="sr33-qr-header-name">QR para <span>Nombre</span></p>
             <div id="sr33-qr-img-con"></div>
             <p id="sr33-qr-instruction-text">
@@ -3120,42 +3166,164 @@
           </div>
         </div>
       </div>
-    </div>
 
-    <!-- d -->
+      <!-- d -->
 
-    <!-- <div class="sr11-rePer-con">
-      <p class="sr11-rePer-con-text">
-        Josué pide permiso para hacer cambios en sus horas. ¿Que deseas hacer?
-      </p>
-      <div class="sr11-rePer-btn-con">
-        <button
-          class="sr11-btn-deny"
-          data-where="permision-deny"
-          data-memberId="${val.memberId}"
-        >
-          Negar
-        </button>
-        <button
-          class="sr11-btn-grant"
-          data-where="permision-grant"
-          data-memberId="${val.memberId}"
-        >
-          Conceder por 5 min
-        </button>
+      <!-- <div class="sr11-rePer-con">
+        <p class="sr11-rePer-con-text">
+          Josué pide permiso para hacer cambios en sus horas. ¿Que deseas hacer?
+        </p>
+        <div class="sr11-rePer-btn-con">
+          <button
+            class="sr11-btn-deny"
+            data-where="permision-deny"
+            data-memberId="${val.memberId}"
+          >
+            Negar
+          </button>
+          <button
+            class="sr11-btn-grant"
+            data-where="permision-grant"
+            data-memberId="${val.memberId}"
+          >
+            Conceder por 5 min
+          </button>
+        </div>
+      </div> -->
+
+      <div id="error-success-message" class="error-mess">
+        <p id="error-success-message-text" class="error-mess-text">
+          No hay conecxión a internet
+        </p>
       </div>
-    </div> -->
+      <div id="sr22" class="">
+        <div id="sr22-cont-con-3">
+          <div id="sr22-spinner-con">
+            <svg
+              xmlns="http://www.w3.org/2000/svg"
+              width="100"
+              height="100"
+              viewBox="0 0 100 100"
+              fill="none"
+            >
+              <circle
+                cx="50"
+                cy="50"
+                r="45"
+                stroke="#0085ff"
+                stroke-width="10"
+                stroke-dasharray="113.097"
+                stroke-dashoffset="0"
+              >
+                <animateTransform
+                  attributeName="transform"
+                  attributeType="XML"
+                  type="rotate"
+                  from="0 50 50"
+                  to="360 50 50"
+                  dur="1s"
+                  repeatCount="indefinite"
+                />
+              </circle>
+            </svg>
+          </div>
+          <div id="sr22-cont-con-2">
+            <p id="sr22-wait-text">Espera...</p>
+          </div>
+        </div>
+      </div>
 
-    <div id="error-success-message" class="error-mess">
-      <p id="error-success-message-text" class="error-mess-text">
-        No hay conecxión a internet
-      </p>
-    </div>
-    <!-- <div id="success-message"></div> -->
-    <!-- srs-get-started ends -->
-    <!-- app footer -->
-    <div id="app-footer">
-      <p id="htmlf">© copyright 2024 M&WDesigns</p>
+      <div id="sr30" style="display: none" class="">
+        <div id="sr30">
+          <div id="sr30-main-rate-con">
+            <div id="sr30-rate-con-2">
+              <div id="sr30-info-con">
+                <p id="sr30-info-con-header">Califícanos</p>
+                <p id="sr30-info-con-content">
+                  Si te es útil esta aplicación, danos un 5 y describe lo que
+                  más te gusta.
+                </p>
+              </div>
+              <div id="sr30-rate-con-3">
+                <div id="sr30-rate-con-4">
+                  <div id="sr30-star-con">
+                    <span
+                      id="star1"
+                      data-star="1"
+                      data-active="off"
+                      class="star"
+                      >★
+                    </span>
+                    <span
+                      id="star2"
+                      data-star="2"
+                      data-active="off"
+                      class="star"
+                      >★
+                    </span>
+                    <span
+                      id="star3"
+                      data-star="3"
+                      data-active="off"
+                      class="star"
+                      >★
+                    </span>
+                    <span
+                      id="star4"
+                      data-star="4"
+                      data-active="off"
+                      class="star"
+                      >★
+                    </span>
+                    <span
+                      id="star5"
+                      data-star="5"
+                      data-active="off"
+                      class="star"
+                      >★
+                    </span>
+                  </div>
+                  <p id="sr30-rate-output">Calificación: 0/5</p>
+                </div>
+                <p id="sr30-description-textarea-hint"></p>
+              </div>
+              <div id="sr30-rate-user-description-con">
+                <p id="sr30-rate-user-description-text">
+                  Describe tu opinión aquí:
+                </p>
+                <textarea
+                  name=""
+                  rows="5"
+                  id="sr30-rate-user-description"
+                  maxlength="200"
+                  placeholder="Escribe aquí"
+                ></textarea>
+
+                <div id="sr30-btn-con">
+                  <button id="sr30-btn-rate-later">Después</button>
+                  <button id="sr30-btn-rate-now">Calificar</button>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+      <div id="sr34" class="">
+        <div id="sr34-alert-con">
+          <div id="sr34-alert-con-2">
+            <p id="sr34-alert-header">Liste</p>
+            <p id="sr34-alert-body">Comfirmamos este paso</p>
+          </div>
+          <button id="sr34-btn-alert-understand">Entendido</button>
+        </div>
+      </div>
+      <!-- <div id="success-message"></div> -->
+      <!-- srs-get-started ends -->
+      <!-- app footer -->
+      <!-- TODO: coment in -->
+      <div id="app-footer">
+        <p id="htmlf">© copyright 2024 M&WDesigns</p>
+      </div>
     </div>
   </body>
 </html>
@@ -3169,3 +3337,11 @@
   </div>
 </div> -->
 <!-- SWITCH COMPONENT FOR COPY END -->
+
+<!-- <body>
+  <div class="main-container">
+    <div class="header-red">this is my app header</div>
+    <div class="all-content-container">here goes all my app's screens</div>
+    <div class="footer-red">this is my app footer</div>
+  </div>
+</body> -->
