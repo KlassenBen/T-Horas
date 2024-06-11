@@ -5733,6 +5733,13 @@ class App {
       curDataLocal = this.#curData;
     }
 
+    SVGImgConSr12.style.display = "none";
+    ImgConSr12.style.height = "120px";
+    ImgConSr12.style.width = "120px";
+    console.log("img ready");
+
+    ImgConSr12.innerHTML = `<img class="sr12-display-team-img" src="${teamImage.src}" alt="Selected Image">`;
+
     inpTeamName.value = curDataLocal.teamName;
     dispTeamCode.textContent = curDataLocal.teamCode;
     inpTeamPay.value = curDataLocal.salary;
