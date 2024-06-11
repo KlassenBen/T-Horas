@@ -2780,7 +2780,7 @@ p {
   gap: 24px;
   background: rgba(111, 155, 196, 0.233);
   /* TODO: Here */
-  backdrop-filter: blur(6px);
+  backdrop-filter: blur(4px);
   position: absolute;
   /* display: flex; */
 }
