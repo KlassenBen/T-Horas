@@ -28,9 +28,24 @@ import {
   uploadBytes,
 } from "https://www.gstatic.com/firebasejs/10.11.0/firebase-storage.js";
 
+const firebaseConfig = {
+  apiKey: "AIzaSyA30VKmZDuM0Xv0z-CuG5o6C-4lU4Z-u64",
+  authDomain: "auth-test-f961a.firebaseapp.com",
+  projectId: "auth-test-f961a",
+  storageBucket: "auth-test-f961a.appspot.com",
+  messagingSenderId: "720650529368",
+  appId: "1:720650529368:web:dd05407559ed23a0d7f82d",
+  measurementId: "G-PLCKMJYMFB",
+};
+const firebaseApp = initializeApp(firebaseConfig);
+const db = getFirestore(firebaseApp);
+
 // <-- Labels
 const hourSheetWeekNumber = document.querySelector(
   "#sr11-daily-hours-week-number"
+);
+const hourSheetWeekNumberLast = document.querySelector(
+  "#sr11-daily-hours-week-number-last"
 );
 const sr20Logout = document.querySelector("#sr20-cho-logout");
 const sr20DeleteAccount = document.querySelector("#sr20-cho-delete-account");
@@ -93,6 +108,7 @@ const sr30DescriptionTextArea = document.querySelector(
 const sr30UserInputText = document.querySelector(`#sr30-rate-user-description`);
 const sr30StarsCon = document.querySelector(`#sr30-rate-con-4`);
 // Rating ends
+
 const header = document.querySelector("#app-header");
 const stickyHeader = header.offsetTop;
 
@@ -144,7 +160,7 @@ const sr11punchInClockMinutes = document.querySelector(
 const sr11punchInClockSeconds = document.querySelector(
   "#sr11-punchin-clock-seconds"
 );
-const sr11punchInDay = document.querySelector("#sr11-punchin-day");
+const sr11punchInDay = document.querySelector("#sr11-punchin-day span");
 const sr11punchInConMain = document.querySelector("#sr11-punchin-cont-con");
 const sr11SettingsPunchInCon = document.querySelector("#sr16-swi-punchin-con");
 const sr9CreateMemPunchInCon = document.querySelector("#sr9-swi-punchin-con");
@@ -204,6 +220,7 @@ const sr31 = document.querySelector("#sr31");
 const sr32 = document.querySelector("#sr32");
 const sr33 = document.querySelector("#sr33");
 const sr34 = document.querySelector("#sr34");
+const sr35 = document.querySelector("#sr35");
 
 // <-- Buttons
 const btnWeekSelectForward = document.querySelector(
@@ -212,8 +229,20 @@ const btnWeekSelectForward = document.querySelector(
 const btnWeekSelectBack = document.querySelector(
   "#sr11-daily-hours-btn-week-back"
 );
+const btnWeekSelectForwardPath = document.querySelector(
+  "#sr11-daily-hours-btn-week-forward path"
+);
+const btnWeekSelectBackPath = document.querySelector(
+  "#sr11-daily-hours-btn-week-back path"
+);
 const btnsr16InfoSaveChanges = document.querySelector(
   "#sr16-contbx-btn-save-changes"
+);
+const btnsr11UpdateCurWeekToStartWeek = document.querySelector(
+  "#sr11-update-week-btn"
+);
+const sr7UpdateCurWeekToStartWeekCon = document.querySelector(
+  "#sr11-update-week-con-main"
 );
 const btnsr16SettingsSaveChanges = document.querySelector(
   "#sr16-contbx1-btn-save-changes"
@@ -224,6 +253,7 @@ const btnsr16SettingsCancel = document.querySelector(
 );
 const btnsr16DeleteMember = document.querySelector("#sr16-delete-member");
 const btnsr17LeaveTeam = document.querySelector("#sr17-leave-team");
+const btnsr17NewWeek = document.querySelector("#sr17-new-week");
 const btnsr11NewTimeTable = document.querySelector(
   "#sr11-tb-btn-new-time-table"
 );
@@ -322,18 +352,7 @@ const btnsr29Back = document.querySelector("#sr29-btn-back");
 const btnsr32Back = document.querySelector("#sr32-btn-back");
 const btnsr33Back = document.querySelector("#sr33-btn-back");
 
-const firebaseConfig = {
-  apiKey: "AIzaSyA30VKmZDuM0Xv0z-CuG5o6C-4lU4Z-u64",
-  authDomain: "auth-test-f961a.firebaseapp.com",
-  projectId: "auth-test-f961a",
-  storageBucket: "auth-test-f961a.appspot.com",
-  messagingSenderId: "720650529368",
-  appId: "1:720650529368:web:dd05407559ed23a0d7f82d",
-  measurementId: "G-PLCKMJYMFB",
-};
-const firebaseApp = initializeApp(firebaseConfig);
-const db = getFirestore(firebaseApp);
-
+// TODO: LOOK HERE FIRST. NEEDS THE AUTO NEW WEEK ADD SYSTEM UPDATED
 class App {
   #alfaNumDitch = [
     "z",
@@ -384,6 +403,15 @@ class App {
     "1",
     "0",
   ];
+  #weekDaysSp = [
+    "domingo",
+    "lunes",
+    "martes",
+    "miércoles",
+    "jueves",
+    "viernes",
+    "sábado",
+  ];
 
   //cookies
   #cTeamCode;
@@ -396,7 +424,7 @@ class App {
   #timePickerUpdateDay;
   #timePickerUpdatetype;
   #timePickerUpdatestnd;
-  #weekDisplayNumberMinus = 1;
+  #weekDisplayNumberMinus;
   #otp;
   #email;
   #password;
@@ -440,10 +468,147 @@ class App {
   #idLenght = 16;
   #idTakeArrLenght = this.#alfaNumDitch.length - 1;
 
+  #daysArrForNewWeek = [
+    {
+      day: "monday",
+      in: "0:00",
+      out: "0:00",
+      totalPay: "000",
+      totalTime: "0:00",
+      totaExtraTime: "0:00",
+      break: [
+        {
+          start: "0:00",
+          startM: "am",
+          end: "0:00",
+          endM: "am",
+          time: "0:00",
+        },
+      ],
+    },
+    {
+      day: "tuesday",
+      in: "0:00",
+      out: "0:00",
+      totalPay: "000",
+      totalTime: "0:00",
+      totaExtraTime: "0:00",
+      break: [
+        {
+          start: "0:00",
+          startM: "am",
+          end: "0:00",
+          endM: "am",
+          time: "0:00",
+        },
+      ],
+    },
+    {
+      day: "wednesday",
+      in: "0:00",
+      out: "0:00",
+      totalPay: "000",
+      totalTime: "0:00",
+      totaExtraTime: "0:00",
+      break: [
+        {
+          start: "0:00",
+          startM: "am",
+          end: "0:00",
+          endM: "am",
+          time: "0:00",
+        },
+      ],
+    },
+    {
+      day: "thursday",
+      in: "0:00",
+      out: "0:00",
+      totalPay: "000",
+      totalTime: "0:00",
+      totaExtraTime: "0:00",
+      break: [
+        {
+          start: "0:00",
+          startM: "am",
+          end: "0:00",
+          endM: "am",
+          time: "0:00",
+        },
+      ],
+    },
+    {
+      day: "friday",
+      in: "0:00",
+      out: "0:00",
+      totalPay: "000",
+      totalTime: "0:00",
+      totaExtraTime: "0:00",
+      break: [
+        {
+          start: "0:00",
+          startM: "am",
+          end: "0:00",
+          endM: "am",
+          time: "0:00",
+        },
+      ],
+    },
+    {
+      day: "saturday",
+      in: "0:00",
+      out: "0:00",
+      totalPay: "000",
+      totalTime: "0:00",
+      totaExtraTime: "0:00",
+      break: [
+        {
+          start: "0:00",
+          startM: "am",
+          end: "0:00",
+          endM: "am",
+          time: "0:00",
+        },
+      ],
+    },
+    {
+      day: "sunday",
+      in: "0:00",
+      out: "0:00",
+      totalPay: "000",
+      totalTime: "0:00",
+      totaExtraTime: "0:00",
+      break: [
+        {
+          start: "0:00",
+          startM: "am",
+          end: "0:00",
+          endM: "am",
+          time: "0:00",
+        },
+      ],
+    },
+  ];
+
+  #previousScreen;
+  #currentScreen;
   constructor() {
     this._events();
     this._registerSW();
     this._init("sr1");
+    // this._tryMyFunction();
+
+    // this._displayPrompt(
+    //   "input",
+    //   "Cancelar",
+    //   "Confirmar",
+    //   "¿Estas seguro?",
+    //   "Confirmar este paso al seguir"
+    // );
+
+    // this._srGetStartedDispChoose("sr35", "sr1", "none");
+    // hourSheetWeekNumberLast.textContent = "última";
+
     // this._displaySpinner();
     // this._displayAlert("Comfirmado", "Esto ya es confirmado");
 
@@ -453,9 +618,135 @@ class App {
     // this._onSnapshot("accounts", "cn25uwg629tb9143");
     // this._srGetStartedDispChoose("sr13", "sr1", "left");
     // this._srGetStartedDispChoose("sr29", "sr1", "none");
-    // this._srGetStartedDispChoose("sr30", "sr1", "none");
     // this._transactionsTry();
+    // const rearranged = this._rearrangeWeekDays("martes");
+    // console.log(rearranged);
   }
+
+  async _updateCurWeekWithWeekStart() {
+    try {
+      const userInput = await this._displayPrompt(
+        "confirm",
+        "Cancelar",
+        "Confirmar",
+        "¿Convertir semana?",
+        "Al convertir, esta semana se actualisará con el dia de inicio de semana. No pererás tus horas."
+      );
+
+      // Proceed with your function using the userInput if needed
+
+      const updatememberInfo = async () => {
+        // Define updatememberInfo as an async function
+        const q = query(
+          collection(db, `accounts/${this.#curMemberInfo.teamCode}/team`),
+          where("memberId", "==", this.#curMemberInfo.memberId)
+        );
+        const docSnap = await getDocs(q); // Use await to wait for the query to resolve
+        docSnap.forEach((doc) => {
+          const val = doc.data();
+          this.#curMemberInfo = val;
+          console.log(val);
+          console.log(this.#curMemberInfo);
+        });
+      };
+
+      console.log(this.#curWeek.days);
+      this._displaySpinner(
+        `Estamos ajustando esta semana para que empiece el ${
+          this.#curMemberInfo.weekStart
+        }`
+      );
+
+      try {
+        console.log(this.#curMemberInfo);
+
+        const UpDatedDays = this._rearrangeWeekDays(
+          this.#curWeek.days,
+          this.#curMemberInfo.weekStart
+        );
+        console.log(this.#curMemberInfo.weekStart);
+
+        const success = await this._updateData(
+          `accounts/${this.#curMemberInfo.teamCode}/weeks`,
+          this.#curMemberInfo.curWeekId,
+          {
+            days: UpDatedDays,
+            weekStart: this.#curMemberInfo.weekStart,
+          }
+        );
+
+        if (success) {
+          await updatememberInfo();
+          this._displayTimeSheet("ng", true);
+          this._displayAlert("Éxito", "Esta semana está actualizado.");
+        } else {
+          console.error("Update failed."); // Log the failure
+        }
+      } catch (error) {
+        console.error("Error updating week:", error);
+      } finally {
+        // this._hideSpinner(); // Ensure spinner is always hidden
+      }
+    } catch (error) {
+      if (error === "cancel") {
+        console.log("User cancelled");
+        // Abort your function
+      } else {
+        console.error("Error:", error);
+      }
+    } finally {
+      this._hideSpinner(); // Ensure spinner is always hidden
+    }
+    console.log("all done");
+  }
+
+  _rearrangeWeekDays(weekDaysArr, startDay) {
+    const spanishToEnglishDayMap = {
+      lunes: "monday",
+      martes: "tuesday",
+      miércoles: "wednesday",
+      jueves: "thursday",
+      viernes: "friday",
+      sábado: "saturday",
+      domingo: "sunday",
+    };
+    const daysOfWeek = [
+      "lunes",
+      "martes",
+      "miércoles",
+      "jueves",
+      "viernes",
+      "sábado",
+      "domingo",
+    ];
+    const startIndex = daysOfWeek.indexOf(startDay);
+
+    if (startIndex === -1) {
+      console.error("Invalid start day");
+      return;
+    }
+
+    const rearrangedMap = {};
+    for (let i = 0; i < daysOfWeek.length; i++) {
+      const currentIndex = (startIndex + i) % daysOfWeek.length;
+      const currentDay = daysOfWeek[currentIndex];
+      rearrangedMap[currentDay] = spanishToEnglishDayMap[currentDay];
+    }
+
+    const rearangedWeekDays = [];
+    for (const day in rearrangedMap) {
+      const englishDay = rearrangedMap[day];
+      const matchingDay = weekDaysArr.find((obj) => obj.day === englishDay);
+      if (matchingDay) {
+        rearangedWeekDays.push(matchingDay);
+      }
+    }
+
+    console.log(rearangedWeekDays);
+    return rearangedWeekDays;
+  }
+
+  // Example usage
 
   _opacityDimScreen(srHide, srDisp) {}
   _transactionsTry() {
@@ -520,8 +811,6 @@ class App {
     // this._setCookie("check", "0h54tc988ry5pf76", 840000);
     // this._setCookie("teamCode", "0h54tc988ry5pf76", 840000);
     // this._setCookie("memberId", "2nnuzn9l7446t5lz", 840000);
-    // this._setCookie("level", "miembro", 840000);
-    // this._setCookie("level", "asistente", 840000);
     // this._deleteCookie("check");
     this._deleteCookie("teamCode");
     this._deleteCookie("memberId");
@@ -661,76 +950,168 @@ class App {
     });
   }
 
-  _init(srHide) {
+  _previousScreen() {
+    const currentSreenLocal = this.#currentScreen;
+    let sreenLocalToGo;
+    if (currentSreenLocal === "sr11" && this.#curData.level !== "miembro") {
+      this._displayMembers("sr11");
+      // sreenLocalToGo = "sr7";
+    } else {
+      if (currentSreenLocal === "sr16") {
+        sreenLocalToGo = "sr7";
+      }
+      if (currentSreenLocal === "sr17") {
+        sreenLocalToGo = "sr11";
+      }
+      if (currentSreenLocal === "sr20") {
+        sreenLocalToGo = "sr7";
+      }
+      if (currentSreenLocal === "sr12") {
+        sreenLocalToGo = "sr20";
+      }
+      if (currentSreenLocal === "sr19") {
+        sreenLocalToGo = "sr20";
+      }
+      if (currentSreenLocal === "sr24") {
+        sreenLocalToGo = "sr7";
+      }
+      if (currentSreenLocal === "sr25") {
+        sreenLocalToGo = "sr24";
+      }
+      if (currentSreenLocal === "sr8") {
+        sreenLocalToGo = "sr7";
+      }
+      if (currentSreenLocal === "sr29") {
+        sreenLocalToGo = sr29.dataset.fromWhere;
+      }
+      if (sreenLocalToGo.length > 0) {
+        this._srGetStartedDispChoose(sreenLocalToGo, currentSreenLocal, "left");
+      }
+    }
+    // this._disdSuccessErrorMessage("sr back", "ex", 1000);
+  }
+
+  _swipeToGoBack() {
+    let touchStartX = 0;
+    let touchEndX = 0;
+    let startTime = 0;
+
+    srsGetStarted.addEventListener("touchstart", (e) => {
+      touchStartX = e.touches[0].clientX;
+      startTime = Date.now(); // Capture start time
+    });
+
+    srsGetStarted.addEventListener("touchend", (e) => {
+      touchEndX = e.changedTouches[0].clientX;
+      const screenWidth = window.innerWidth;
+      const swipeThreshold = screenWidth * 0.2; // 20% of screen width
+      const swipeTimeLimit = 1500; // 1.5 seconds
+
+      const elapsedTime = Date.now() - startTime;
+
+      if (
+        touchEndX - touchStartX > swipeThreshold &&
+        elapsedTime < swipeTimeLimit &&
+        touchStartX < screenWidth * 0.2
+      ) {
+        this._previousScreen();
+      }
+    });
+  }
+
+  async _init(srHide) {
+    // sr1.style.display = "flex";
+    this._displaySpinner();
+    this._swipeToGoBack();
     // this._deleteCookie("teamCode");
     // this._deleteCookie("memberId");
     // this._deleteCookie("level");
     // this._removeFromLocal("curData");
-    this._displaySpinner();
-    sr1.classList.remove("sr-none");
-    sr1.classList.add("sr");
+
+    // console.log(val.level);
+    // this._setCookie("level", val.level, 15552000000);
+    // this._setCookie("memberId", val.memberId, 15552000000);
+    // this._setCookie("teamCode", val.teamCode, 15552000000);
+
     if (navigator.onLine) {
+      const CTeamCode = this._readCokie("teamCode");
+      let CLevel = this._readCokie("level");
+      const CMemberID = this._readCokie("memberId");
+
+      console.log(CTeamCode, CLevel, CMemberID);
+
+      const step1 = async () => {
+        const admin = async () => {
+          if (CLevel === "admin" || CLevel === "top admin") {
+            console.log("taken");
+            const q = query(
+              collection(db, `accounts`),
+              where("teamCode", "==", CTeamCode)
+            );
+            const docSnap = await getDocs(q);
+            docSnap.forEach(async (doc) => {
+              // Marking the forEach callback as async
+              const val = doc.data();
+              this._setCookie("level", val.level, 15552000000);
+              this._setCookie("teamCode", val.teamCode, 15552000000);
+              this._saveToLocal("curData", val);
+              this._setLastSeen(`accounts`, val.teamCode);
+            });
+          }
+        };
+        const member = async () => {
+          if (CLevel === "miembro") {
+            console.log("taken");
+            const q = query(
+              collection(db, `accounts/${CTeamCode}/team`),
+              where("memberId", "==", CMemberID)
+            );
+            const docSnap = await getDocs(q);
+            docSnap.forEach(async (doc) => {
+              // Marking the forEach callback as async
+              const val = doc.data();
+              if (val.level === "asistente") {
+                console.log("taken");
+                CLevel = "admin";
+                await admin(); // Waiting for admin to finish before proceeding
+              } else {
+                console.log("taken");
+                this._setCookie("level", val.level, 15552000000);
+                this._setCookie("memberId", val.memberId, 15552000000);
+                this._setCookie("teamCode", val.teamCode, 15552000000);
+                this._saveToLocal("curData", val);
+                console.log(val);
+                this._setLastSeen(`accounts`, val.teamCode);
+              }
+            });
+          }
+        };
+        const assistant = () => {
+          if (CLevel === "asistente") {
+            admin();
+          }
+        };
+
+        if (CTeamCode !== "" && CTeamCode !== undefined) {
+          if (CLevel !== "" && CLevel !== undefined) {
+            await member();
+            assistant();
+            admin();
+          }
+        }
+      };
+
+      await step1(); // Wait for step1 to finish before moving on
+
       this._setSupportInfo();
-      this._setExplainVideo();
-      console.log("contact info:", this.#appSupportInfo);
+      // this._setExplainVideo();
       this.#curData = this._getFromLocal("curData");
       this._srGetStartedDispChoose("sr1", srHide, "left");
-      this._displaySpinner();
-      console.log("Your App is initializing");
 
-      this.#cTeamCode = this._readCokie("teamCode");
-      this.#cLevel = this._readCokie("level");
-      this.#cMemberId = this._readCokie("memberId");
+      console.log("Your App is initializing");
 
       console.log(this.#cTeamCode, this.#cLevel, this.#cMemberId);
 
-      if (this.#cTeamCode !== "" && this.#cTeamCode !== undefined) {
-        if (this.#cLevel !== "" && this.#cLevel !== undefined) {
-          if (this.#cLevel === "miembro" || this.#cLevel === "asistente") {
-            // TODO: FOR NOW THE SAME AS ADMIN
-            const q = query(
-              collection(db, `accounts`),
-              where("teamCode", "==", this.#cTeamCode)
-            );
-            getDocs(q).then((docSnap) => {
-              docSnap.forEach((doc) => {
-                const val = doc.data();
-                this._saveToLocal("curData", val);
-                this._setLastSeen(`accounts`, val.teamCode);
-              });
-            });
-
-            // TODO: AS BEFORE, BUT IT DEOS NOT WORK CORECTLY
-            // const q = query(
-            //   collection(db, `accounts/${this.#cTeamCode}/team`),
-            //   where("memberId", "==", this.#cMemberId)
-            // );
-            // getDocs(q).then((docSnap) => {
-            //   docSnap.forEach((doc) => {
-            //     const val = doc.data();
-            //     this._saveToLocal("curData", val);
-            //     this._setLastSeen(
-            //       `accounts/${val.teamCode}/team`,
-            //       val.memberId
-            //     );
-            //   });
-            // });
-          }
-          if (this.#cLevel === "admin" || this.#cLevel === "top admin") {
-            const q = query(
-              collection(db, `accounts`),
-              where("teamCode", "==", this.#cTeamCode)
-            );
-            getDocs(q).then((docSnap) => {
-              docSnap.forEach((doc) => {
-                const val = doc.data();
-                this._saveToLocal("curData", val);
-                this._setLastSeen(`accounts`, val.teamCode);
-              });
-            });
-          }
-        }
-      }
       this.#curData = this._getFromLocal("curData");
 
       // setTimeout(() => {
@@ -738,47 +1119,27 @@ class App {
         // TODO: if user is logedIn, all validations come under here
         console.log("Your App has initialized");
 
-        if (this.#curData.level === "admin") {
+        if (CLevel === "admin") {
+          console.log("this one was called");
           this._onSnapshot("accounts", this.#curData.teamCode);
           if (this.#curData.teamName.length < 1) {
             this._srGetStartedDispChoose("sr5", "sr1", "right");
             this._hideSpinner();
-            // this._srGetStartedDispChoose("sr5", "sr22", "right");
-            this._eventTeamCodeDisp(); //TODO:
           } else {
             this._displayMembers("sr1");
             this._accountProCheck();
             btnBackTbSr11.style.display = "flex";
             this._onSnapshotCollectoion();
           }
-        } else if (this.#curData.level === "asistente") {
+        } else if (CLevel === "asistente") {
           // TODO: FOR NOW THE SAME AS ADMIN
           this._onSnapshot("accounts", this.#curData.teamCode);
-          // if (this.#curData.teamName.length < 1) {
-          //   this._srGetStartedDispChoose("sr5", "sr1", "right");
-          //   this._hideSpinner();
-          //   // this._srGetStartedDispChoose("sr5", "sr22", "right");
-          //   this._eventTeamCodeDisp(); //TODO:
-          // } else {
           this._displayMembers("sr1");
           this._accountProCheck();
           btnBackTbSr11.style.display = "flex";
           this._onSnapshotCollectoion();
-          // }
-
-          // TODO: AS BEFORE, BUT IT DEOS NOT WORK CORECTLY
-          // this._onSnapshot(
-          //   `accounts/${this.#curData.teamCode}/team`,
-          //   this.#curData.memberId
-          // );
-          // this._displayMembers("sr1");
-          // btnBackTbSr11.style.display = "flex";
-        } else if (this.#curData.level === "miembro") {
+        } else if (CLevel === "miembro") {
           console.log("member now");
-          // this._onSnapshot(
-          //   `accounts/${this.#curData.teamCode}/team`,
-          //   this.#curData.memberId
-          // );
           this._displayMemberOnly("sr1");
         } else {
           const q = query(
@@ -789,16 +1150,16 @@ class App {
             docSnap.forEach((doc) => {
               const val = doc.data();
               this.#adminLevel = val.appAdmin;
-              if (this.#curData.level === this.#adminLevel) {
+              if (CLevel === val.appAdmin) {
                 this._onSnapshot("accounts", this.#curData.teamCode);
                 console.log("admin is top");
                 this.#curAccountData = this.#curData;
                 this._displayMembers("sr1");
+                this._accountProCheck();
+                this._onSnapshotCollectoion();
                 sr20AppAdmin.style.display = "block";
                 sr20AppAdminNorm.style.display = "block";
-                this._accountProCheck();
                 btnBackTbSr11.style.display = "flex";
-                this._onSnapshotCollectoion();
               }
             });
           });
@@ -812,9 +1173,8 @@ class App {
         setTimeout(this._hideSpinner, 100);
       }
       // }, 100);
-      this._visitsToApp();
+      // this._visitsToApp();
     } else {
-      // this._srGetStartedDispChoose("sr22", srHide, "right");
       this._displaySpinner();
       setTimeout(() => {
         this._hideSpinner();
@@ -823,6 +1183,80 @@ class App {
     }
   }
 
+  _displayPrompt(type, btnCancel, btnConfirm, header, text) {
+    return new Promise((resolve, reject) => {
+      const promptInput = document.querySelector("#sr35-prompt-input");
+      const promptBtnCancel = document.querySelector("#sr35-btn-prompt-cancel");
+      const promptBtnConfirm = document.querySelector("#sr35-btn-prompt-ahead");
+      const promptHeader = document.querySelector("#sr35-prompt-header");
+      const promptBody = document.querySelector("#sr35-prompt-body");
+
+      promptInput.classList.remove("prompt-red-border");
+      promptInput.value = "";
+
+      promptBtnCancel.textContent = btnCancel;
+      promptBtnConfirm.textContent = btnConfirm;
+      promptHeader.textContent = header;
+      promptBody.textContent = text;
+
+      if (type === "input") {
+        promptInput.style.display = "flex";
+      } else {
+        promptInput.style.display = "none";
+      }
+      sr35.style.display = "flex";
+
+      promptBtnConfirm.addEventListener("click", () => {
+        // If the confirm button is clicked, resolve the promise with the input value
+        if (type === "input") {
+          if (promptInput.value.length > 0) {
+            resolve(promptInput.value);
+            sr35.style.display = "none";
+          } else {
+            promptInput.classList.add("prompt-red-border");
+            promptInput.placeholder = "rellenar";
+          }
+        } else {
+          resolve("confirm");
+          sr35.style.display = "none";
+        }
+        // Hide the prompt
+      });
+
+      promptBtnCancel.addEventListener("click", () => {
+        // If the cancel button is clicked, reject the promise
+        reject("cancel");
+        // Hide the prompt
+        sr35.style.display = "none";
+      });
+    });
+  }
+
+  async _tryMyFunction() {
+    try {
+      const userInput = await this._displayPrompt(
+        "confirm",
+        "Cancelar",
+        "Confirmar",
+        "¿Estas seguro?",
+        "Confirmar este paso al seguir"
+      );
+      console.log("User input:", userInput);
+      // Proceed with your function using the userInput if needed
+    } catch (error) {
+      if (error === "cancel") {
+        console.log("User cancelled");
+        // Abort your function
+      } else {
+        console.error("Error:", error);
+      }
+    }
+    console.log("all done");
+  }
+
+  _hidePrompt() {
+    sr35.style.display = "none";
+  }
   _displaySpinner(text) {
     const spinnerText = document.querySelector("#sr22-wait-text");
     if (text) {
@@ -855,70 +1289,13 @@ class App {
   }
   // TODO: INIT ENDS HERE
 
-  _onSnapshotCollectoion(name, listen) {
+  _onSnapshotCollectoion() {
     // TODO: REAL TIME listen on a collection
     const q = query(collection(db, `accounts/${this.#curData.teamCode}/team`));
     console.log(q);
     onSnapshot(
       collection(db, `accounts/${this.#curData.teamCode}/team`),
       () => {
-        // const style = window.getComputedStyle(sr7);
-        // const matrix = new WebKitCSSMatrix(style.transform);
-        // const nowLocated = matrix.e;
-        // console.log(nowLocated);
-
-        // if (sr7.classList.contains("sr") || sr1.classList.contains("sr")) {
-        //   if (sr7.classList.contains("sr")) {
-        //     // this._deleteAllChildren("sr7-mem-con");
-        //     this._displayMembers("sr7");
-        //   }
-        //   if (sr1.classList.contains("sr")) {
-        //     // this._deleteAllChildren("sr7-mem-con");
-        //     this._displayMembers("sr1");
-        //   }
-
-        //   // this._deleteAllChildren("sr7-mem-con");
-        //   // this._displayMembers("sr7");
-        // }
-        // if (sr11.classList==="sr") {
-        //   if (sr7.classList.contains("sr")) {
-        //     // this._deleteAllChildren("sr7-mem-con");
-        //     this._displayMembers("sr7");
-        //   }
-        //   if (sr1.classList.contains("sr")) {
-        //     // this._deleteAllChildren("sr7-mem-con");
-        //     this._displayMembers("sr1");
-        //   }
-
-        //   // this._deleteAllChildren("sr7-mem-con");
-        //   // this._displayMembers("sr7");
-        // }
-        //  else if (nowLocated2 === -7800) {
-        //   // this._deleteAllChildren("sr7-mem-con");
-        //   this._displayMembers("sr22");
-        // }
-        //  else if (nowLocated3 === -5070) {
-        //   // this._deleteAllChildren("sr7-mem-con");
-        //   this._displayMembers("sr11");
-        // }
-
-        // -3835.59
-
-        // 390 * 10
-
-        // TODO: notifications don't work
-        // Notification.requestPermission().then((perm) => {
-        //   console.log(perm);
-        //   if (perm == "granted") {
-        //     console.log("all good noti");
-
-        //     // {
-        //     //   body: "there were changes on your team",
-        //     //   icon: "images/THoras App logo 2.png",
-        //     // }
-        //     const notifi = new Notification("THoras");
-        //   }
-        // });
         if (
           sr7.classList.contains("sr") &&
           Number(sr7.dataset.when) + 100 < this._getTimeStamp()
@@ -1012,7 +1389,7 @@ class App {
     }
   }
 
-  _topAdminDisplay() {
+  async _topAdminDisplay() {
     let admionPassword;
 
     const openAdminMode = () => {
@@ -1036,24 +1413,39 @@ class App {
     };
 
     if (sr20AppAdmin.dataset.mode === "norm") {
-      admionPassword = prompt(
-        `To start Admin mode you have to put in the admin password`
-      );
-      const q = query(
-        collection(db, "appSettings"),
-        where("settings", "==", "admin_mode")
-      );
-      getDocs(q).then((docSnap) => {
-        docSnap.forEach((doc) => {
-          const val = doc.data();
+      try {
+        const admionPassword = await this._displayPrompt(
+          "input",
+          "Cancelar",
+          "Confirmar",
+          "Admin",
+          "Put in the admin password"
+        );
+        const q = query(
+          collection(db, "appSettings"),
+          where("settings", "==", "admin_mode")
+        );
+        getDocs(q).then((docSnap) => {
+          docSnap.forEach((doc) => {
+            const val = doc.data();
 
-          if (admionPassword === val.password) {
-            openAdminMode();
-          } else {
-            this._disdSuccessErrorMessage("Incorect password", "er", 2000);
-          }
+            if (admionPassword === val.password) {
+              console.log("yeah");
+              openAdminMode();
+            } else {
+              this._disdSuccessErrorMessage("Incorect password", "er", 2000);
+            }
+          });
         });
-      });
+        // Proceed with your function using the userInput if needed
+      } catch (error) {
+        if (error === "cancel") {
+          console.log("User cancelled");
+          // Abort your function
+        } else {
+          console.error("Error:", error);
+        }
+      }
     } else {
       openAdminMode();
     }
@@ -1072,6 +1464,7 @@ class App {
       ),
       (doc) => {
         console.log(this.#curData.level);
+
         if (this.#curData.level === "miembro") {
           this._saveToLocal("curData", doc.data());
           console.log("error here");
@@ -1092,7 +1485,10 @@ class App {
             sr1.classList.contains("sr") ||
             sr22.classList.contains("sr")
           ) {
-            this._readWeeks(srHide);
+            // this._readWeeks(srHide);
+
+            this._displayTimeSheet(srHide, true);
+            // sr1.style.display = "none";
           }
 
           const q5 = query(
@@ -1252,6 +1648,12 @@ class App {
                       );
                       this.#curData = val;
                       console.log(val);
+
+                      this._removeFromLocal("curData");
+                      this._deleteCookie("teamCode");
+                      this._deleteCookie("memberId");
+                      this._deleteCookie("level");
+
                       this._saveToLocal("curData", this.#curData);
                       this._setCookie("teamCode", val.teamCode, 86400000 * 400);
                       this._setCookie("memberId", val.memberId, 86400000 * 400);
@@ -1429,24 +1831,34 @@ class App {
     //line 1724 for try
     setDoc(doc(db, where, id), content);
   }
-  _updateData(path, id, content) {
+  _updateData2(path, id, content) {
     updateDoc(doc(db, path, id), content);
   }
+
+  async _updateData(path, id, content) {
+    try {
+      const docRef = doc(db, path, id);
+      await updateDoc(docRef, content);
+      console.log("Document updated successfully!");
+      return true; // Indicate success
+    } catch (error) {
+      console.error("Error updating document:", error);
+      return false; // Indicate failure
+    }
+  }
+
   _addData(path, data) {
     addDoc(collection(db, path), data);
   }
 
   _searchData(path, searchIdent, equalWhat) {
-    //line 1725 for try
-    // TODO: get filtered data
-    let users = [];
+    let week = [];
     const q = query(collection(db, path), where(searchIdent, "==", equalWhat));
     console.log(q);
     getDocs(q).then((docSnap) => {
       docSnap.forEach((doc) => {
-        users.push(doc.data());
+        week.push(doc.data());
       });
-      console.log("filtered users: ", users);
     });
 
     return users;
@@ -1470,18 +1882,39 @@ class App {
     return users;
   }
 
+  // _readData(path, id) {
+  //   let data;
+  //   return getDoc(collection(db, path, id)).then((docSnap) => {
+  //     if (docSnap.exists()) {
+  //       data = docSnap.data();
+  //       console.log(docSnap.data());
+  //       return data;
+  //     } else {
+  //       return "";
+  //     }
+  //   });
+  // }
+
   _readData(path, id) {
-    let data;
-    return getDoc(collection(db, path, id)).then((docSnap) => {
-      if (docSnap.exists()) {
-        data = docSnap.data();
-        console.log(docSnap.data());
-        return data;
-      } else {
-        return "";
-      }
+    return new Promise((resolve, reject) => {
+      let data;
+      getDoc(collection(db, path, id))
+        .then((docSnap) => {
+          if (docSnap.exists()) {
+            data = docSnap.data();
+            console.log(docSnap.data());
+            resolve(data);
+          } else {
+            resolve(""); // Resolving with an empty string when the document doesn't exist
+          }
+        })
+        .catch((error) => {
+          console.error("Error fetching document:", error);
+          reject(error);
+        });
     });
   }
+
   // <--------- Data End -----------> //
 
   // <--------- Start Random -----------> //
@@ -1547,6 +1980,55 @@ class App {
         }
         if (error.includes("false")) {
           disSuccErrSub("Código enviado", "ex", 3000);
+        }
+        console.log(this.responseText);
+      }
+    });
+    xhr.open("POST", "https://rapidmail.p.rapidapi.com/");
+    xhr.setRequestHeader("content-type", "application/json");
+    xhr.setRequestHeader(
+      "X-RapidAPI-Key",
+      "7d3c879bccmsh62af9fff7beec24p169f3ajsna9b5e9a558be"
+    );
+    xhr.setRequestHeader("X-RapidAPI-Host", "rapidmail.p.rapidapi.com");
+    xhr.send(data);
+  }
+
+  _sendEmailNormal(sendTo, replyTo, title, message) {
+    const data = JSON.stringify({
+      ishtml: "false",
+      sendto: sendTo,
+      name: "THoras Tracker",
+      replyTo: replyTo,
+      title: title,
+      body: message,
+    });
+
+    const xhr = new XMLHttpRequest();
+    xhr.withCredentials = true;
+    const disSuccErrSub = (text, se, msTime) => {
+      this._hideSpinner();
+      this._disdSuccessErrorMessage(text, se, msTime);
+      // if (se === "ex") {
+      //   this._displayAlert(
+      //     "Código enviado.",
+      //     `Hemos enviado un código de verificación a: ${sendTo}. Asegúrate que tienes acceso a este correo para recibir el código.`
+      //   );
+      // }
+    };
+    xhr.addEventListener("readystatechange", function () {
+      if (this.readyState === this.DONE) {
+        const [error, direc] = this.responseText.split(",");
+
+        if (error.includes("true")) {
+          // disSuccErrSub(
+          //   "Hubo un error con enviar el código. Estamos trabajando para solucionarlo.",
+          //   "er",
+          //   6000
+          // );
+        }
+        if (error.includes("false")) {
+          // disSuccErrSub("Código enviado", "ex", 3000);
         }
         console.log(this.responseText);
       }
@@ -1851,8 +2333,8 @@ class App {
     // srhide.style.transform = `translateX(${perhide}px)`;
     // srdisp.style.transform = `translateX(-${perdisp}px)`;
 
-    console.log(srHide);
-    console.log(srDisp);
+    this.#currentScreen = srDisp;
+    console.log(this.#currentScreen);
     const srhideNew = document.querySelector(`#${srHide}`);
     const srdispNew = document.querySelector(`#${srDisp}`);
 
@@ -1964,6 +2446,7 @@ class App {
     const numWeeks = this.#curWeekArrayOrg.length;
     this.#curWeek = this.#curWeekArrayOrg[`${numWeeks - i}`];
     this._displayTimeSheet(
+      "ng",
       this.#curWeek,
       1,
       this.#curWeekArrayOrg.length - i + 1
@@ -1990,35 +2473,194 @@ class App {
     return totalPayR;
   }
 
-  _weekSelect(direction, weekNum) {
-    if (weekNum) {
-      console.log("Yes");
-    } else {
-      if (direction === "back") {
-        if (this.#weekDisplayNumberMinus <= this.#curWeekArrayOrg.length - 1) {
-          this.#weekDisplayNumberMinus += 1;
-          this._setCurWeek(this.#weekDisplayNumberMinus);
-          btnWeekSelectForward.classList.remove("btn-dim-dim");
-          btnWeekSelectForward.classList.add("btn-dim-full");
-        } else {
-          console.log("no more week back");
-          btnWeekSelectBack.classList.remove("btn-dim-full");
-          btnWeekSelectBack.classList.add("btn-dim-dim");
-        }
-      }
-      if (direction === "ahead") {
-        if (this.#weekDisplayNumberMinus > 1) {
-          this.#weekDisplayNumberMinus -= 1;
-          this._setCurWeek(this.#weekDisplayNumberMinus);
-          btnWeekSelectBack.classList.remove("btn-dim-dim");
-          btnWeekSelectBack.classList.add("btn-dim-full");
-        } else {
-          console.log("no more weeks ahead");
-          btnWeekSelectForward.classList.remove("btn-dim-full");
-          btnWeekSelectForward.classList.add("btn-dim-dim");
-        }
+  _weekSelectBtnDimmer(direct) {
+    if (direct === "back") {
+      btnWeekSelectBack.classList.remove("btn-dim-full");
+      btnWeekSelectBack.classList.add("btn-dim-dim");
+      btnWeekSelectForward.classList.remove("btn-dim-dim");
+      btnWeekSelectForward.classList.add("btn-dim-full");
+      btnWeekSelectBack.dataset.active = "off";
+      btnWeekSelectBackPath.dataset.active = "off";
+      btnWeekSelectForward.dataset.active = "on";
+      btnWeekSelectForwardPath.dataset.active = "on";
+    }
+    if (direct === "ahead") {
+      btnWeekSelectForward.classList.remove("btn-dim-full");
+      btnWeekSelectForward.classList.add("btn-dim-dim");
+      btnWeekSelectBack.classList.remove("btn-dim-dim");
+      btnWeekSelectBack.classList.add("btn-dim-full");
+      btnWeekSelectForward.dataset.active = "off";
+      btnWeekSelectForwardPath.dataset.active = "off";
+      btnWeekSelectBack.dataset.active = "on";
+      btnWeekSelectBackPath.dataset.active = "on";
+    }
+    if (direct === "both") {
+      btnWeekSelectBack.classList.remove("btn-dim-dim");
+      btnWeekSelectBack.classList.add("btn-dim-full");
+      btnWeekSelectForward.classList.remove("btn-dim-dim");
+      btnWeekSelectForward.classList.add("btn-dim-full");
+      btnWeekSelectBack.dataset.active = "on";
+      btnWeekSelectBackPath.dataset.active = "on";
+      btnWeekSelectForward.dataset.active = "on";
+      btnWeekSelectForwardPath.dataset.active = "on";
+    }
+  }
+
+  async _weekSelect2(direction, weekNum) {
+    if (direction === "back") {
+      if (this.#curWeekArrayOrg[0]) {
+      } else {
+        this.#curWeekArrayOrg = await this._readWeeks();
       }
     }
+
+    console.log(this.#weekDisplayNumberMinus);
+
+    if (direction === "back") {
+      if (this.#weekDisplayNumberMinus === this.#curWeekArrayOrg.length) {
+        this.#weekDisplayNumberMinus = this.#curWeekArrayOrg.length - 1;
+      }
+      if (this.#weekDisplayNumberMinus > 0) {
+        this._displayTimeSheet(
+          "ng",
+          false,
+          this.#curWeekArrayOrg[this.#weekDisplayNumberMinus],
+          this.#weekDisplayNumberMinus
+        );
+        if (this.#weekDisplayNumberMinus >= 0) {
+          this.#weekDisplayNumberMinus = this.#weekDisplayNumberMinus - 1;
+        }
+        this._weekSelectBtnDimmer("both");
+      } else {
+        this._weekSelectBtnDimmer("back");
+      }
+    }
+
+    if (direction === "ahead") {
+      if (this.#weekDisplayNumberMinus < this.#curWeekArrayOrg.length) {
+        this._displayTimeSheet(
+          "ng",
+          false,
+          this.#curWeekArrayOrg[this.#weekDisplayNumberMinus],
+          this.#weekDisplayNumberMinus
+        );
+
+        this.#weekDisplayNumberMinus = this.#weekDisplayNumberMinus + 1;
+        this._weekSelectBtnDimmer("both");
+      } else {
+        this._weekSelectBtnDimmer("ahead");
+      }
+    }
+  }
+
+  async _weekSelect3(direction, weekNum) {
+    if (direction === "back") {
+      if (!this.#curWeekArrayOrg[0]) {
+        this.#curWeekArrayOrg = await this._readWeeks();
+      }
+    }
+
+    console.log(this.#weekDisplayNumberMinus);
+
+    if (direction === "back") {
+      if (this.#weekDisplayNumberMinus >= 0) {
+        this._displayTimeSheet(
+          "ng",
+          false,
+          this.#curWeekArrayOrg[this.#weekDisplayNumberMinus],
+          this.#weekDisplayNumberMinus
+        );
+        this.#weekDisplayNumberMinus = Math.max(
+          0,
+          this.#weekDisplayNumberMinus - 1
+        );
+        this._weekSelectBtnDimmer("both");
+      } else {
+        this._weekSelectBtnDimmer("back");
+      }
+    }
+
+    if (direction === "ahead") {
+      if (this.#weekDisplayNumberMinus < this.#curWeekArrayOrg.length) {
+        this.#weekDisplayNumberMinus = Math.min(
+          this.#weekDisplayNumberMinus + 1,
+          this.#curWeekArrayOrg.length - 1
+        );
+        this._displayTimeSheet(
+          "ng",
+          false,
+          this.#curWeekArrayOrg[this.#weekDisplayNumberMinus],
+          this.#weekDisplayNumberMinus
+        );
+        this._weekSelectBtnDimmer("both");
+      } else {
+        this._weekSelectBtnDimmer("ahead");
+      }
+    }
+  }
+
+  async _weekSelect4(direction, weekNum) {
+    if (!this.#curWeekArrayOrg[0]) {
+      this.#curWeekArrayOrg = await this._readWeeks();
+    }
+
+    if (direction === "back") {
+      this.#weekDisplayNumberMinus = Math.max(
+        0,
+        this.#weekDisplayNumberMinus - 1
+      );
+    }
+
+    if (direction === "ahead") {
+      this.#weekDisplayNumberMinus = Math.min(
+        this.#weekDisplayNumberMinus + 1,
+        this.#curWeekArrayOrg.length - 1
+      );
+    }
+
+    this._displayTimeSheet(
+      "ng",
+      false,
+      this.#curWeekArrayOrg[this.#weekDisplayNumberMinus],
+      this.#weekDisplayNumberMinus
+    );
+
+    this._weekSelectBtnDimmer("both");
+  }
+
+  async _weekSelect(direction, weekNum) {
+    if (!this.#curWeekArrayOrg[0]) {
+      this.#curWeekArrayOrg = await this._readWeeks();
+    }
+
+    if (direction === "back") {
+      this.#weekDisplayNumberMinus = Math.max(
+        0,
+        this.#weekDisplayNumberMinus - 1
+      );
+      this._weekSelectBtnDimmer("both");
+      if (this.#weekDisplayNumberMinus === 0) {
+        this._weekSelectBtnDimmer("back");
+      }
+    }
+
+    if (direction === "ahead") {
+      this.#weekDisplayNumberMinus = Math.min(
+        this.#weekDisplayNumberMinus + 1,
+        this.#curWeekArrayOrg.length - 1
+      );
+      this._weekSelectBtnDimmer("both");
+      if (this.#weekDisplayNumberMinus === this.#curWeekArrayOrg.length - 1) {
+        this._weekSelectBtnDimmer("ahead");
+      }
+    }
+
+    this._displayTimeSheet(
+      "ng",
+      false,
+      this.#curWeekArrayOrg[this.#weekDisplayNumberMinus],
+      this.#weekDisplayNumberMinus
+    );
   }
 
   _calculateTimeBetween(timeIn, timeOut) {
@@ -2059,65 +2701,52 @@ class App {
     }
   }
 
-  // TODO: start here with loading weeks ofline
-  _readWeeks(srHide) {
-    this._displaySpinner();
-    // let weekIdNumberCounter = 0;
-    // this._srGetStartedDispChoose("sr1", "sr7", "left");
-    this.#curData = this._getFromLocal("curData");
+  async _readWeeks() {
+    let curWeekArrayOrgLocal;
+    if (navigator.onLine) {
+      this._displaySpinner("Espera un momento. Estamos cargando tus semanas.");
+      this.#curData = this._getFromLocal("curData");
 
-    let curDataLocal;
-    if (this.#curData.level === this.#adminLevel) {
-      curDataLocal = this.#curAccountData;
-    } else {
-      curDataLocal = this.#curData;
-    }
-
-    const q = query(
-      collection(db, `accounts/${curDataLocal.teamCode}/weeks`),
-      where("memberId", "==", this.#curMemberInfo.memberId)
-    );
-    getDocs(q).then((docSnap) => {
-      let arr = [];
-      docSnap.forEach((doc) => {
-        const val = doc.data();
-        arr.push(val);
-      });
-
-      this.#curWeekArrayOrg = arr.sort((a, b) => {
-        return a.weekMadeTimeStamp - b.weekMadeTimeStamp;
-      });
-      console.log(this.#curWeekArrayOrg);
-      console.log(this.#curMemberInfo.curWeekId);
-      if (
-        this.#curMemberInfo.curWeekId.length === 0 &&
-        this.#weekIdNumberCounter < 1
-      ) {
-        // if (this.#curWeekArrayOrg.length === 0) {
-        if (navigator.onLine) {
-          this.#weekIdNumberCounter = 1;
-          this._newWeek();
-        }
-        console.log("no weeks yet");
-        sr11TimeSheetHours.style.display = "none";
-        sr11TimeSheetSumary.style.display = "none";
-        sr11NewTimeSheetMessage.style.display = "block";
-        this._srGetStartedDispChoose("sr11", srHide, "left");
-        sr11TimeSheetName.textContent = this.#curMemberInfo.name;
+      let curDataLocal;
+      if (this.#curData.level === this.#adminLevel) {
+        curDataLocal = this.#curAccountData;
       } else {
-        this._srGetStartedDispChoose("sr11", srHide, "left");
-        sr11TimeSheetHours.style.display = "block";
-        sr11TimeSheetSumary.style.display = "block";
-        sr11NewTimeSheetMessage.style.display = "none";
-        this._displayTimeSheet(
-          this.#curWeekArrayOrg,
-          "arr",
-          this.#curWeekArrayOrg.length
-        );
-        sr11TimeSheetName.textContent = this.#curMemberInfo.name;
+        curDataLocal = this.#curData;
       }
-    });
-    this._hideSpinner();
+
+      const q = query(
+        collection(db, `accounts/${curDataLocal.teamCode}/weeks`),
+        where("memberId", "==", this.#curMemberInfo.memberId)
+      );
+
+      try {
+        const docSnap = await getDocs(q);
+        let arr = [];
+        docSnap.forEach((doc) => {
+          const val = doc.data();
+          arr.push(val);
+        });
+
+        curWeekArrayOrgLocal = arr.sort((a, b) => {
+          return a.weekMadeTimeStamp - b.weekMadeTimeStamp;
+        });
+        console.log(curWeekArrayOrgLocal);
+        console.log(this.#curMemberInfo.curWeekId);
+        this._hideSpinner();
+        this.#weekDisplayNumberMinus = curWeekArrayOrgLocal.length - 1;
+        return curWeekArrayOrgLocal;
+      } catch (error) {
+        console.error("Error fetching weeks:", error);
+        this._hideSpinner();
+        throw error; // Rethrow the error for handling in the calling function
+      }
+    } else {
+      this._displayAlert(
+        "Fuera de conexión.",
+        "No pudimos cargar tus semanas anteriores porque no tienes conexión a internet. Revisa tu conexión e intenta de nuevo."
+      );
+      return []; // Return an empty array if offline
+    }
   }
 
   _daySp(dayNum) {
@@ -2225,38 +2854,214 @@ class App {
   }
 
   // TODO: Auto week creator
-  _checkForNewWeek(weekTimeStamp) {
-    const dateNow = new Date();
-    const date = new Date(weekTimeStamp);
-    const day = date.getDay();
-    const dayNow = dateNow.getDay();
-    // 604,800,000 one week in milliseconds
-    if (this._getTimeStamp() - weekTimeStamp > 604800000) {
-      this._newWeek();
-    } else {
-      if (dayNow < day) {
-        console.log("skip");
-        this._newWeek();
-      }
-      if (dayNow === day) {
-        const millBetween = 604800000 - (weekTimeStamp - this._getTimeStamp());
-        if (millBetween < 86400000) {
-          this._newWeek();
-        } else {
+  _checkForNewWeek(weekTimeStamp, weekStartDay) {
+    console.log(weekTimeStamp);
+    const getIndexByValue = (array, value) => {
+      for (var i = 0; i < array.length; i++) {
+        if (array[i] === value) {
+          console.log(i);
+          return i; // Return the index if value is found
         }
       }
+      return -1; // Return -1 if value is not found in the array
+    };
+    let weekTimeStampForUse;
+    let millisecondsToSubtract;
+
+    const weekDaySopossedToStart = getIndexByValue(
+      this.#weekDaysSp,
+      weekStartDay
+    );
+
+    console.log(weekStartDay);
+
+    const oneWeekInMilliseconds = 604800000;
+    const oneDayInMilliseconds = 86400000;
+
+    const dateNow = new Date();
+    // const hoursForNextWeek = dateNow.getHours();
+    // const minutesForNextWeek = dateNow.getMinutes();
+    // const secondsForNextWeek = dateNow.getSeconds();
+
+    const dateLastWeek = new Date(weekTimeStamp);
+    const weekDayLastWeek = dateLastWeek.getDay();
+
+    console.log(weekDayLastWeek);
+    console.log(weekDaySopossedToStart);
+
+    let numberForTimes = 1;
+
+    // TODO: here's trouble
+
+    console.log(weekDayLastWeek, weekDaySopossedToStart);
+    if (weekDayLastWeek >= weekDaySopossedToStart) {
+      numberForTimes = weekDaySopossedToStart - weekDayLastWeek;
+      weekTimeStampForUse =
+        weekTimeStamp - oneDayInMilliseconds * numberForTimes;
+      console.error("here");
+    } else if (weekDayLastWeek < weekDaySopossedToStart) {
+      const tillEndDays = 6 - weekDaySopossedToStart;
+      numberForTimes = weekDayLastWeek + tillEndDays;
+      weekTimeStampForUse =
+        weekTimeStamp - oneDayInMilliseconds * numberForTimes;
+    } else {
+      console.error("here");
+      weekTimeStampForUse = weekTimeStamp - oneWeekInMilliseconds;
     }
+
+    const dateForNextWeek = new Date(weekTimeStampForUse);
+    const hoursForNextWeek = dateForNextWeek.getHours();
+    const minutesForNextWeek = dateForNextWeek.getMinutes();
+    const secondsForNextWeek = dateForNextWeek.getSeconds();
+
+    console.log(hoursForNextWeek);
+    console.log(minutesForNextWeek);
+    console.log(secondsForNextWeek);
+
+    const calculateMilliseconds = (hours, minutes, seconds) => {
+      return hours * 60 * 60 * 1000 + minutes * 60 * 1000 + seconds * 1000;
+    };
+    millisecondsToSubtract = calculateMilliseconds(
+      hoursForNextWeek,
+      minutesForNextWeek,
+      secondsForNextWeek
+    );
+
+    // TODO: NEW from GPT
+    // Calculate the timestamp of the start of the next week
+    const nextWeekTimeStamp =
+      weekTimeStampForUse + (oneWeekInMilliseconds - millisecondsToSubtract);
+
+    console.log(this._getTimeFromTimeStamp(weekTimeStampForUse));
+    console.log(this._getTimeFromTimeStamp(nextWeekTimeStamp));
+
+    console.log(oneWeekInMilliseconds - millisecondsToSubtract);
+
+    // Check if the current time is after the start of the next week
+    console.log(this._getTimeStamp());
+    console.log(nextWeekTimeStamp);
+    if (this._getTimeStamp() >= nextWeekTimeStamp) {
+      this._newWeek();
+    } else {
+      console.log("no new week needed");
+    }
+  }
+
+  _checkForNewWeek2(weekTimeStamp) {
+    console.log("called check week");
+    const checkForNewWeek = (timestamp, weekStartDay) => {
+      // Get current date
+      var currentDate = new Date();
+      // Get current year
+      var currentYear = currentDate.getFullYear();
+      // Get day of the week (0 = Sunday, 1 = Monday, ..., 6 = Saturday)
+      var currentDayOfWeek = currentDate.getDay();
+      // Get current week number
+      var currentWeekNumber = getWeekNumber(currentDate, weekStartDay);
+
+      // Convert timestamp to Date object
+      var createdDate = new Date(timestamp);
+      // Get the year of the provided timestamp
+      var createdYear = createdDate.getFullYear();
+
+      // If the year of the timestamp is not the current year, call newWeek()
+      if (createdYear !== currentYear) {
+        console.log(
+          "Timesheet date is not in the current year. Calling newWeek()..."
+        );
+        newWeek();
+        return;
+      }
+
+      // Get week number of the provided timestamp
+      var createdWeekNumber = getWeekNumber(createdDate, weekStartDay);
+
+      // If the week was created during the current week, do nothing
+      if (currentWeekNumber === createdWeekNumber) {
+        console.log("Timesheet was created during the current week.");
+        return;
+      }
+
+      // If the week was created before the current week, call newWeek()
+      if (createdWeekNumber < currentWeekNumber) {
+        console.log(
+          "Timesheet was not created during the current week. Calling newWeek()..."
+        );
+        newWeek();
+        return;
+      }
+
+      // If the week was created after the current week, it's a future date
+      console.log("Timesheet date is in the future. Invalid.");
+    };
+
+    // Function to get the week number of a given date
+    function getWeekNumber(date, weekStartDay) {
+      var d = new Date(date);
+      d.setHours(0, 0, 0, 0);
+
+      // Adjust the date to the specified week start day
+      var dayOfWeek = d.getDay();
+      var diff = (dayOfWeek - weekStartDay + 7) % 7;
+      d.setDate(d.getDate() - diff);
+
+      // Get the year
+      var year = d.getFullYear();
+
+      // Get January 4th of the year
+      var january4 = new Date(year, 0, 4);
+
+      // Calculate the difference in milliseconds between January 4th and the current date
+      var difference = d - january4;
+
+      // Calculate the week number
+      var weekNumber = Math.ceil(difference / (7 * 24 * 60 * 60 * 1000));
+
+      // Adjust week number for January 1st-3rd being part of the previous year's week
+      if (weekNumber < 1) {
+        // Get January 1st of the year
+        var january1 = new Date(year, 0, 1);
+
+        // Calculate the difference in milliseconds between January 1st and January 4th
+        var januaryDifference = january4 - january1;
+
+        // Calculate the week number for the previous year
+        var prevYearWeekNumber = Math.ceil(
+          januaryDifference / (7 * 24 * 60 * 60 * 1000)
+        );
+
+        // Adjust week number
+        weekNumber = prevYearWeekNumber;
+      }
+
+      return weekNumber;
+    }
+
+    // Function to call when a new week needs to be created
+    function newWeek() {
+      console.log("Creating a new week...");
+      // Your new week logic here
+    }
+
+    // Example usage
+    var weekStartDay = -6; // Wednesday (0 = Sunday, 1 = Monday, ..., 6 = Saturday)
+    checkForNewWeek(weekTimeStamp, weekStartDay);
   }
 
   _punchIn(punch) {
     const date = new Date();
-    const dayDate = date.getDay();
-    let dayDateCor;
-    if (dayDate === 0) {
-      dayDateCor = 7;
-    } else {
-      dayDateCor = dayDate;
-    }
+    const dayInNumber = date.getDay();
+
+    const weekDaysEn = [
+      "sunday",
+      "monday",
+      "tuesday",
+      "wednesday",
+      "thursday",
+      "friday",
+      "saturday",
+    ];
+    const presentWeekDayEn = weekDaysEn[dayInNumber];
     const hourDate = date.getHours();
     const minutesDate = date.getMinutes();
 
@@ -2278,98 +3083,388 @@ class App {
     console.log(timeDate);
     if (punch === "in") {
       this.#timePickerUpdatestnd = "start";
-      this._updateEntries(timeDate, dayDateCor);
+      this._updateEntries(timeDate, presentWeekDayEn);
     }
     if (punch === "out") {
       this.#timePickerUpdatestnd = "end";
-      this._updateEntries(timeDate, dayDateCor);
+      this._updateEntries(timeDate, presentWeekDayEn);
     }
   }
 
-  _displayTimeSheet(weeks, arr, i, name) {
-    clearInterval(this.clockInterval);
-    sr11punchInClockSeconds.textContent = "00";
-    sr11punchInClockMinutes.textContent = "00";
-    sr11punchInClockHours.textContent = "0";
+  _getTimeFromTimeStamp(timestamp) {
+    var daysOfWeek = [
+      "Domingo",
+      "Lunes",
+      "Martes",
+      "Miércoles",
+      "Jueves",
+      "Viernes",
+      "Sábado",
+    ];
+    var months = [
+      "Enero",
+      "Febrero",
+      "Marzo",
+      "Abril",
+      "Mayo",
+      "Junio",
+      "Julio",
+      "Agosto",
+      "Septiembre",
+      "Octubre",
+      "Noviembre",
+      "Diciembre",
+    ];
 
-    let week;
-    let IndexDayValNum;
-    if (arr === "arr") {
-      week = weeks[weeks.length - 1];
-      this.#curWeek = week;
-    } else {
-      week = weeks;
-    }
-    if (arr === "arr") {
-      setTimeout(this._checkForNewWeek(week.weekMadeTimeStamp), 2000);
-    }
+    // Create a new Date object using the timestamp
+    var date = new Date(timestamp);
 
-    const date = new Date();
-    const dayDate = date.getDay();
-    let dayDateCor;
-    if (dayDate === 0) {
-      dayDateCor = 7;
-    } else {
-      dayDateCor = dayDate;
-    }
-    if (dayDate > 0 && dayDate < 7) {
-      IndexDayValNum = dayDate - 1;
-      console.log("here");
-    }
-    if (this.#curWeekArrayOrg.length === i) {
-      if (this.#curMemberInfo.writePermision === "true") {
-        sr11punchInConMain.style.display = "flex";
-        sr11punchInDay.textContent = this._daySp(dayDate);
-        sr11punchInClockMinutes.textContent = "00";
-        sr11punchInClockHours.textContent = "0";
-      }
-      if (this.#curMemberInfo.punchInPermision === "true") {
-        sr11punchInConMain.style.display = "flex";
-        sr11punchInDay.textContent = this._daySp(dayDate);
-        sr11punchInClockMinutes.textContent = "00";
-        sr11punchInClockHours.textContent = "0";
-      }
-      ("00");
-    } else {
-      sr11punchInConMain.style.display = "none";
-    }
-    IndexDayValNum = dayDateCor - 1;
+    // Extract the day of the week, day, month, year, hours, and minutes
+    var dayOfWeek = daysOfWeek[date.getDay()];
+    var day = date.getDate();
+    var month = months[date.getMonth()];
+    var year = date.getFullYear();
+    var hours = date.getHours();
+    var minutes = date.getMinutes();
 
-    if (week.days[IndexDayValNum].in === "0:00") {
+    // Format hours (12-hour format) and add AM/PM indicator
+    var amPM = hours >= 12 ? "am" : "pm";
+    hours = hours % 12;
+    hours = hours ? hours : 12; // Handle midnight (0 hours) as 12
+    var formattedHours = hours < 10 ? "0" + hours : hours;
+
+    // Format minutes
+    var formattedMinutes = minutes < 10 ? "0" + minutes : minutes;
+
+    // Format the date string
+    var formattedDate =
+      dayOfWeek +
+      "," +
+      " " +
+      day +
+      " de " +
+      month +
+      " " +
+      year +
+      "," +
+      " " +
+      formattedHours +
+      ":" +
+      formattedMinutes +
+      " " +
+      amPM;
+    return formattedDate;
+  }
+
+  //   const htmlForUse = `<div id="sr11-daily-hours-monday" class="daily-hours-con">
+  //   <p id="sr11-daily-hours-monday-day" class="daily-hours-day">
+  //     Lu
+  //   </p>
+  //   <div
+  //     id="sr11-daily-hours-monday-con"
+  //     class="daily-hours-con-2"
+  //   >
+  //     <p
+  //       id="sr11-daily-hours-monday-start"
+  //       class="daily-hours-start"
+  //       data-do="open-time-picker"
+  //       data-day="monday"
+  //       data-type="day"
+  //       data-stnd="start"
+  //     >
+  //       0:00
+  //     </p>
+  //     <div id="sr11-daily-hours-sunday-end-con">
+  //       <p
+  //         id="sr11-daily-hours-monday-end"
+  //         class="daily-hours-end"
+  //         data-do="open-time-picker"
+  //         data-day="monday"
+  //         data-type="day"
+  //         data-stnd="end"
+  //       >
+  //         0:00
+  //       </p>
+  //     </div>
+  //   </div>
+  //   <p
+  //     id="sr11-daily-hours-monday-time-total"
+  //     class="daily-hours-total"
+  //   >
+  //     0:00
+  //   </p>
+  // </div>
+
+  // <div id="sr11-daily-hours-tuesday" class="daily-hours-con">
+  //   <p id="sr11-daily-hours-tuesday-day" class="daily-hours-day">
+  //     Ma
+  //   </p>
+  //   <div
+  //     id="sr11-daily-hours-tuesday-con"
+  //     class="daily-hours-con-2"
+  //   >
+  //     <p
+  //       id="sr11-daily-hours-tuesday-start"
+  //       class="daily-hours-start"
+  //       data-do="open-time-picker"
+  //       data-day="tuesday"
+  //       data-type="day"
+  //       data-stnd="start"
+  //     >
+  //       0:00
+  //     </p>
+  //     <div id="sr11-daily-hours-sunday-end-con">
+  //       <p
+  //         id="sr11-daily-hours-tuesday-end"
+  //         class="daily-hours-end"
+  //         data-do="open-time-picker"
+  //         data-day="tuesday"
+  //         data-type="day"
+  //         data-stnd="end"
+  //       >
+  //         0:00
+  //       </p>
+  //     </div>
+  //   </div>
+  //   <p
+  //     id="sr11-daily-hours-tuesday-time-total"
+  //     class="daily-hours-total"
+  //   >
+  //     0:00
+  //   </p>
+  // </div>
+
+  // <div id="sr11-daily-hours-wednesday" class="daily-hours-con">
+  //   <p
+  //     id="sr11-daily-hours-wednesday-day"
+  //     class="daily-hours-day"
+  //   >
+  //     Mi
+  //   </p>
+  //   <div
+  //     id="sr11-daily-hours-wednesday-con"
+  //     class="daily-hours-con-2"
+  //   >
+  //     <p
+  //       id="sr11-daily-hours-wednesday-start"
+  //       class="daily-hours-start"
+  //       data-do="open-time-picker"
+  //       data-day="wednesday"
+  //       data-type="day"
+  //       data-stnd="start"
+  //     >
+  //       0:00
+  //     </p>
+  //     <div id="sr11-daily-hours-sunday-end-con">
+  //       <p
+  //         id="sr11-daily-hours-wednesday-end"
+  //         class="daily-hours-end"
+  //         data-do="open-time-picker"
+  //         data-day="wednesday"
+  //         data-type="day"
+  //         data-stnd="end"
+  //       >
+  //         0:00
+  //       </p>
+  //     </div>
+  //   </div>
+  //   <p
+  //     id="sr11-daily-hours-wednesday-time-total"
+  //     class="daily-hours-total"
+  //   >
+  //     0:00
+  //   </p>
+  // </div>
+
+  // <div id="sr11-daily-hours-thursday" class="daily-hours-con">
+  //   <p id="sr11-daily-hours-thursday-day" class="daily-hours-day">
+  //     Ju
+  //   </p>
+  //   <div
+  //     id="sr11-daily-hours-thursday-con"
+  //     class="daily-hours-con-2"
+  //   >
+  //     <p
+  //       id="sr11-daily-hours-thursday-start"
+  //       class="daily-hours-start"
+  //       data-do="open-time-picker"
+  //       data-day="thursday"
+  //       data-type="day"
+  //       data-stnd="start"
+  //     >
+  //       0:00
+  //     </p>
+  //     <div id="sr11-daily-hours-sunday-end-con">
+  //       <p
+  //         id="sr11-daily-hours-thursday-end"
+  //         class="daily-hours-end"
+  //         data-do="open-time-picker"
+  //         data-day="thursday"
+  //         data-type="day"
+  //         data-stnd="end"
+  //       >
+  //         0:00
+  //       </p>
+  //     </div>
+  //   </div>
+  //   <p
+  //     id="sr11-daily-hours-thursday-time-total"
+  //     class="daily-hours-total"
+  //   >
+  //     0:00
+  //   </p>
+  // </div>
+
+  // <div id="sr11-daily-hours-friday" class="daily-hours-con">
+  //   <p id="sr11-daily-hours-friday-day" class="daily-hours-day">
+  //     Vi
+  //   </p>
+  //   <div
+  //     id="sr11-daily-hours-friday-con"
+  //     class="daily-hours-con-2"
+  //   >
+  //     <p
+  //       id="sr11-daily-hours-friday-start"
+  //       class="daily-hours-start"
+  //       data-do="open-time-picker"
+  //       data-day="friday"
+  //       data-type="day"
+  //       data-stnd="start"
+  //     >
+  //       0:00
+  //     </p>
+  //     <div id="sr11-daily-hours-sunday-end-con">
+  //       <p
+  //         id="sr11-daily-hours-friday-end"
+  //         class="daily-hours-end"
+  //         data-do="open-time-picker"
+  //         data-day="friday"
+  //         data-type="day"
+  //         data-stnd="end"
+  //       >
+  //         0:00
+  //       </p>
+  //     </div>
+  //   </div>
+  //   <p
+  //     id="sr11-daily-hours-friday-time-total"
+  //     class="daily-hours-total"
+  //   >
+  //     0:00
+  //   </p>
+  // </div>
+
+  // <div id="sr11-daily-hours-saturday" class="daily-hours-con">
+  //   <p id="sr11-daily-hours-saturday-day" class="daily-hours-day">
+  //     Sa
+  //   </p>
+  //   <div
+  //     id="sr11-daily-hours-saturday-con"
+  //     class="daily-hours-con-2"
+  //   >
+  //     <p
+  //       id="sr11-daily-hours-saturday-start"
+  //       class="daily-hours-start"
+  //       data-do="open-time-picker"
+  //       data-day="saturday"
+  //       data-type="day"
+  //       data-stnd="start"
+  //     >
+  //       0:00
+  //     </p>
+  //     <div id="sr11-daily-hours-sunday-end-con">
+  //       <p
+  //         id="sr11-daily-hours-saturday-end"
+  //         class="daily-hours-end"
+  //         data-do="open-time-picker"
+  //         data-day="saturday"
+  //         data-type="day"
+  //         data-stnd="end"
+  //       >
+  //         0:00
+  //       </p>
+  //     </div>
+  //   </div>
+  //   <p
+  //     id="sr11-daily-hours-saturday-time-total"
+  //     class="daily-hours-total"
+  //   >
+  //     0:00
+  //   </p>
+  // </div>
+
+  // <div id="sr11-daily-hours-sunday" class="daily-hours-con">
+  //   <p id="sr11-daily-hours-sunday-day" class="daily-hours-day">
+  //     Do
+  //   </p>
+  //   <div
+  //     id="sr11-daily-hours-sunday-con"
+  //     class="daily-hours-con-2"
+  //   >
+  //     <p
+  //       id="sr11-daily-hours-sunday-start"
+  //       class="daily-hours-start"
+  //       data-do="open-time-picker"
+  //       data-day="sunday"
+  //       data-type="day"
+  //       data-stnd="start"
+  //     >
+  //       0:00
+  //     </p>
+  //     <div id="sr11-daily-hours-sunday-end-con">
+  //       <p
+  //         id="sr11-daily-hours-sunday-end"
+  //         class="daily-hours-end"
+  //         data-do="open-time-picker"
+  //         data-day="sunday"
+  //         data-type="day"
+  //         data-stnd="end"
+  //       >
+  //         0:00
+  //       </p>
+  //     </div>
+  //   </div>
+  //   <p
+  //     id="sr11-daily-hours-sunday-time-total"
+  //     class="daily-hours-total"
+  //   >
+  //     0:00
+  //   </p>
+  // </div>`;
+
+  _punchInActDisp(InOut) {
+    if (InOut === "in") {
       sr11PunchInBtnIn.dataset.active = "act";
       sr11PunchInBtnIn.style.opacity = "100%";
-    } else {
-      if (week.days[IndexDayValNum].out === "0:00") {
-        this._punchInTimer("in", week.days[IndexDayValNum].in);
-      } else {
-        const timeInArr = week.days[IndexDayValNum].totalTime.split(":");
-        let hour = Number(timeInArr[0]);
-        let min;
-        if (Number(timeInArr[1]) < 10) {
-          min = `0${Number(timeInArr[1])}`;
-        } else {
-          min = Number(timeInArr[1]);
-        }
-
-        sr11punchInClockMinutes.textContent = min;
-        sr11punchInClockHours.textContent = hour;
-        sr11PunchInBtnOut.style.opacity = "30%";
-        sr11PunchInBtnIn.style.opacity = "30%";
-        sr11PunchInBtnIn.dataset.active = "no";
-        sr11PunchInBtnOut.dataset.active = "no";
-      }
-      // sr11PunchInBtnIn.style.opacity = "50%";
+      sr11PunchInBtnOut.dataset.active = "no";
+      sr11PunchInBtnOut.style.opacity = "50%";
     }
-    if (
-      week.days[IndexDayValNum].out === "0:00" &&
-      week.days[IndexDayValNum].in !== "0:00"
-    ) {
+    if (InOut === "out") {
       sr11PunchInBtnOut.dataset.active = "act";
       sr11PunchInBtnOut.style.opacity = "100%";
+      sr11PunchInBtnIn.dataset.active = "no";
+      sr11PunchInBtnIn.style.opacity = "50%";
     }
+    if (InOut === "done") {
+      sr11PunchInBtnOut.style.opacity = "30%";
+      sr11PunchInBtnIn.style.opacity = "30%";
+      sr11PunchInBtnIn.dataset.active = "no";
+      sr11PunchInBtnOut.dataset.active = "no";
+    }
+  }
 
+  async _displayTimeSheet(srhide, load, week, weekNum) {
+    let srHide;
+
+    if (srhide === "ng") {
+      srHide = "sr7";
+    } else [(srHide = srhide)];
+    this._displaySpinner("Estamos cargando esta semana");
     const sr11WeekTimeTotalTime = document.querySelector(
       `#sr11-summary-time-total-time`
+    );
+    const sr11UpdateWeekTextDay = document.querySelector(
+      `#sr11-update-week-text-day`
     );
     const sr11WeekPayPerHour = document.querySelector(
       `#sr11-summary-pay--hour-pay`
@@ -2378,99 +3473,392 @@ class App {
       `#sr11-summary-pay-total-total-pay`
     );
 
-    hourSheetWeekNumber.textContent = `Semana ${i}`;
-    // if (name !== undefined) {
-    //   sr11TimeSheetName.textContent = name;
-    // } else {
-    //   sr11TimeSheetName.textContent = week.name;
-    // }
+    const restOfDisplay = async () => {
+      // Varibles
+      let weekForUse;
+      let lastWeekLocal;
+      let conditionStopAll;
 
-    const daysArr = week.days;
-    daysArr.forEach((curDay, i, arr) => {
-      const curday = curDay.day;
+      const logHours = (arr) => {
+        console.log(weekForUse[0].weekMadeTimeStamp);
+        const sr11WeekCreatedDate = document.querySelector(
+          "#sr11-week-created span"
+        );
+        sr11WeekCreatedDate.textContent = this._getTimeFromTimeStamp(
+          weekForUse[0].weekMadeTimeStamp
+        );
+        this._deleteAllChildren("sr11-log-hours-con-main");
+        const sr11LogHoursConMain = document.querySelector(
+          "#sr11-log-hours-con-main"
+        );
+        let htmlToAdd = ``;
+        arr.forEach((curDay, i, arr) => {
+          let shortDay;
+          let dayTimeStart;
+          let dayTimeEnd;
+          let dayTimeTotal;
 
-      const updateDayStart = document.querySelector(
-        `#sr11-daily-hours-${curday}-start`
-      );
-      const updateDayEnd = document.querySelector(
-        `#sr11-daily-hours-${curday}-end`
-      );
-      const updateDayTotalTime = document.querySelector(
-        `#sr11-daily-hours-${curday}-time-total`
-      );
+          // short days
+          if (curDay.day === "monday") {
+            shortDay = "Lu";
+          } else if (curDay.day === "tuesday") {
+            shortDay = "Ma";
+          } else if (curDay.day === "wednesday") {
+            shortDay = "Mi";
+          } else if (curDay.day === "thursday") {
+            shortDay = "Ju";
+          } else if (curDay.day === "friday") {
+            shortDay = "Vi";
+          } else if (curDay.day === "saturday") {
+            shortDay = "Sa";
+          } else if (curDay.day === "sunday") {
+            shortDay = "Do";
+          }
 
-      if (curDay.in === "0:00") {
-        updateDayStart.textContent = curDay.in;
-      } else {
-        let zeroRidTime = curDay.in.replace(/^0+/, "");
-        updateDayStart.textContent = this._timeFormator(zeroRidTime);
+          //time formater
+          if (curDay.in === "0:00") {
+            dayTimeStart = curDay.in;
+          } else {
+            let zeroRidTime = curDay.in.replace(/^0+/, "");
+            dayTimeStart = this._timeFormator(zeroRidTime);
+          }
+          if (curDay.out === "0:00") {
+            dayTimeEnd = curDay.out;
+          } else {
+            let zeroRidTime = curDay.out.replace(/^0+/, "");
+            dayTimeEnd = this._timeFormator(zeroRidTime);
+          }
+          if (this.#curData.pro !== "false") {
+            dayTimeTotal = curDay.totalTime;
+          } else {
+            dayTimeTotal = "-:--";
+          }
+
+          const curDayHtml = `
+              <div id="sr11-daily-hours-${curDay.day}"
+                class="daily-hours-con"
+                >
+                <p
+                  id="sr11-daily-hours-${curDay.day}-day"
+                  class="daily-hours-day"
+                >
+                
+                ${shortDay}
+                </p>
+                <div
+                  id="sr11-daily-hours-${curDay.day}-con"
+                  class="daily-hours-con-2"
+                >
+                  <p
+                    id="sr11-daily-hours-${curDay.day}-start"
+                    class="daily-hours-start"
+                    data-do="open-time-picker"
+                    data-day="${curDay.day}"
+                    data-type="day"
+                    data-stnd="start"
+                  >${dayTimeStart}</p>
+                  <div id="sr11-daily-hours-sunday-end-con">
+                    <p
+                      id="sr11-daily-hours-${curDay.day}-end"
+                      class="daily-hours-end"
+                      data-do="open-time-picker"
+                      data-day="${curDay.day}"
+                      data-type="day"
+                      data-stnd="end"
+                    >${dayTimeEnd}</p>
+                  </div>
+                </div>
+                <p
+                  id="sr11-daily-hours-${curDay.day}-time-total"
+                  class="daily-hours-total"
+                >
+                ${dayTimeTotal}
+                </p>
+              </div>`;
+
+          htmlToAdd = htmlToAdd + curDayHtml;
+        });
+        sr11LogHoursConMain.insertAdjacentHTML("beforeend", htmlToAdd);
+        this.#curWeek = weekForUse[0];
+
+        this._srGetStartedDispChoose("sr11", srHide, "left");
+
+        this._hideSpinner();
+      };
+
+      const searchWeek = async () => {
+        const q = query(
+          collection(db, `accounts/${this.#curMemberInfo.teamCode}/weeks`),
+          where("weekId", "==", this.#curMemberInfo.curWeekId)
+        );
+        console.log(q);
+        const docSnap = await getDocs(q);
+        const data = [];
+        docSnap.forEach((doc) => {
+          data.push(doc.data());
+        });
+        return data;
+      };
+
+      const newWeekChecker = async () => {
+        console.log("here now");
+        if (this.#curMemberInfo.curWeekId) {
+          if (load === true) {
+            this.#curWeekArrayOrg = [];
+            this._weekSelectBtnDimmer("ahead");
+            weekForUse = await searchWeek();
+            lastWeekLocal = true;
+            console.log("here now");
+            console.log(lastWeekLocal);
+
+            return new Promise((resolve) => {
+              resolve(
+                this._checkForNewWeek(
+                  weekForUse[0].weekMadeTimeStamp,
+                  weekForUse[0].weekStart
+                )
+              );
+            });
+          } else {
+            weekForUse = [week];
+            lastWeekLocal = false;
+            console.log("here now");
+            console.log(lastWeekLocal);
+          }
+        } else {
+          console.log("here now");
+          console.log(lastWeekLocal);
+          conditionStopAll = true;
+          this._newWeek();
+          return Promise.resolve();
+        }
+      };
+
+      await newWeekChecker();
+
+      if (conditionStopAll === true) {
+        console.log("all stoped here because a new week was created");
+        return;
       }
-      if (curDay.out === "0:00") {
-        updateDayEnd.textContent = curDay.out;
-      } else {
-        let zeroRidTime = curDay.out.replace(/^0+/, "");
-        updateDayEnd.textContent = this._timeFormator(zeroRidTime);
-      }
-      if (this.#curData.pro !== "false") {
-        updateDayTotalTime.textContent = curDay.totalTime;
-      } else {
-        updateDayTotalTime.textContent = "-:--";
-      }
-    });
-    if (
-      this.#curWeekArrayOrg.length === i &&
-      this.#curMemberInfo.salary !== week.salary
-    ) {
-      console.log("last week");
-      console.log(this.#curMemberInfo.salary);
-      console.log(this.#curMemberInfo);
-      console.log(week.salary);
-      console.log(week.weekId);
+      console.log("nothing stoped here because no new week was created");
 
-      if (this.#curData.pro !== "false") {
-        sr11WeekTimeTotalTime.textContent = week.totalTime;
-        sr11WeekPayTotal.textContent = `$ ${this._calculatePay(
-          this.#curMemberInfo.salary,
-          week.totalTime
-        )}`;
-      } else {
-        sr11WeekTimeTotalTime.textContent = "-:--";
-        sr11WeekPayTotal.textContent = "$ ----";
-      }
+      logHours(weekForUse[0].days);
+      sr11TimeSheetName.textContent = this.#curMemberInfo.name;
 
-      sr11WeekPayPerHour.textContent = `$ ${this.#curMemberInfo.salary}`;
-      this._updateData(
-        `accounts/${this.#curMemberInfo.teamCode}/weeks`,
-        week.weekId,
-        {
-          salary: this.#curMemberInfo.salary,
-          totalPay: this._calculatePay(
+      if (this.#curMemberInfo.salary !== weekForUse[0].salary) {
+        if (this.#curData.pro !== "false") {
+          sr11WeekTimeTotalTime.textContent = weekForUse[0].totalTime;
+          sr11WeekPayTotal.textContent = `$ ${this._calculatePay(
             this.#curMemberInfo.salary,
-            week.totalTime
-          ),
+            weekForUse[0].totalTime
+          )}`;
+        } else {
+          sr11WeekTimeTotalTime.textContent = "-:--";
+          sr11WeekPayTotal.textContent = "$ ----";
+        }
+
+        sr11WeekPayPerHour.textContent = `$ ${this.#curMemberInfo.salary}`;
+        this._updateData(
+          `accounts/${this.#curMemberInfo.teamCode}/weeks`,
+          weekForUse[0].weekId,
+          {
+            salary: this.#curMemberInfo.salary,
+            totalPay: this._calculatePay(
+              this.#curMemberInfo.salary,
+              weekForUse[0].totalTime
+            ),
+          }
+        );
+      } else {
+        if (this.#curData.pro !== "false") {
+          sr11WeekTimeTotalTime.textContent = weekForUse[0].totalTime;
+          sr11WeekPayTotal.textContent = `$ ${weekForUse[0].totalPay}`;
+        } else {
+          sr11WeekTimeTotalTime.textContent = "-:--";
+          sr11WeekPayTotal.textContent = "$ ----";
+        }
+
+        sr11WeekPayPerHour.textContent = `$ ${weekForUse[0].salary}`;
+      }
+      // TODO: all good overhead. need to fix downward
+
+      //
+
+      //
+
+      //
+
+      //
+
+      ///
+      clearInterval(this.clockInterval);
+      sr11punchInClockSeconds.textContent = "00";
+      sr11punchInClockMinutes.textContent = "00";
+      sr11punchInClockHours.textContent = "0";
+
+      const date = new Date();
+      const dayInNumber = date.getDay();
+      const weekDaysSp = [
+        "domingo",
+        "lunes",
+        "martes",
+        "miércoles",
+        "jueves",
+        "viernes",
+        "sábado",
+      ];
+      const presentWeekDaySp = weekDaysSp[dayInNumber];
+      const weekDaysEn = [
+        "sunday",
+        "monday",
+        "tuesday",
+        "wednesday",
+        "thursday",
+        "friday",
+        "saturday",
+      ];
+      const presentWeekDayEn = weekDaysEn[dayInNumber];
+
+      const dispPunchinCon = () => {
+        lastWeekLocal = true;
+        sr11punchInConMain.style.display = "flex";
+        sr11punchInDay.textContent = presentWeekDaySp;
+        sr11punchInClockMinutes.textContent = "00";
+        sr11punchInClockHours.textContent = "0";
+      };
+
+      const dispWeekConvertBtn = () => {
+        console.log("called");
+        if (lastWeekLocal === true) {
+          console.log("called");
+          if (this.#curMemberInfo.weekStart !== weekForUse[0].weekStart) {
+            console.log("called");
+            if (srhide === "ng") {
+              sr7UpdateCurWeekToStartWeekCon.style.display = "flex";
+
+              sr11UpdateWeekTextDay.textContent = this.#curMemberInfo.weekStart;
+            } else {
+              console.error("not displayed");
+            }
+          }
+          if (this.#curMemberInfo.weekStart === weekForUse[0].weekStart) {
+            console.log("called");
+            sr7UpdateCurWeekToStartWeekCon.style.display = "none";
+          }
+        } else {
+          console.log("called");
+          sr7UpdateCurWeekToStartWeekCon.style.display = "none";
+        }
+      };
+
+      if (lastWeekLocal === true) {
+        if (this.#curMemberInfo.writePermision === "true") {
+          dispPunchinCon();
+          dispWeekConvertBtn();
+        }
+        if (this.#curMemberInfo.punchInPermision === "true") {
+          dispPunchinCon();
+          dispWeekConvertBtn();
+        }
+      } else {
+        sr11punchInConMain.style.display = "none";
+        dispWeekConvertBtn();
+      }
+      if (typeof weekNum === "number") {
+        console.log(this.#curMemberInfo.numberOfWeeks);
+        console.log(weekNum);
+        if (weekNum + 1 === this.#curMemberInfo.numberOfWeeks) {
+          hourSheetWeekNumber.textContent = `Semana ${weekNum + 1}`;
+          hourSheetWeekNumberLast.textContent = "última";
+          dispPunchinCon();
+          dispWeekConvertBtn();
+        } else {
+          hourSheetWeekNumber.textContent = `Semana ${weekNum + 1}`;
+          hourSheetWeekNumberLast.textContent = "";
+        }
+      } else {
+        console.log(typeof weekNum);
+        hourSheetWeekNumber.textContent = `Semana ${
+          this.#curMemberInfo.numberOfWeeks
+        }`;
+        hourSheetWeekNumberLast.textContent = "última";
+        dispPunchinCon();
+        dispWeekConvertBtn();
+      }
+      // IndexDayValNum = dayDateCor - 1;
+      function arrSearchByKeyValue(array, key, value) {
+        // Loop through each object in the array
+        for (let i = 0; i < array.length; i++) {
+          // Check if the current object has the specified key and value
+          if (array[i][key] === value) {
+            // If found, return the object
+            return array[i];
+          }
+        }
+        // If not found, return null or handle the case as needed
+        return null;
+      }
+
+      arrSearchByKeyValue(weekForUse[0].days, "day", presentWeekDayEn);
+
+      if (
+        arrSearchByKeyValue(weekForUse[0].days, "day", presentWeekDayEn).in ===
+        "0:00"
+      ) {
+        this._punchInActDisp("in");
+      } else {
+        if (
+          arrSearchByKeyValue(weekForUse[0].days, "day", presentWeekDayEn)
+            .out === "0:00"
+        ) {
+          this._punchInTimer(
+            "in",
+            arrSearchByKeyValue(weekForUse[0].days, "day", presentWeekDayEn).in
+          );
+        } else {
+          const timeInArr = arrSearchByKeyValue(
+            weekForUse[0].days,
+            "day",
+            presentWeekDayEn
+          ).totalTime.split(":");
+          let hour = Number(timeInArr[0]);
+          let min;
+          if (Number(timeInArr[1]) < 10) {
+            min = `0${Number(timeInArr[1])}`;
+          } else {
+            min = Number(timeInArr[1]);
+          }
+
+          sr11punchInClockMinutes.textContent = min;
+          sr11punchInClockHours.textContent = hour;
+          this._punchInActDisp("done");
+        }
+      }
+      if (
+        arrSearchByKeyValue(weekForUse[0].days, "day", presentWeekDayEn).out ===
+          "0:00" &&
+        arrSearchByKeyValue(weekForUse[0].days, "day", presentWeekDayEn).in !==
+          "0:00"
+      ) {
+        this._punchInActDisp("out");
+      }
+    };
+
+    if (this.#curMemberInfo.numberOfWeeks) {
+      // Code inside this block will execute synchronously
+      restOfDisplay();
+    } else {
+      const weeksLocal = await this._readWeeks();
+      await this._updateData(
+        `accounts/${this.#curMemberInfo.teamCode}/team`,
+        this.#curMemberInfo.memberId,
+        {
+          numberOfWeeks: weeksLocal.length,
         }
       );
-    } else {
-      if (this.#curData.pro !== "false") {
-        sr11WeekTimeTotalTime.textContent = week.totalTime;
-        sr11WeekPayTotal.textContent = `$ ${week.totalPay}`;
-      } else {
-        sr11WeekTimeTotalTime.textContent = "-:--";
-        sr11WeekPayTotal.textContent = "$ ----";
-      }
-
-      sr11WeekPayPerHour.textContent = `$ ${week.salary}`;
+      // Code after this point will execute after _updateData finishes
+      restOfDisplay();
     }
-
-    // const style = window.getComputedStyle(sr11);
-    // const matrix = new WebKitCSSMatrix(style.transform);
-    // const nowLocated = matrix.e;
-    // console.log(nowLocated);
-    // if (nowLocated === -5070) {
-    //   // this._srGetStartedDispChoose("sr11", "sr22", "left");
-    // } else {
-    // }
-    console.log("here it is");
   }
 
   _timeFormator(time) {
@@ -2509,43 +3897,30 @@ class App {
     return timeFormated;
   }
 
-  _updateEntries(time, dayNum) {
-    console.log(dayNum);
+  _updateEntries(time, dayToChange) {
     let curDataLocal;
     if (this.#curData.level === this.#adminLevel) {
       curDataLocal = this.#curAccountData;
     } else {
       curDataLocal = this.#curData;
     }
+
     console.log(this.#curMemberInfo.memberId);
-    let IndexDayVal;
-    console.log("er4gtrewfe");
-    if (dayNum) {
-      IndexDayVal = dayNum - 1;
-    } else {
-      console.log("nomo");
-      if (this.#timePickerUpdateDay === "monday") {
-        IndexDayVal = 0;
+
+    function findIndexByKeyValue(array, key, value) {
+      for (let i = 0; i < array.length; i++) {
+        if (array[i][key] === value) {
+          return i;
+        }
       }
-      if (this.#timePickerUpdateDay === "tuesday") {
-        IndexDayVal = 1;
-      }
-      if (this.#timePickerUpdateDay === "wednesday") {
-        IndexDayVal = 2;
-      }
-      if (this.#timePickerUpdateDay === "thursday") {
-        IndexDayVal = 3;
-      }
-      if (this.#timePickerUpdateDay === "friday") {
-        IndexDayVal = 4;
-      }
-      if (this.#timePickerUpdateDay === "saturday") {
-        IndexDayVal = 5;
-      }
-      if (this.#timePickerUpdateDay === "sunday") {
-        IndexDayVal = 6;
-      }
+      return -1; // Return -1 if the key/value pair is not found
     }
+
+    const IndexDayVal = findIndexByKeyValue(
+      this.#curWeek.days,
+      "day",
+      dayToChange
+    );
 
     console.log("time: ", time);
 
@@ -2579,15 +3954,9 @@ class App {
         this.#curWeek.weekId,
         this.#curWeek
       );
-      if (dayNum) {
-        this._punchInTimer("in");
-      }
     };
 
     const updateOut = () => {
-      if (dayNum) {
-        this._punchInTimer("out");
-      }
       this._updateData(
         `accounts/${curDataLocal.teamCode}/team`,
         this.#curMemberInfo.memberId,
@@ -2777,11 +4146,17 @@ class App {
         }
       }
       console.log("arr", this.#curWeek.days);
-      this._displayTimeSheet(
-        this.#curWeek,
-        "not arr",
-        this.#curWeekArrayOrg.length - this.#weekDisplayNumberMinus + 1
-      );
+
+      if (this.#weekDisplayNumberMinus) {
+        this._displayTimeSheet(
+          "ng",
+          false,
+          this.#curWeekArrayOrg[this.#weekDisplayNumberMinus],
+          this.#weekDisplayNumberMinus
+        );
+      } else {
+        this._displayTimeSheet("ng", true);
+      }
     }
   }
 
@@ -3153,14 +4528,19 @@ class App {
       curDataLocal = this.#curData;
     }
     const inpPayPerHour = document.querySelector("#sr9-inp-pay--hour");
+    const inpMemberName = document.querySelector("#sr8-inp-name");
     const writePermision = document.querySelector("#sr9-swi-write--hours");
     const memberLevel = document.querySelector("#sr9-swi-assis");
+    const selectWeekStart = document.querySelector("#sr9-swi-pay--day");
     let write = writePermision.dataset.on;
     let punchIn = sr9SwiPunchIn.dataset.on;
     let level;
 
     if (inpPayPerHour.value > 0) {
-      this._srGetStartedDispChoose("sr22", "sr9", "left");
+      // this._srGetStartedDispChoose("sr22", "sr9", "left");
+      this._displaySpinner(
+        `Estamos añdiendo ${inpMemberName.value} a tu equipo.`
+      );
 
       if (memberLevel.dataset.on === "true") {
         level = "asistente";
@@ -3176,6 +4556,7 @@ class App {
           writePermision: write,
           punchInPermision: punchIn,
           salary: inpPayPerHour.value,
+          weekStart: selectWeekStart.value,
         }
       );
 
@@ -3184,7 +4565,8 @@ class App {
       console.log("assistant", level);
 
       setTimeout(() => {
-        this._displayMembers("sr22");
+        this._displayMembers("sr9");
+        this._hideSpinner();
         this._disdSuccessErrorMessage(
           "Éxito. Un nuevo trabajador fue añadido a tu equipo.",
           "ex",
@@ -3195,6 +4577,38 @@ class App {
       console.error("no pay");
     }
   }
+  async _newWeekForCurUser() {
+    try {
+      const userInput = await this._displayPrompt(
+        "confirm",
+        "Cancelar",
+        "Crear semana",
+        "Crear nueva semana",
+        "Crear una nueva semana solo debería usarse si por alguna razón nuestro creador automático de nuevas semanas no te proporcionó una nueva semana."
+      );
+      console.log("User input:", userInput);
+      this._newWeek();
+
+      this._sendEmailNormal(
+        "thorastrack@gmail.com",
+        "thorastrack@gmail.com",
+        "THoras Tracker: New Week",
+        `A new week was created by ${this.#curData.email}. Team name: ${
+          this.#curData.teamName
+        }. Team code: ${this.#curData.teamCode}`
+      );
+      sr17.classList.remove("sr");
+      sr17.classList.add("sr-none");
+      // Proceed with your function using the userInput if needed
+    } catch (error) {
+      if (error === "cancel") {
+        console.log("User cancelled");
+        // Abort your function
+      } else {
+        console.error("Error:", error);
+      }
+    }
+  }
 
   _newWeek(curid) {
     if (navigator.onLine) {
@@ -3202,6 +4616,14 @@ class App {
       this._idGenerator(this.#idLenght, this.#idTakeArrLenght);
 
       let curDataLocal;
+      let weekStartlocal;
+
+      if (this.#curMemberInfo.weekStart) {
+        weekStartlocal = this.#curMemberInfo.weekStart;
+      } else {
+        weekStartlocal = "lunes";
+      }
+
       if (this.#curData.level === this.#adminLevel) {
         curDataLocal = this.#curAccountData;
       } else {
@@ -3224,6 +4646,7 @@ class App {
             this.#curUseId,
             {
               weekId: this.#curUseId,
+              weekStart: weekStartlocal,
               name: this.#curMemberInfo.name,
               memberId: memberId,
               salary: this.#curMemberInfo.salary,
@@ -3242,127 +4665,10 @@ class App {
               memberPayed: "false",
               adminPayed: "false",
               payed: "false",
-              days: [
-                {
-                  day: "monday",
-                  in: "0:00",
-                  out: "0:00",
-                  totalPay: "000",
-                  totalTime: "0:00",
-                  totaExtraTime: "0:00",
-                  break: [
-                    {
-                      start: "0:00",
-                      startM: "am",
-                      end: "0:00",
-                      endM: "am",
-                      time: "0:00",
-                    },
-                  ],
-                },
-                {
-                  day: "tuesday",
-                  in: "0:00",
-                  out: "0:00",
-                  totalPay: "000",
-                  totalTime: "0:00",
-                  totaExtraTime: "0:00",
-                  break: [
-                    {
-                      start: "0:00",
-                      startM: "am",
-                      end: "0:00",
-                      endM: "am",
-                      time: "0:00",
-                    },
-                  ],
-                },
-                {
-                  day: "wednesday",
-                  in: "0:00",
-                  out: "0:00",
-                  totalPay: "000",
-                  totalTime: "0:00",
-                  totaExtraTime: "0:00",
-                  break: [
-                    {
-                      start: "0:00",
-                      startM: "am",
-                      end: "0:00",
-                      endM: "am",
-                      time: "0:00",
-                    },
-                  ],
-                },
-                {
-                  day: "thursday",
-                  in: "0:00",
-                  out: "0:00",
-                  totalPay: "000",
-                  totalTime: "0:00",
-                  totaExtraTime: "0:00",
-                  break: [
-                    {
-                      start: "0:00",
-                      startM: "am",
-                      end: "0:00",
-                      endM: "am",
-                      time: "0:00",
-                    },
-                  ],
-                },
-                {
-                  day: "friday",
-                  in: "0:00",
-                  out: "0:00",
-                  totalPay: "000",
-                  totalTime: "0:00",
-                  totaExtraTime: "0:00",
-                  break: [
-                    {
-                      start: "0:00",
-                      startM: "am",
-                      end: "0:00",
-                      endM: "am",
-                      time: "0:00",
-                    },
-                  ],
-                },
-                {
-                  day: "saturday",
-                  in: "0:00",
-                  out: "0:00",
-                  totalPay: "000",
-                  totalTime: "0:00",
-                  totaExtraTime: "0:00",
-                  break: [
-                    {
-                      start: "0:00",
-                      startM: "am",
-                      end: "0:00",
-                      endM: "am",
-                      time: "0:00",
-                    },
-                  ],
-                },
-                {
-                  day: "sunday",
-                  in: "0:00",
-                  out: "0:00",
-                  totalPay: "000",
-                  totalTime: "0:00",
-                  totaExtraTime: "0:00",
-                  break: [
-                    {
-                      start: "0:00",
-                      startM: "am",
-                      end: "0:00",
-                      endM: "am",
-                      time: "0:00",
-                    },
-                  ],
-                },
-              ],
+              days: this._rearrangeWeekDays(
+                this.#daysArrForNewWeek,
+                weekStartlocal
+              ),
             }
           );
 
@@ -3373,7 +4679,28 @@ class App {
               curWeekId: this.#curUseId,
             }
           );
-          this._readWeeks("sr11");
+          const appInfo = doc(
+            db,
+            `accounts/${this.#curMemberInfo.teamCode}/team`,
+            this.#curMemberInfo.memberId
+          );
+          updateDoc(appInfo, {
+            numberOfWeeks: increment(1),
+          });
+          // this._readWeeks("sr11");
+
+          const q = query(
+            collection(db, `accounts/${curDataLocal.teamCode}/team`),
+            where("memberId", "==", this.#curMemberInfo.memberId)
+          );
+          getDocs(q).then((docSnap) => {
+            docSnap.forEach((doc) => {
+              const val = doc.data();
+              this.#curMemberInfo = val;
+              console.log(this.#curMemberInfo);
+              this._displayTimeSheet("ng", true);
+            });
+          });
           this._disdSuccessErrorMessage(
             "Éxito. Una nueva semana ha comenzado.",
             "ex",
@@ -3400,6 +4727,7 @@ class App {
       const inpVerPasswordErrMess = document.querySelector(
         "#sr8-inp-confpass-errmess"
       );
+      const selectWeekStart = document.querySelector("#sr9-swi-pay--day");
 
       const inpMemberName = document.querySelector("#sr8-inp-name");
       const inpPassword = document.querySelector("#sr8-inp-crepass");
@@ -3407,12 +4735,20 @@ class App {
       const inpPayPerHour = document.querySelector("#sr9-inp-pay--hour");
 
       let curDataLocal;
+      let weekStartlocal;
       if (this.#curData.level === this.#adminLevel) {
         curDataLocal = this.#curAccountData;
       } else {
         curDataLocal = this.#curData;
       }
+
+      if (curDataLocal.weekStart) {
+        weekStartlocal = curDataLocal.weekStart;
+      } else {
+        weekStartlocal = "lunes";
+      }
       inpPayPerHour.value = curDataLocal.salary;
+      selectWeekStart.value = weekStartlocal;
 
       if (inpMemberName.value.length > 0 && inpPassword.value.length > 0) {
         const q = query(
@@ -3427,7 +4763,10 @@ class App {
             ) {
               if (inpPassword.value.length > 5) {
                 if (inpPassword.value === inpVerPassword.value) {
-                  this._srGetStartedDispChoose("sr22", "sr8", "right");
+                  // this._srGetStartedDispChoose("sr22", "sr8", "right");
+                  this._displaySpinner(
+                    `Estamos prosesando la información de ${inpMemberName.value}. Porfavor espera un momento.`
+                  );
                   this._idGenerator(this.#idLenght, this.#idTakeArrLenght);
                   const intv = setInterval(() => {
                     if (this.#curUseId !== undefined) {
@@ -3488,7 +4827,8 @@ class App {
                         inpPayPerHour.value = "";
                       });
 
-                      this._srGetStartedDispChoose("sr9", "sr22", "left");
+                      this._srGetStartedDispChoose("sr9", "sr8", "left");
+                      this._hideSpinner();
                     } else {
                       console.log("still not");
                     }
@@ -3542,6 +4882,7 @@ class App {
   }
 
   _createTeamStep2() {
+    const selectWeekStart = document.querySelector("#sr6-swi-pay--day");
     const inpTeamPay = document.querySelector("#sr6-inp-pay");
     const inpTeamPayErrMess = document.querySelector("#sr6-inp-pay-errmess");
     this.#curData = this._getFromLocal("curData");
@@ -3557,6 +4898,7 @@ class App {
       this._onSnapshot("accounts", this.#curData.teamCode);
       this._updateData("accounts", curDataLocal.teamCode, {
         salary: inpTeamPay.value,
+        weekStart: selectWeekStart.value,
       });
       this._displayMembers("sr6");
       headerTeamImg.src = curDataLocal.teamImg;
@@ -4001,7 +5343,9 @@ class App {
     }
   }
   async _sr16SettingsSaveChanges() {
+    const selectWeekStart = document.querySelector("#sr16-swi-pay--day");
     let curDataLocal;
+    let weekDaysCheck;
     if (this.#curData.level === this.#adminLevel) {
       curDataLocal = this.#curAccountData;
     } else {
@@ -4014,11 +5358,22 @@ class App {
       level = "miembro";
     }
 
+    if (this.#curMemberInfo.weekStart) {
+      if (this.#curMemberInfo.weekStart === selectWeekStart.value) {
+        weekDaysCheck = true;
+      } else {
+        weekDaysCheck = false;
+      }
+    } else {
+      weekDaysCheck = false;
+    }
+
     if (
       this.#curMemberInfo.salary === sr16InpMemberPay.value &&
       this.#curMemberInfo.writePermision === sr16SwiHours.dataset.on &&
       this.#curMemberInfo.punchInPermision === sr16SwiPunchIn.dataset.on &&
-      this.#curMemberInfo.level === level
+      this.#curMemberInfo.level === level &&
+      weekDaysCheck === true
     ) {
       // this._displayMembers("sr16");
       this._srGetStartedDispChoose("sr7", "sr16", "right");
@@ -4045,6 +5400,16 @@ class App {
             } automáticamente iniciará sesión como un admin y tendrá todos los derechos de un admin. Incluso padrá cambiar detalles de tu cuenta y los ajustes de tu equipo.`
           );
         }
+        if (weekDaysCheck === false) {
+          this._displayAlert(
+            `Acerca de ${this.#curMemberInfo.name}`,
+            `Las semanas de ${this.#curMemberInfo.name} comezarán el ${
+              selectWeekStart.value
+            }. Esto no cambiará la semana presente. Solo será aplicado al crear nuavas semanas. Para cambiar la semana actual, debes entrar en la tabla de horas de ${
+              this.#curMemberInfo.name
+            }, en la barra de heramientas veras la opcion de convertir la semana actual.`
+          );
+        }
         setTimeout(() => {
           this._updateData(
             `accounts/${curDataLocal.teamCode}/team`,
@@ -4055,6 +5420,7 @@ class App {
               punchInPermision: sr16SwiPunchIn.dataset.on,
               level: level,
               lastModified: this._getTimeStamp(),
+              weekStart: selectWeekStart.value,
             }
           );
           // this._displayMembers("sr16");
@@ -4067,30 +5433,54 @@ class App {
     }
   }
 
-  _logout() {
+  async _logout() {
     let curDataLocal;
     if (this.#curData.level === this.#adminLevel) {
       curDataLocal = this.#curAccountData;
     } else {
       curDataLocal = this.#curData;
     }
-
-    const logoutPassword = prompt(
-      `¿Cerrar sesión? \n Para confirmar, introduce tu contraseña aqui.`
-    );
-    if (logoutPassword === curDataLocal.accountPassword) {
-      console.log("good");
-      this._removeFromLocal("curData");
-      this._deleteCookie("teamCode");
-      this._deleteCookie("level");
-      this._init("sr20");
-      // this._disdSuccessErrorMessage(`Cerraste sesión`, "ex", 5000);
-    } else {
-      this._disdSuccessErrorMessage(`Contraseña incorecta`, "er", 3000);
+    try {
+      const logoutPassword = await this._displayPrompt(
+        "input",
+        "Cancelar",
+        "Cerrar session",
+        "Cerrar session",
+        "Para cerrar sesión, necesitas ingresar tu contraseña aquí"
+      );
+      if (logoutPassword === curDataLocal.accountPassword) {
+        console.log("good");
+        this._removeFromLocal("curData");
+        this._deleteCookie("teamCode");
+        this._deleteCookie("level");
+        this._init("sr20");
+        // this._disdSuccessErrorMessage(`Cerraste sesión`, "ex", 5000);
+      } else {
+        this._disdSuccessErrorMessage(`Contraseña incorecta`, "er", 3000);
+      }
+      // Proceed with your function using the userInput if needed
+    } catch (error) {
+      if (error === "cancel") {
+        console.log("User cancelled");
+        // Abort your function
+      } else {
+        console.error("Error:", error);
+      }
     }
+
+    // if (logoutPassword === curDataLocal.accountPassword) {
+    //   console.log("good");
+    //   this._removeFromLocal("curData");
+    //   this._deleteCookie("teamCode");
+    //   this._deleteCookie("level");
+    //   this._init("sr20");
+    //   // this._disdSuccessErrorMessage(`Cerraste sesión`, "ex", 5000);
+    // } else {
+    //   this._disdSuccessErrorMessage(`Contraseña incorecta`, "er", 3000);
+    // }
   }
 
-  _deleteMember() {
+  async _deleteMember() {
     const name = this.#curMemberInfo.name;
     let curDataLocal;
     if (this.#curData.level === this.#adminLevel) {
@@ -4099,41 +5489,73 @@ class App {
       curDataLocal = this.#curData;
     }
 
-    const password = prompt(
-      `¿Quieres eliminar a ${name} de tu equipo? \n Para comfirmar introduce su contraseña de ${name} aqui.`
-    );
-    if (this.#curMemberInfo.password === password) {
-      deleteDoc(
-        doc(
-          db,
-          `accounts/${curDataLocal.teamCode}/team`,
-          this.#curMemberInfo.memberId
-        )
+    try {
+      const password = await this._displayPrompt(
+        "input",
+        "Cancelar",
+        "Eliminar Trabajador",
+        "Eliminar Trabajador",
+        `Este paso no se puede deshacer. Perderás todos los datos de ${
+          this.#curMemberInfo.name
+        }.`
       );
-      this._displayMembers("sr16");
-      this._disdSuccessErrorMessage(
-        `${name} eliminado fue de tu equipo`,
-        "ex",
-        3000
-      );
-    } else {
-      this._disdSuccessErrorMessage(`Contraseña incorecta`, "er", 3000);
+
+      // Proceed with your function using the userInput if needed
+
+      if (this.#curMemberInfo.password === password) {
+        deleteDoc(
+          doc(
+            db,
+            `accounts/${curDataLocal.teamCode}/team`,
+            this.#curMemberInfo.memberId
+          )
+        );
+        this._displayMembers("sr16");
+        this._disdSuccessErrorMessage(
+          `${name} eliminado fue de tu equipo`,
+          "ex",
+          3000
+        );
+      } else {
+        this._disdSuccessErrorMessage(`Contraseña incorecta`, "er", 3000);
+      }
+    } catch (error) {
+      if (error === "cancel") {
+        console.log("User cancelled");
+        // Abort your function
+      } else {
+        console.error("Error:", error);
+      }
     }
   }
-  _leaveTeam() {
+  async _leaveTeam() {
     const name = this.#curMemberInfo.name;
 
-    const password = prompt(
-      `¿Quieres dejar este equipo? \n Para comfirmar introduce tu contraseña aqui.`
-    );
-    if (this.#curMemberInfo.password === password) {
-      this._deleteCookie("teamCode");
-      this._deleteCookie("memberId");
-      this._deleteCookie("level");
-      this._removeFromLocal("curData");
-      this._init("sr17");
-    } else {
-      this._disdSuccessErrorMessage(`Contraseña incorecta`, "er", 3000);
+    try {
+      const password = await this._displayPrompt(
+        "input",
+        "Cancelar",
+        "Dejar equipo",
+        "Dejar este equipo",
+        "Para dejar este equipo, ingrese su contraseña."
+      );
+      // Proceed with your function using the userInput if needed
+      if (this.#curMemberInfo.password === password) {
+        this._deleteCookie("teamCode");
+        this._deleteCookie("memberId");
+        this._deleteCookie("level");
+        this._removeFromLocal("curData");
+        this._init("sr17");
+      } else {
+        this._disdSuccessErrorMessage(`Contraseña incorecta`, "er", 3000);
+      }
+    } catch (error) {
+      if (error === "cancel") {
+        console.log("User cancelled");
+        // Abort your function
+      } else {
+        console.error("Error:", error);
+      }
     }
   }
 
@@ -4142,11 +5564,20 @@ class App {
     const memberName = document.querySelector("#sr17-disp-member-name");
     const memberPassword = document.querySelector("#sr17-disp-member-pass");
     const memberPay = document.querySelector("#sr17-disp-pay--hour");
+    const memberWeekStart = document.querySelector("#sr17-week-start");
 
     headerNameText.textContent = this.#curMemberInfo.name;
     memberName.textContent = this.#curMemberInfo.name;
     memberPassword.textContent = this.#curMemberInfo.password;
     memberPay.textContent = this.#curMemberInfo.salary;
+    memberWeekStart.textContent = this.#curMemberInfo.weekStart;
+    if (this.#curData.level === "miembro") {
+      btnsr17LeaveTeam.style.display = "flex";
+      btnsr17NewWeek.style.display = "none";
+    } else {
+      btnsr17LeaveTeam.style.display = "none";
+      btnsr17NewWeek.style.display = "flex";
+    }
 
     this._srGetStartedDispChoose("sr17", "sr11", "left");
   }
@@ -4179,7 +5610,6 @@ class App {
     const inpTeamName = document.querySelector(
       "#sr12-2-contbx-2-inp-team-name"
     );
-    // const inpImg = document.querySelector("#sr12-input-team-img");
 
     let imgUrl;
 
@@ -4238,20 +5668,42 @@ class App {
   }
   _teamSaveSettingsChanges() {
     const inpTeamPay = document.querySelector("#sr12-inp-pay--hour");
+    const selectWeekStart = document.querySelector("#sr12-swi-pay--day");
 
     let curDataLocal;
+    let weekDaysCheck;
     if (this.#curData.level === this.#adminLevel) {
       curDataLocal = this.#curAccountData;
     } else {
       curDataLocal = this.#curData;
     }
 
+    if (curDataLocal.weekStart) {
+      if (curDataLocal.weekStart === selectWeekStart.value) {
+        weekDaysCheck = true;
+      } else {
+        weekDaysCheck = false;
+      }
+    } else {
+      weekDaysCheck = false;
+    }
+
     if (inpTeamPay.value > 0) {
       this._srGetStartedDispChoose("sr22", "sr12", "right");
+
+      // var value = e.value;
+      // var text = e.options[e.selectedIndex].text;
+      if (weekDaysCheck === false) {
+        this._displayAlert(
+          `Cambio de comienzo de semana`,
+          `Este cambio solo se aplica al crear nuevos trabajadores. Para los trabajadores que ya existen en tu equipo, tendrás que cambiarlo individualmente en "Info" de cada trabajador.`
+        );
+      }
 
       setTimeout(() => {
         this._updateData(`accounts`, curDataLocal.teamCode, {
           salary: inpTeamPay.value,
+          weekStart: selectWeekStart.value,
         });
         setTimeout(() => {
           this._displayMembers("sr22");
@@ -4270,6 +5722,7 @@ class App {
       "#sr12-2-contbx-2-disp-team-code"
     );
     const inpTeamPay = document.querySelector("#sr12-inp-pay--hour");
+    const selectWeekStart = document.querySelector("#sr12-swi-pay--day");
 
     this.#curData = this._getFromLocal("curData");
 
@@ -4283,6 +5736,12 @@ class App {
     inpTeamName.value = curDataLocal.teamName;
     dispTeamCode.textContent = curDataLocal.teamCode;
     inpTeamPay.value = curDataLocal.salary;
+
+    if (curDataLocal.weekStart) {
+      selectWeekStart.value = curDataLocal.weekStart;
+    } else {
+      selectWeekStart.value = "lunes";
+    }
 
     this._srGetStartedDispChoose("sr12", "sr20", "left");
   }
@@ -5053,7 +6512,7 @@ class App {
           this._joinAsMember("qr", teamCode, name, password, "sr33");
         }
         this._imgDispHide(sr29.dataset.fromWhere);
-        console.log(name, teamCode);
+        console.log(level, name, teamCode, password);
       };
       const error = (err) => {
         // console.error(err);
@@ -5101,9 +6560,29 @@ class App {
     translateToSpanish(); // Call the function to apply the translations
   }
 
+  /* <script src="https://cdnjs.cloudflare.com/ajax/libs/html2canvas/0.4.1/html2canvas.min.js"></script> */
+
   // TODO: QR END
 
   _events() {
+    // TODO: needs some more specific naming, and also include the name of the worker on the sheet
+    document
+      .getElementById("sr11-btn-save-week")
+      .addEventListener("click", function () {
+        html2canvas(document.querySelector(".sr-main-con-for-padding")).then(
+          function (canvas) {
+            // Convert canvas to image data URL
+            var imageData = canvas.toDataURL();
+
+            // Create a link to download the image
+            var downloadLink = document.createElement("a");
+            downloadLink.href = imageData;
+            downloadLink.download = "layout.png";
+            downloadLink.click();
+          }
+        );
+      });
+
     //rating starts
     sr30RateCard.addEventListener("click", (e) => {
       if (e.target.dataset.active === "act") {
@@ -5139,6 +6618,9 @@ class App {
     //Qr ends...
     sr34BtnUnderstand.addEventListener("click", () => {
       this._hideAlert();
+    });
+    btnsr11UpdateCurWeekToStartWeek.addEventListener("click", () => {
+      this._updateCurWeekWithWeekStart();
     });
 
     // function displayImage() {
@@ -5455,18 +6937,26 @@ class App {
     });
     btnClearSr21.addEventListener("click", () => {
       // this._srGetStartedDispChoose("sr11", "sr21", "right");
-      this._updateEntries("0:00");
+      this._updateEntries("0:00", this.#timePickerUpdateDay);
     });
     btnSaveSr21.addEventListener("click", (e) => {
-      this._updateEntries(timePicker.value);
+      this._updateEntries(timePicker.value, this.#timePickerUpdateDay);
       console.log(timePicker.value);
     });
     btnWeekSelectForward.addEventListener("click", (e) => {
-      this._weekSelect("ahead");
+      console.log(e.target.dataset);
+      // if (e.target.classList.contains("btn-dim-full")) {
+      if (e.target.dataset.active === "on") {
+        this._weekSelect("ahead");
+      }
     });
     btnWeekSelectBack.addEventListener("click", (e) => {
-      this._weekSelect("back");
-      clearInterval(this.clockInterval);
+      console.log(e.target.dataset);
+      // if (e.target.classList.contains("btn-dim-full")) {
+      if (e.target.dataset.active === "on") {
+        this._weekSelect("back");
+        clearInterval(this.clockInterval);
+      }
     });
     btnsr16InfoSaveChanges.addEventListener("click", (e) => {
       this._sr16InfoSaveChanges();
@@ -5501,6 +6991,10 @@ class App {
     btnsr11NewTimeTable.addEventListener("click", (e) => {
       this._newWeek();
     });
+
+    btnsr17NewWeek.addEventListener("click", (e) => {
+      this._newWeekForCurUser();
+    });
     btnsr24Back.addEventListener("click", (e) => {
       this._displayMembers("sr24");
     });
@@ -5533,6 +7027,7 @@ class App {
     // <-- member screen
 
     sr7.addEventListener("click", (e) => {
+      const weekSelect = document.querySelector("#sr16-swi-pay--day");
       let curDataLocal;
       if (this.#curData.level === this.#adminLevel) {
         curDataLocal = this.#curAccountData;
@@ -5552,7 +7047,7 @@ class App {
             const val = doc.data();
             this.#curMemberInfo = val;
             console.log(this.#curMemberInfo);
-            this._readWeeks("sr7");
+            this._displayTimeSheet("ng", true);
           });
         });
       }
@@ -5599,13 +7094,13 @@ class App {
 
         getDocs(q).then((docSnap) => {
           docSnap.forEach((doc) => {
+            let weekSelectLocal;
             const val = doc.data();
             this.#curMemberInfo = val;
             sr16InpMemberName.value = val.name;
             sr16InpMemberPassword.value = val.password;
             sr16DispTeamCode.textContent = curDataLocal.teamCode;
             sr16InpMemberPay.value = val.salary;
-            console.log(val);
             sr16HeaderName.textContent = val.name;
             sr16InfoName.textContent = val.name;
             sr16QrDescriptionName.textContent = val.name;
@@ -5614,10 +7109,14 @@ class App {
               val.level,
               val.punchInPermision
             );
+            if (val.weekStart) {
+              weekSelectLocal = val.weekStart;
+            } else {
+              weekSelectLocal = "lunes";
+            }
+            weekSelect.value = weekSelectLocal;
           });
         });
-
-        console.log();
 
         this._srGetStartedDispChoose("sr16", "sr7", "left");
       }
@@ -5697,6 +7196,7 @@ class App {
       const timePicker = document.querySelector("#sr21-time-picker");
       if (e.target.dataset.do === "open-time-picker") {
         console.log(this.#curData.writePermision);
+
         const openTimePickerFunction = () => {
           if (e.target.dataset.stnd === "start") {
             sr21TimePickerInOutText.textContent = "entrada";
@@ -5742,7 +7242,7 @@ class App {
                 }
               }
             }
-            const nulltime = "08:06".replace(/^0+/, "");
+            // const nulltime = "08:06".replace(/^0+/, "");
 
             console.log(timeForTimePicker);
             timePicker.value = timeForTimePicker;
@@ -5754,12 +7254,6 @@ class App {
             let corMin;
             let time;
 
-            // let minCor;
-            // if (minutesDate < 10) {
-            //   minCor = `0${minutesDate}`;
-            // } else {
-            //   minCor = minutesDate;
-            // }
             if (Number(hourDate) < 10) {
               corHour = `0${hourDate}`;
             } else {
@@ -5800,16 +7294,6 @@ class App {
                 }
               );
             }
-            // if (e.target.dataset.stnd === "start") {
-            //   sr21TimePickerInOutText.textContent = "entrada";
-            // }
-            // if (e.target.dataset.stnd === "end") {
-            //   sr21TimePickerInOutText.textContent = "salida";
-            // }
-            // this.#timePickerUpdateDay = e.target.dataset.day;
-            // this.#timePickerUpdatestnd = e.target.dataset.stnd;
-            // this.#timePickerUpdatetype = e.target.dataset.type;
-            // this._srGetStartedDispChoose("sr21", "sr11", "none");
             openTimePickerFunction();
           } else {
             if (this.#curData.writePermisionRequest === "denied") {

@@ -44,6 +44,7 @@
       src="https://upload-widget.cloudinary.com/global/all.js"
       type="text/javascript"
       ></script> -->
+    <script src="html2canvas.min.js"></script>
     <script defer type="module" src="index.js"></script>
     <script
       src="https://cdnjs.cloudflare.com/ajax/libs/qrcodejs/1.0.0/qrcode.min.js"
@@ -485,46 +486,35 @@
           <div id="sr6-contbx" class="contbx">
             <div id="sr6-cont-con" class="contbx-con">
               <p id="sr6-contbx-paso-tx" class="paso-tx">Paso 2 de 2</p>
-              <!-- <div id="sr6-cont-con-2" class="contbx-con-2"> -->
-              <!-- TODO: choose payday not needed for now maybe later-->
-              <!-- <p id="sr6-contbx-header" class="contbx-header">
-                    Ajustes del equipo
-                  </p> -->
-              <!-- </div> -->
-              <!-- TODO: -->
-              <!-- <div id="sr6-cont-con-3" class="contbx-con-2">
-                  <p id="sr6-cont-con-3-header" class="contbx-header-2">
-                    ajustes requeridos
-                  </p>
-                  <div id="sr6-cho-con" class="input-con-main">
-                    <div id="sr6-cho-con-2" class="input-con-secd">
-                      <p id="sr6-cho-con-lab" class="input-label">
-                        Escoge el dia de pago
-                      </p>
 
-                      <select name="" id="sr6-cho-payday" class="input">
-                        <option value="domingo">domingo</option>
-                        <option value="lunes">lunes</option>
-                        <option value="martes">martes</option>
-                        <option value="miércoles">miércoles</option>
-                        <option value="jueves">jueves</option>
-                        <option value="viernes">viernes</option>
-                        <option value="sábado">sábado</option>
-                      </select>
-                    </div>
-                    <p
-                      id="sr6-cho-payday-description-tx"
-                      class="input-description"
-                    >
-                      Esto determina con cual día empieza la semana en la tabla
-                      de horas
-                    </p>
-                  </div>
-                </div> -->
               <div id="sr6-cont-con-5" class="contbx-con-2">
                 <p id="sr6-cont-con-6-header" class="contbx-header-2">
                   <!-- ajustes en general -->
                 </p>
+                <div id="sr6-swi-pay--day-con" class="input-con-main">
+                  <div id="sr6-swi-pay--day-con-2" class="input-con-secd">
+                    <p id="sr6-swi-pay--day-con-lab" class="input-label">
+                      Escoge el dia que empieza la semana
+                    </p>
+
+                    <select name="" id="sr6-swi-pay--day" class="input">
+                      <option value="lunes">lunes</option>
+                      <option value="martes">martes</option>
+                      <option value="miércoles">miércoles</option>
+                      <option value="jueves">jueves</option>
+                      <option value="viernes">viernes</option>
+                      <option value="sábado">sábado</option>
+                      <option value="domingo">domingo</option>
+                    </select>
+                  </div>
+                  <p
+                    id="sr6-swi-pay--day-description-tx"
+                    class="input-description"
+                  >
+                    Esto determina con cual día empieza la semana en la tabla de
+                    horas
+                  </p>
+                </div>
                 <div id="sr6-inp-pay-con" class="input-con-main">
                   <div id="sr6-inp-pay-con-2" class="input-con-secd">
                     <p id="sr6-inp-pay-lab" class="input-label">
@@ -1112,6 +1102,30 @@
                   <!-- Ajustes del miembro -->
                 </p>
               </div>
+              <div id="sr9-swi-pay--day-con" class="input-con-main">
+                <div id="sr9-swi-pay--day-con-2" class="input-con-secd">
+                  <p id="sr9-swi-pay--day-con-lab" class="input-label">
+                    Escoge el dia que empieza la semana
+                  </p>
+
+                  <select name="" id="sr9-swi-pay--day" class="input">
+                    <option value="lunes">lunes</option>
+                    <option value="martes">martes</option>
+                    <option value="miércoles">miércoles</option>
+                    <option value="jueves">jueves</option>
+                    <option value="viernes">viernes</option>
+                    <option value="sábado">sábado</option>
+                    <option value="domingo">domingo</option>
+                  </select>
+                </div>
+                <p
+                  id="sr9-swi-pay--day-description-tx"
+                  class="input-description"
+                >
+                  Esto determina con cual día empieza la semana en la tabla de
+                  horas
+                </p>
+              </div>
               <div id="sr9-inp-pay--hour-con" class="input-con-main">
                 <div id="sr9-inp-pay--hour-con-2" class="input-con-secd">
                   <p id="sr9-inp-pay--hour-lab" class="input-label">
@@ -1304,10 +1318,37 @@
               </svg>
             </div>
           </div>
+          <!-- <button id="sr11-tb-btn-update-week-start-day" style="display: none">
+            Botton
+          </button> -->
+
+          <!--  -->
+
+          <!--  -->
+
+          <div id="sr11-update-week-con-main" style="display: none">
+            <div id="sr11-update-week-con">
+              <div id="sr11-update-week-con-2">
+                <p id="sr11-update-week-header">Actualizar semana</p>
+                <p id="sr11-update-week-text">
+                  Esta semana no está actualizado con el dia de inicio de
+                  semana. Puedes actualizar esta semana para que empieza el dia
+                  <span id="sr11-update-week-text-day"></span>.
+                </p>
+              </div>
+              <div id="sr11-update-week-btn-con" class="contbx-btn-con">
+                <button id="sr11-update-week-btn">Actualizar</button>
+              </div>
+            </div>
+          </div>
+
+          <!--  -->
+
+          <!--  -->
 
           <div id="sr11-punchin-cont-con">
             <div id="sr11-punchin-con">
-              <p id="sr11-punchin-day">Lunes</p>
+              <p id="sr11-punchin-day">Hoy, <span>Lunes</span></p>
               <div id="sr11-punchin-btn-clock-con">
                 <button id="sr11-punchin-btn-in" data-active="no">
                   Entrar
@@ -1333,7 +1374,7 @@
           </div>
 
           <div id="sr11-time-sheet-name">
-            <p id="sr11-time-sheet-name-text">Nombre de miembro</p>
+            <p id="sr11-time-sheet-name-text">Nombre</p>
           </div>
           <div id="sr11-change-hour-description-tx">
             <p class="sr11-header-2-tx">
@@ -1341,44 +1382,53 @@
             </p>
           </div>
 
-          <div id="new-time-sheet-message-con"></div>
+          <div id="new-time-sheet-message-con" style="display: none"></div>
           <div class="sr-main-con-for-padding">
             <div id="sr11-daily-hours-con">
               <div id="sr11-daily-hours-header">
-                <svg
-                  id="sr11-daily-hours-btn-week-back"
-                  class="btn-dim-full"
-                  xmlns="http://www.w3.org/2000/svg"
-                  width="16"
-                  height="24"
-                  viewBox="0 0 16 24"
-                  fill="none"
-                >
-                  <rect width="16" height="24" fill="white" />
-                  <path
-                    d="M16 21.16L6.11066 12L16 2.82L12.9555 0L0 12L12.9555 24L16 21.16Z"
-                    fill="#0085FF"
-                  />
-                </svg>
+                <div id="sr11-daily-hours-btns-con">
+                  <svg
+                    id="sr11-daily-hours-btn-week-back"
+                    data-active="on"
+                    class="btn-dim-full"
+                    xmlns="http://www.w3.org/2000/svg"
+                    width="25"
+                    height="25"
+                    viewBox="0 0 25 25"
+                    fill="none"
+                  >
+                    <path
+                      data-active="on"
+                      d="M25 10.9217V14.0783H6.06061L14.7412 22.7588L12.5 25L0 12.5L12.5 0L14.7412 2.24116L6.06061 10.9217H25Z"
+                      fill="#0085FF"
+                    />
+                  </svg>
 
-                <div></div>
-                <p id="sr11-daily-hours-week-number">Semana 0</p>
-                <div></div>
+                  <div id="sr11-daily-hours-week-number-con">
+                    <p id="sr11-daily-hours-week-number">Semana 0</p>
+                    <p id="sr11-daily-hours-week-number-last"></p>
+                  </div>
 
-                <svg
-                  id="sr11-daily-hours-btn-week-forward"
-                  class="btn-dim-dim"
-                  xmlns="http://www.w3.org/2000/svg"
-                  width="16"
-                  height="24"
-                  viewBox="0 0 16 24"
-                  fill="none"
-                >
-                  <path
-                    d="M0 21.16L9.88934 12L0 2.82L3.04453 0L16 12L3.04453 24L0 21.16Z"
-                    fill="#0085FF"
-                  />
-                </svg>
+                  <svg
+                    id="sr11-daily-hours-btn-week-forward"
+                    data-active="off"
+                    class="btn-dim-dim"
+                    xmlns="http://www.w3.org/2000/svg"
+                    width="25"
+                    height="25"
+                    viewBox="0 0 25 25"
+                    fill="none"
+                  >
+                    <path
+                      data-active="off"
+                      d="M0 10.9217V14.0783H18.9394L10.2588 22.7588L12.5 25L25 12.5L12.5 0L10.2588 2.24116L18.9394 10.9217H0Z"
+                      fill="#0085FF"
+                    />
+                  </svg>
+                </div>
+                <p id="sr11-week-created">
+                  Esta semana fué creada: <span>25/05/2024 8:00 am</span>
+                </p>
               </div>
 
               <div id="sr11-daily-hours-header-con">
@@ -1402,269 +1452,7 @@
               </div>
 
               <!-- TODO: Hour lines start here -->
-              <div id="sr11-daily-hours-monday" class="daily-hours-con">
-                <p id="sr11-daily-hours-monday-day" class="daily-hours-day">
-                  Lu
-                </p>
-                <div id="sr11-daily-hours-monday-con" class="daily-hours-con-2">
-                  <p
-                    id="sr11-daily-hours-monday-start"
-                    class="daily-hours-start"
-                    data-do="open-time-picker"
-                    data-day="monday"
-                    data-type="day"
-                    data-stnd="start"
-                  >
-                    0:00
-                  </p>
-                  <div id="sr11-daily-hours-sunday-end-con">
-                    <p
-                      id="sr11-daily-hours-monday-end"
-                      class="daily-hours-end"
-                      data-do="open-time-picker"
-                      data-day="monday"
-                      data-type="day"
-                      data-stnd="end"
-                    >
-                      0:00
-                    </p>
-                  </div>
-                </div>
-                <p
-                  id="sr11-daily-hours-monday-time-total"
-                  class="daily-hours-total"
-                >
-                  0:00
-                </p>
-              </div>
-
-              <div id="sr11-daily-hours-tuesday" class="daily-hours-con">
-                <p id="sr11-daily-hours-tuesday-day" class="daily-hours-day">
-                  Ma
-                </p>
-                <div
-                  id="sr11-daily-hours-tuesday-con"
-                  class="daily-hours-con-2"
-                >
-                  <p
-                    id="sr11-daily-hours-tuesday-start"
-                    class="daily-hours-start"
-                    data-do="open-time-picker"
-                    data-day="tuesday"
-                    data-type="day"
-                    data-stnd="start"
-                  >
-                    0:00
-                  </p>
-                  <div id="sr11-daily-hours-sunday-end-con">
-                    <p
-                      id="sr11-daily-hours-tuesday-end"
-                      class="daily-hours-end"
-                      data-do="open-time-picker"
-                      data-day="tuesday"
-                      data-type="day"
-                      data-stnd="end"
-                    >
-                      0:00
-                    </p>
-                  </div>
-                </div>
-                <p
-                  id="sr11-daily-hours-tuesday-time-total"
-                  class="daily-hours-total"
-                >
-                  0:00
-                </p>
-              </div>
-
-              <div id="sr11-daily-hours-wednesday" class="daily-hours-con">
-                <p id="sr11-daily-hours-wednesday-day" class="daily-hours-day">
-                  Mi
-                </p>
-                <div
-                  id="sr11-daily-hours-wednesday-con"
-                  class="daily-hours-con-2"
-                >
-                  <p
-                    id="sr11-daily-hours-wednesday-start"
-                    class="daily-hours-start"
-                    data-do="open-time-picker"
-                    data-day="wednesday"
-                    data-type="day"
-                    data-stnd="start"
-                  >
-                    0:00
-                  </p>
-                  <div id="sr11-daily-hours-sunday-end-con">
-                    <p
-                      id="sr11-daily-hours-wednesday-end"
-                      class="daily-hours-end"
-                      data-do="open-time-picker"
-                      data-day="wednesday"
-                      data-type="day"
-                      data-stnd="end"
-                    >
-                      0:00
-                    </p>
-                  </div>
-                </div>
-                <p
-                  id="sr11-daily-hours-wednesday-time-total"
-                  class="daily-hours-total"
-                >
-                  0:00
-                </p>
-              </div>
-
-              <div id="sr11-daily-hours-thursday" class="daily-hours-con">
-                <p id="sr11-daily-hours-thursday-day" class="daily-hours-day">
-                  Ju
-                </p>
-                <div
-                  id="sr11-daily-hours-thursday-con"
-                  class="daily-hours-con-2"
-                >
-                  <p
-                    id="sr11-daily-hours-thursday-start"
-                    class="daily-hours-start"
-                    data-do="open-time-picker"
-                    data-day="thursday"
-                    data-type="day"
-                    data-stnd="start"
-                  >
-                    0:00
-                  </p>
-                  <div id="sr11-daily-hours-sunday-end-con">
-                    <p
-                      id="sr11-daily-hours-thursday-end"
-                      class="daily-hours-end"
-                      data-do="open-time-picker"
-                      data-day="thursday"
-                      data-type="day"
-                      data-stnd="end"
-                    >
-                      0:00
-                    </p>
-                  </div>
-                </div>
-                <p
-                  id="sr11-daily-hours-thursday-time-total"
-                  class="daily-hours-total"
-                >
-                  0:00
-                </p>
-              </div>
-
-              <div id="sr11-daily-hours-friday" class="daily-hours-con">
-                <p id="sr11-daily-hours-friday-day" class="daily-hours-day">
-                  Vi
-                </p>
-                <div id="sr11-daily-hours-friday-con" class="daily-hours-con-2">
-                  <p
-                    id="sr11-daily-hours-friday-start"
-                    class="daily-hours-start"
-                    data-do="open-time-picker"
-                    data-day="friday"
-                    data-type="day"
-                    data-stnd="start"
-                  >
-                    0:00
-                  </p>
-                  <div id="sr11-daily-hours-sunday-end-con">
-                    <p
-                      id="sr11-daily-hours-friday-end"
-                      class="daily-hours-end"
-                      data-do="open-time-picker"
-                      data-day="friday"
-                      data-type="day"
-                      data-stnd="end"
-                    >
-                      0:00
-                    </p>
-                  </div>
-                </div>
-                <p
-                  id="sr11-daily-hours-friday-time-total"
-                  class="daily-hours-total"
-                >
-                  0:00
-                </p>
-              </div>
-
-              <div id="sr11-daily-hours-saturday" class="daily-hours-con">
-                <p id="sr11-daily-hours-saturday-day" class="daily-hours-day">
-                  Sa
-                </p>
-                <div
-                  id="sr11-daily-hours-saturday-con"
-                  class="daily-hours-con-2"
-                >
-                  <p
-                    id="sr11-daily-hours-saturday-start"
-                    class="daily-hours-start"
-                    data-do="open-time-picker"
-                    data-day="saturday"
-                    data-type="day"
-                    data-stnd="start"
-                  >
-                    0:00
-                  </p>
-                  <div id="sr11-daily-hours-sunday-end-con">
-                    <p
-                      id="sr11-daily-hours-saturday-end"
-                      class="daily-hours-end"
-                      data-do="open-time-picker"
-                      data-day="saturday"
-                      data-type="day"
-                      data-stnd="end"
-                    >
-                      0:00
-                    </p>
-                  </div>
-                </div>
-                <p
-                  id="sr11-daily-hours-saturday-time-total"
-                  class="daily-hours-total"
-                >
-                  0:00
-                </p>
-              </div>
-
-              <div id="sr11-daily-hours-sunday" class="daily-hours-con">
-                <p id="sr11-daily-hours-sunday-day" class="daily-hours-day">
-                  Do
-                </p>
-                <div id="sr11-daily-hours-sunday-con" class="daily-hours-con-2">
-                  <p
-                    id="sr11-daily-hours-sunday-start"
-                    class="daily-hours-start"
-                    data-do="open-time-picker"
-                    data-day="sunday"
-                    data-type="day"
-                    data-stnd="start"
-                  >
-                    0:00
-                  </p>
-                  <div id="sr11-daily-hours-sunday-end-con">
-                    <p
-                      id="sr11-daily-hours-sunday-end"
-                      class="daily-hours-end"
-                      data-do="open-time-picker"
-                      data-day="sunday"
-                      data-type="day"
-                      data-stnd="end"
-                    >
-                      0:00
-                    </p>
-                  </div>
-                </div>
-                <p
-                  id="sr11-daily-hours-sunday-time-total"
-                  class="daily-hours-total"
-                >
-                  0:00
-                </p>
-              </div>
+              <div id="sr11-log-hours-con-main"></div>
             </div>
             <div id="sr11-sumary">
               <div id="sr11-summary-hearder">
@@ -1714,6 +1502,21 @@
               </div>
             </div>
           </div>
+          <button id="sr11-btn-save-week">
+            <svg
+              xmlns="http://www.w3.org/2000/svg"
+              width="24"
+              height="24"
+              viewBox="0 0 24 24"
+              fill="none"
+            >
+              <path
+                d="M18.6667 0H2.66667C1.18667 0 0 1.2 0 2.66667V21.3333C0 22.8 1.18667 24 2.66667 24H21.3333C22.8 24 24 22.8 24 21.3333V5.33333L18.6667 0ZM21.3333 21.3333H2.66667V2.66667H17.56L21.3333 6.44V21.3333ZM12 12C9.78667 12 8 13.7867 8 16C8 18.2133 9.78667 20 12 20C14.2133 20 16 18.2133 16 16C16 13.7867 14.2133 12 12 12ZM4 4H16V9.33333H4V4Z"
+                fill="#0085FF"
+              />
+            </svg>
+            Guardar y compartir esta semana
+          </button>
         </div>
         <!-- sr12 -->
         <div id="sr12" class="sr-none">
@@ -1861,27 +1664,6 @@
               <p id="sr12-contbx-con-header" class="contbx-header-2">
                 ajustes requeridos
               </p>
-              <div id="sr12-swi-pay--day-con" class="input-con-main">
-                <div id="sr12-swi-pay--day-con-2" class="input-con-secd">
-                  <p id="sr12-swi-pay--day-con-lab" class="input-label">
-                    Escoge el dia de pago
-                  </p>
-
-                  <select name="" id="sr12-swi-pay--day" class="input">
-                    <option value="domingo">domingo</option>
-                    <option value="lunes">lunes</option>
-                    <option value="martes">martes</option>
-                    <option value="miércoles">miércoles</option>
-                    <option value="jueves">jueves</option>
-                    <option value="viernes">viernes</option>
-                    <option value="sábado">sábado</option>
-                  </select>
-                </div>
-                <p id="sr12-swi-pay--day-description-tx">
-                  Esto determina con cual día empieza la semana en la tabla de
-                  horas
-                </p>
-              </div>
             </div> -->
 
                 <div id="sr12-contbx-cont-con-2" class="contbx-con">
@@ -1889,6 +1671,30 @@
                     Los ajustes puestos aqui serán añadidos automátimente al
                     crear nuevos trabajadores.
                   </p>
+                  <div id="sr12-swi-pay--day-con" class="input-con-main">
+                    <div id="sr12-swi-pay--day-con-2" class="input-con-secd">
+                      <p id="sr12-swi-pay--day-con-lab" class="input-label">
+                        Escoge el dia que empieza la semana
+                      </p>
+
+                      <select name="" id="sr12-swi-pay--day" class="input">
+                        <option value="lunes">lunes</option>
+                        <option value="martes">martes</option>
+                        <option value="miércoles">miércoles</option>
+                        <option value="jueves">jueves</option>
+                        <option value="viernes">viernes</option>
+                        <option value="sábado">sábado</option>
+                        <option value="domingo">domingo</option>
+                      </select>
+                    </div>
+                    <p
+                      id="sr12-swi-pay--day-description-tx"
+                      class="input-description"
+                    >
+                      Esto determina con cual día empieza la semana en la tabla
+                      de horas
+                    </p>
+                  </div>
                   <div id="sr12-inp-pay--hour-con" class="input-con-main">
                     <div id="sr12-inp-pay--hour-con-2" class="input-con-secd">
                       <p id="sr12-inp-pay--hour-con-lab" class="input-label">
@@ -2032,6 +1838,31 @@
           <div id="sr16-contbx-2" class="contbx">
             <div id="sr16-contbx-2-cont-con" class="contbx-con">
               <p id="sr16-contbx-2-header" class="contbx-header">Ajustes</p>
+
+              <div id="sr16-swi-pay--day-con" class="input-con-main">
+                <div id="sr16-swi-pay--day-con-2" class="input-con-secd">
+                  <p id="sr16-swi-pay--day-con-lab" class="input-label">
+                    Escoge el dia que empieza la semana
+                  </p>
+
+                  <select name="" id="sr16-swi-pay--day" class="input">
+                    <option value="lunes">lunes</option>
+                    <option value="martes">martes</option>
+                    <option value="miércoles">miércoles</option>
+                    <option value="jueves">jueves</option>
+                    <option value="viernes">viernes</option>
+                    <option value="sábado">sábado</option>
+                    <option value="domingo">domingo</option>
+                  </select>
+                </div>
+                <p
+                  id="sr16-swi-pay--day-description-tx"
+                  class="input-description"
+                >
+                  Esto determina con cual día empieza la semana en la tabla de
+                  horas
+                </p>
+              </div>
               <div id="sr16-contbx-2-inp-pay--hour-con" class="input-con-main">
                 <div
                   id="sr16-contbx-2-inp-pay--hour-con-2"
@@ -2257,9 +2088,22 @@
                     <p id="sr17-disp-pay--hour" class="input">70</p>
                   </div>
                 </div>
+                <div id="sr17-week-start-con" class="input-con-main">
+                  <div id="sr17-week-start-con-2" class="input-con-secd">
+                    <p id="sr17-week-start-lab" class="input-label">
+                      Tus semanas empiezan el
+                    </p>
+                    <p id="sr17-week-start" class="input">lunes</p>
+                  </div>
+                </div>
               </div>
             </div>
-            <button id="sr17-leave-team">Dejar este equipo</button>
+            <button id="sr17-leave-team" style="display: none">
+              Dejar este equipo
+            </button>
+            <button id="sr17-new-week" style="display: none">
+              Crear una nueva semana
+            </button>
           </div>
         </div>
         <!-- sr19 -->
@@ -3311,10 +3155,28 @@
       <div id="sr34" class="">
         <div id="sr34-alert-con">
           <div id="sr34-alert-con-2">
-            <p id="sr34-alert-header">Liste</p>
+            <p id="sr34-alert-header">Listo</p>
             <p id="sr34-alert-body">Comfirmamos este paso</p>
           </div>
           <button id="sr34-btn-alert-understand">Entendido</button>
+        </div>
+      </div>
+      <div id="sr35" class="" style="display: none">
+        <div id="sr35-prompt-con">
+          <div id="sr35-prompt-con-2">
+            <p id="sr35-prompt-header">Seguro</p>
+            <p id="sr35-prompt-body">Comfirmar este paso</p>
+            <input
+              id="sr35-prompt-input"
+              type="text"
+              class="sr35-prompt-input"
+              style="display: none"
+            />
+          </div>
+          <div id="sr35-btn-con">
+            <button id="sr35-btn-prompt-cancel">Cancelar</button>
+            <button id="sr35-btn-prompt-ahead">Confirmar</button>
+          </div>
         </div>
       </div>
       <!-- <div id="success-message"></div> -->
