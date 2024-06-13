@@ -7538,4 +7538,10 @@ class App {
         sr16SwiAssis3.classList.remove("switch-text-on");
         sr16SwiAssis3.classList.add("switch-text-off");
         sr16SwiAssis.dataset.on = "false";
-        sr16SwiAssisText.textContent = "miembr
+        sr16SwiAssisText.textContent = "miembro";
+      }
+    });
+  }
+}
+
+const app = new App();
