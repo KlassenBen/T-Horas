@@ -6575,16 +6575,20 @@ class App {
     // TODO: needs some more specific naming, and also include the name of the worker on the sheet
     document
       .getElementById("sr11-btn-save-week")
-      .addEventListener("click", function () {
+      .addEventListener("click", () => {
         html2canvas(document.querySelector(".sr-main-con-for-padding")).then(
-          function (canvas) {
+          (canvas) => {
+            // const [week, number] = hourSheetWeekNumber.textContent.split(" ");
             // Convert canvas to image data URL
             var imageData = canvas.toDataURL();
 
             // Create a link to download the image
             var downloadLink = document.createElement("a");
             downloadLink.href = imageData;
-            downloadLink.download = "layout.png";
+            downloadLink.download = `${this.#curMemberInfo.name}, ${
+              hourSheetWeekNumber.textContent
+            }.png`;
+            // downloadLink.download = `${this.#curMemberInfo.name}, Semana ${number}.png`;
             downloadLink.click();
           }
         );
