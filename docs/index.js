@@ -1173,7 +1173,7 @@ class App {
         setTimeout(this._hideSpinner, 100);
       }
       // }, 100);
-      // this._visitsToApp();
+      this._visitsToApp();
     } else {
       this._displaySpinner();
       setTimeout(() => {
