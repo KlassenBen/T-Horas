@@ -1201,6 +1201,7 @@ class App {
 
       if (type === "input") {
         promptInput.style.display = "flex";
+        setTimeout(() => promptInput.focus(), 0);
       } else {
         promptInput.style.display = "none";
       }
@@ -7537,10 +7538,4 @@ class App {
         sr16SwiAssis3.classList.remove("switch-text-on");
         sr16SwiAssis3.classList.add("switch-text-off");
         sr16SwiAssis.dataset.on = "false";
-        sr16SwiAssisText.textContent = "miembro";
-      }
-    });
-  }
-}
-
-const app = new App();
+        sr16SwiAssisText.textContent = "miembr
