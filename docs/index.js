@@ -1032,13 +1032,13 @@ class App {
     // });
   }
 
-  _setupCustomBackButtonBehavior() {
-    // Prevent the default behavior of the native back button
-    window.onpopstate = function (event) {
-      this._disdSuccessErrorMessage("Tapped", "ex", 2000);
-      this._previousScreen();
-    };
-  }
+  // _setupCustomBackButtonBehavior() {
+  //   // Prevent the default behavior of the native back button
+  //   window.onpopstate = function (event) {
+  //     this._disdSuccessErrorMessage("Tapped", "ex", 2000);
+  //     this._previousScreen();
+  //   };
+  // }
 
   // _swipeToGoBack() {
   //   let touchStartX = 0;
@@ -1079,11 +1079,11 @@ class App {
   //   });
   // }
 
-  _previousScreen() {
-    // Add your logic to navigate to the previous screen here
-    // For example:
-    window.history.back();
-  }
+  // _previousScreen() {
+  //   // Add your logic to navigate to the previous screen here
+  //   // For example:
+  //   window.history.back();
+  // }
 
   async _init(srHide) {
     // sr1.style.display = "flex";
