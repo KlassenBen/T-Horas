@@ -1017,6 +1017,72 @@ class App {
         this._previousScreen();
       }
     });
+
+    //
+
+    //
+
+    //
+
+    //
+
+    // window.addEventListener("popstate", (event) => {
+    //   this._disdSuccessErrorMessage("Tapped", "ex", 2000);
+    //   this._previousScreen(); // Call your existing function to navigate to the previous screen
+    // });
+  }
+
+  _setupCustomBackButtonBehavior() {
+    // Prevent the default behavior of the native back button
+    window.onpopstate = function (event) {
+      this._disdSuccessErrorMessage("Tapped", "ex", 2000);
+      this._previousScreen();
+    };
+  }
+
+  // _swipeToGoBack() {
+  //   let touchStartX = 0;
+  //   let touchEndX = 0;
+  //   let startTime = 0;
+
+  //   srsGetStarted.addEventListener("touchstart", (e) => {
+  //     touchStartX = e.touches[0].clientX;
+  //     startTime = Date.now(); // Capture start time
+  //   });
+
+  //   srsGetStarted.addEventListener("touchend", (e) => {
+  //     touchEndX = e.changedTouches[0].clientX;
+  //     const screenWidth = window.innerWidth;
+  //     const swipeThreshold = screenWidth * 0.2; // 20% of screen width
+  //     const swipeTimeLimit = 1500; // 1.5 seconds
+
+  //     const elapsedTime = Date.now() - startTime;
+
+  //     if (
+  //       touchEndX - touchStartX > swipeThreshold &&
+  //       elapsedTime < swipeTimeLimit &&
+  //       touchStartX < screenWidth * 0.2
+  //     ) {
+  //       this._previousScreen(); // Call your existing function to navigate to the previous screen
+  //     }
+  //   });
+
+  //   // Listen for the back button press
+  //   window.addEventListener("popstate", (event) => {
+  //     // Perform your desired navigation action here
+  //     // For example, you can navigate back within your app
+  //     // You can use window.history to manipulate the browser history
+  //     // For instance, window.history.back() to go back one step
+
+  //     // Example:
+  //     this._previousScreen(); // Call your existing function to navigate to the previous screen
+  //   });
+  // }
+
+  _previousScreen() {
+    // Add your logic to navigate to the previous screen here
+    // For example:
+    window.history.back();
   }
 
   async _init(srHide) {
