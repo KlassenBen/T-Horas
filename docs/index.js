@@ -1026,10 +1026,10 @@ class App {
 
     //
 
-    // window.addEventListener("popstate", (event) => {
-    //   this._disdSuccessErrorMessage("Tapped", "ex", 2000);
-    //   this._previousScreen(); // Call your existing function to navigate to the previous screen
-    // });
+    window.addEventListener("popstate", (event) => {
+      this._disdSuccessErrorMessage("Tapped", "ex", 2000);
+      this._previousScreen(); // Call your existing function to navigate to the previous screen
+    });
   }
 
   // _setupCustomBackButtonBehavior() {
