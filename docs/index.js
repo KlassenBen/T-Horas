@@ -596,6 +596,7 @@ class App {
     this._events();
     this._registerSW();
     this._init("sr1");
+    this._setupCustomBackButtonBehavior();
     // this._tryMyFunction();
 
     // this._displayPrompt(
@@ -1017,73 +1018,37 @@ class App {
         this._previousScreen();
       }
     });
-
-    //
-
-    //
-
-    //
-
-    //
-
-    window.addEventListener("popstate", (event) => {
-      this._disdSuccessErrorMessage("Tapped", "ex", 2000);
-      this._previousScreen(); // Call your existing function to navigate to the previous screen
-    });
   }
 
-  // _setupCustomBackButtonBehavior() {
-  //   // Prevent the default behavior of the native back button
-  //   window.onpopstate = function (event) {
-  //     this._disdSuccessErrorMessage("Tapped", "ex", 2000);
-  //     this._previousScreen();
-  //   };
-  // }
+  _setupCustomBackButtonBehavior() {
+    let lastBackPressTime = 0;
+    const doubleClickThreshold = 500; // Adjust this threshold as needed (in milliseconds)
 
-  // _swipeToGoBack() {
-  //   let touchStartX = 0;
-  //   let touchEndX = 0;
-  //   let startTime = 0;
+    // Prevent the default behavior of the native back button
+    window.onpopstate = function (event) {
+      const currentTime = new Date().getTime();
 
-  //   srsGetStarted.addEventListener("touchstart", (e) => {
-  //     touchStartX = e.touches[0].clientX;
-  //     startTime = Date.now(); // Capture start time
-  //   });
+      // Calculate the time difference between the current press and the last press
+      const timeDiff = currentTime - lastBackPressTime;
 
-  //   srsGetStarted.addEventListener("touchend", (e) => {
-  //     touchEndX = e.changedTouches[0].clientX;
-  //     const screenWidth = window.innerWidth;
-  //     const swipeThreshold = screenWidth * 0.2; // 20% of screen width
-  //     const swipeTimeLimit = 1500; // 1.5 seconds
+      // Check if the time difference is within the double-click threshold
+      if (timeDiff < doubleClickThreshold) {
+        // If it's a double click, do nothing (let the default behavior occur)
+        return;
+      } else {
+        // If it's not a double click, perform custom navigation
+        this._disdSuccessErrorMessage(
+          "Toca dos veces para salir de esta aplicación",
+          "ex",
+          1000
+        );
+        this._previousScreen();
+      }
 
-  //     const elapsedTime = Date.now() - startTime;
-
-  //     if (
-  //       touchEndX - touchStartX > swipeThreshold &&
-  //       elapsedTime < swipeTimeLimit &&
-  //       touchStartX < screenWidth * 0.2
-  //     ) {
-  //       this._previousScreen(); // Call your existing function to navigate to the previous screen
-  //     }
-  //   });
-
-  //   // Listen for the back button press
-  //   window.addEventListener("popstate", (event) => {
-  //     // Perform your desired navigation action here
-  //     // For example, you can navigate back within your app
-  //     // You can use window.history to manipulate the browser history
-  //     // For instance, window.history.back() to go back one step
-
-  //     // Example:
-  //     this._previousScreen(); // Call your existing function to navigate to the previous screen
-  //   });
-  // }
-
-  // _previousScreen() {
-  //   // Add your logic to navigate to the previous screen here
-  //   // For example:
-  //   window.history.back();
-  // }
+      // Update the last back press time
+      lastBackPressTime = currentTime;
+    };
+  }
 
   async _init(srHide) {
     // sr1.style.display = "flex";

@@ -174,7 +174,6 @@ body {
   display: flex;
   justify-content: center;
   align-items: center;
-  border: solid var(--color-orange-100) 1px;
 }
 
 /* Style for the image */
