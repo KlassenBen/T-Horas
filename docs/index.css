@@ -163,6 +163,7 @@ body {
   height: 75px;
   flex-shrink: 0;
   border-radius: 12px;
+  border: solid var(--color-white);
 }
 
 /* Style for the image container */
