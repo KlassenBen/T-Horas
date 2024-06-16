@@ -1031,7 +1031,7 @@ body {
 /* sr8 end */
 
 /* sr11 start */
-#sr11-tb-btn-new-time-table {
+.sr11-tb-btn-new-time-table {
   display: flex;
   height: 32px;
   padding: 0px 8px;
@@ -1042,6 +1042,24 @@ body {
   background: var(--color-blue-100);
 
   color: var(--color-white);
+  font-family: Inter;
+  font-size: 16px;
+  font-style: normal;
+  font-weight: 400;
+  line-height: normal;
+}
+.sr11-tb-btn-delete-time-table {
+  display: flex;
+  height: 32px;
+  padding: 0px 8px;
+  justify-content: center;
+  align-items: center;
+  gap: 8px;
+  border-radius: 10px;
+  background: var(--ghost-btn-white);
+  border: solid var(--color-red-100) 1px;
+
+  color: var(--color-blue-100);
   font-family: Inter;
   font-size: 16px;
   font-style: normal;
@@ -1512,7 +1530,75 @@ body {
   font-weight: 400;
   line-height: normal;
 }
+
+#sr11-pop-up-menuButton {
+  background: var(--color-blue-0);
+  border: none;
+  /* font-size: 20px; */
+  cursor: pointer;
+}
+
+#sr11-pop-up-menu {
+  display: flex;
+  padding: 12px;
+  flex-direction: column;
+  justify-content: center;
+  align-items: flex-start;
+  gap: 12px;
+  position: absolute;
+
+  background: var(--color-white);
+  box-shadow: var(--contbx-shadow-2);
+  top: 0;
+  left: 100%;
+  min-width: 100px;
+}
+
+#sr11-pop-up-menu li {
+  /* padding: 8px 12px; */
+  cursor: pointer;
+  display: block; /* Display the list items as block elements */
+}
+
+#sr11-pop-up-menu li:hover {
+  background-color: #f1f1f1;
+}
+
+#sr11-pop-up-menu.hidden {
+  display: none;
+}
+
 /* sr11 end */
+
+/* pop up menu start */
+.in-pop-up-menu-red {
+  background: var(--color-white);
+  color: #f00;
+  font-family: Inter;
+  font-size: 20px;
+  font-style: normal;
+  font-weight: 400;
+  line-height: normal;
+}
+.in-pop-up-menu-green {
+  background: var(--color-white);
+  color: #0eaa00;
+  font-family: Inter;
+  font-size: 20px;
+  font-style: normal;
+  font-weight: 400;
+  line-height: normal;
+}
+.in-pop-up-menu-norm {
+  background: var(--color-white);
+  color: #0085ff;
+  font-family: Inter;
+  font-size: 20px;
+  font-style: normal;
+  font-weight: 400;
+  line-height: normal;
+}
+/* pop up menu end */
 
 /* sr12 start */
 .sr12-content-con {

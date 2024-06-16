@@ -18,6 +18,7 @@ import {
   deleteDoc,
   runTransaction,
   increment,
+  writeBatch,
 } from "https://www.gstatic.com/firebasejs/10.11.0/firebase-firestore.js";
 
 import {
@@ -253,9 +254,18 @@ const btnsr16SettingsCancel = document.querySelector(
 );
 const btnsr16DeleteMember = document.querySelector("#sr16-delete-member");
 const btnsr17LeaveTeam = document.querySelector("#sr17-leave-team");
+const btnsr11PopUpMenuLeaveTeam = document.querySelector(
+  "#sr11-pop-up-menu-leave-team"
+);
 const btnsr17NewWeek = document.querySelector("#sr17-new-week");
+const btnsr11PopUpMenuNewWeek = document.querySelector(
+  "#sr11-pop-up-menu-new-week"
+);
 const btnsr11NewTimeTable = document.querySelector(
   "#sr11-tb-btn-new-time-table"
+);
+const btnsr11DelteTimeTable = document.querySelector(
+  "#sr11-pop-up-menu--delete-time-table"
 );
 const btnsr12SaveInfoChanges = document.querySelector(
   "#sr12-2-contbx-2-btn-save-changes"
@@ -2538,128 +2548,6 @@ class App {
     }
   }
 
-  async _weekSelect2(direction, weekNum) {
-    if (direction === "back") {
-      if (this.#curWeekArrayOrg[0]) {
-      } else {
-        this.#curWeekArrayOrg = await this._readWeeks();
-      }
-    }
-
-    console.log(this.#weekDisplayNumberMinus);
-
-    if (direction === "back") {
-      if (this.#weekDisplayNumberMinus === this.#curWeekArrayOrg.length) {
-        this.#weekDisplayNumberMinus = this.#curWeekArrayOrg.length - 1;
-      }
-      if (this.#weekDisplayNumberMinus > 0) {
-        this._displayTimeSheet(
-          "ng",
-          false,
-          this.#curWeekArrayOrg[this.#weekDisplayNumberMinus],
-          this.#weekDisplayNumberMinus
-        );
-        if (this.#weekDisplayNumberMinus >= 0) {
-          this.#weekDisplayNumberMinus = this.#weekDisplayNumberMinus - 1;
-        }
-        this._weekSelectBtnDimmer("both");
-      } else {
-        this._weekSelectBtnDimmer("back");
-      }
-    }
-
-    if (direction === "ahead") {
-      if (this.#weekDisplayNumberMinus < this.#curWeekArrayOrg.length) {
-        this._displayTimeSheet(
-          "ng",
-          false,
-          this.#curWeekArrayOrg[this.#weekDisplayNumberMinus],
-          this.#weekDisplayNumberMinus
-        );
-
-        this.#weekDisplayNumberMinus = this.#weekDisplayNumberMinus + 1;
-        this._weekSelectBtnDimmer("both");
-      } else {
-        this._weekSelectBtnDimmer("ahead");
-      }
-    }
-  }
-
-  async _weekSelect3(direction, weekNum) {
-    if (direction === "back") {
-      if (!this.#curWeekArrayOrg[0]) {
-        this.#curWeekArrayOrg = await this._readWeeks();
-      }
-    }
-
-    console.log(this.#weekDisplayNumberMinus);
-
-    if (direction === "back") {
-      if (this.#weekDisplayNumberMinus >= 0) {
-        this._displayTimeSheet(
-          "ng",
-          false,
-          this.#curWeekArrayOrg[this.#weekDisplayNumberMinus],
-          this.#weekDisplayNumberMinus
-        );
-        this.#weekDisplayNumberMinus = Math.max(
-          0,
-          this.#weekDisplayNumberMinus - 1
-        );
-        this._weekSelectBtnDimmer("both");
-      } else {
-        this._weekSelectBtnDimmer("back");
-      }
-    }
-
-    if (direction === "ahead") {
-      if (this.#weekDisplayNumberMinus < this.#curWeekArrayOrg.length) {
-        this.#weekDisplayNumberMinus = Math.min(
-          this.#weekDisplayNumberMinus + 1,
-          this.#curWeekArrayOrg.length - 1
-        );
-        this._displayTimeSheet(
-          "ng",
-          false,
-          this.#curWeekArrayOrg[this.#weekDisplayNumberMinus],
-          this.#weekDisplayNumberMinus
-        );
-        this._weekSelectBtnDimmer("both");
-      } else {
-        this._weekSelectBtnDimmer("ahead");
-      }
-    }
-  }
-
-  async _weekSelect4(direction, weekNum) {
-    if (!this.#curWeekArrayOrg[0]) {
-      this.#curWeekArrayOrg = await this._readWeeks();
-    }
-
-    if (direction === "back") {
-      this.#weekDisplayNumberMinus = Math.max(
-        0,
-        this.#weekDisplayNumberMinus - 1
-      );
-    }
-
-    if (direction === "ahead") {
-      this.#weekDisplayNumberMinus = Math.min(
-        this.#weekDisplayNumberMinus + 1,
-        this.#curWeekArrayOrg.length - 1
-      );
-    }
-
-    this._displayTimeSheet(
-      "ng",
-      false,
-      this.#curWeekArrayOrg[this.#weekDisplayNumberMinus],
-      this.#weekDisplayNumberMinus
-    );
-
-    this._weekSelectBtnDimmer("both");
-  }
-
   async _weekSelect(direction, weekNum) {
     if (!this.#curWeekArrayOrg[0]) {
       this.#curWeekArrayOrg = await this._readWeeks();
@@ -2886,7 +2774,7 @@ class App {
   }
 
   // TODO: Auto week creator
-  _checkForNewWeek(weekTimeStamp, weekStartDay) {
+  _checkForNewWeek2(weekTimeStamp, weekStartDay) {
     console.log(weekTimeStamp);
     const getIndexByValue = (array, value) => {
       for (var i = 0; i < array.length; i++) {
@@ -2979,105 +2867,245 @@ class App {
     }
   }
 
-  _checkForNewWeek2(weekTimeStamp) {
-    console.log("called check week");
-    const checkForNewWeek = (timestamp, weekStartDay) => {
-      // Get current date
-      var currentDate = new Date();
-      // Get current year
-      var currentYear = currentDate.getFullYear();
-      // Get day of the week (0 = Sunday, 1 = Monday, ..., 6 = Saturday)
-      var currentDayOfWeek = currentDate.getDay();
-      // Get current week number
-      var currentWeekNumber = getWeekNumber(currentDate, weekStartDay);
-
-      // Convert timestamp to Date object
-      var createdDate = new Date(timestamp);
-      // Get the year of the provided timestamp
-      var createdYear = createdDate.getFullYear();
-
-      // If the year of the timestamp is not the current year, call newWeek()
-      if (createdYear !== currentYear) {
-        console.log(
-          "Timesheet date is not in the current year. Calling newWeek()..."
-        );
-        newWeek();
-        return;
+  _checkForNewWeek3(weekTimeStamp, weekStartDay) {
+    // Helper function to get the index of a value in an array
+    const getIndexByValue = (array, value) => {
+      for (let i = 0; i < array.length; i++) {
+        if (array[i] === value) {
+          return i;
+        }
       }
-
-      // Get week number of the provided timestamp
-      var createdWeekNumber = getWeekNumber(createdDate, weekStartDay);
-
-      // If the week was created during the current week, do nothing
-      if (currentWeekNumber === createdWeekNumber) {
-        console.log("Timesheet was created during the current week.");
-        return;
-      }
-
-      // If the week was created before the current week, call newWeek()
-      if (createdWeekNumber < currentWeekNumber) {
-        console.log(
-          "Timesheet was not created during the current week. Calling newWeek()..."
-        );
-        newWeek();
-        return;
-      }
-
-      // If the week was created after the current week, it's a future date
-      console.log("Timesheet date is in the future. Invalid.");
+      return -1;
     };
 
-    // Function to get the week number of a given date
-    function getWeekNumber(date, weekStartDay) {
-      var d = new Date(date);
-      d.setHours(0, 0, 0, 0);
+    // Ensure weekStartDay is valid
+    // const this.#weekDaysSp = [
+    //   "Sunday",
+    //   "Monday",
+    //   "Tuesday",
+    //   "Wednesday",
+    //   "Thursday",
+    //   "Friday",
+    //   "Saturday",
+    // ];
+    if (!this.#weekDaysSp.includes(weekStartDay)) {
+      console.error(`Invalid week start day: ${weekStartDay}`);
+      return;
+    }
 
-      // Adjust the date to the specified week start day
-      var dayOfWeek = d.getDay();
-      var diff = (dayOfWeek - weekStartDay + 7) % 7;
-      d.setDate(d.getDate() - diff);
+    // Get the index of the user's chosen start day
+    const weekDaySopossedToStart = getIndexByValue(
+      this.#weekDaysSp,
+      weekStartDay
+    );
 
-      // Get the year
-      var year = d.getFullYear();
+    // Constants for time calculations
+    const oneWeekInMilliseconds = 604800000;
+    const oneDayInMilliseconds = 86400000;
 
-      // Get January 4th of the year
-      var january4 = new Date(year, 0, 4);
+    // Get the day of the week for the last recorded timestamp
+    const dateLastWeek = new Date(weekTimeStamp);
+    const weekDayLastWeek = dateLastWeek.getDay();
 
-      // Calculate the difference in milliseconds between January 4th and the current date
-      var difference = d - january4;
+    // Calculate the number of days to subtract to get to the start of the current week
+    let daysDifference = weekDaySopossedToStart - weekDayLastWeek;
+    if (daysDifference <= 0) {
+      daysDifference += 7; // Accounts for crossing the week boundary
+    }
 
-      // Calculate the week number
-      var weekNumber = Math.ceil(difference / (7 * 24 * 60 * 60 * 1000));
+    // Calculate the timestamp for the start of the current week
+    const currentWeekStart =
+      weekTimeStamp - oneDayInMilliseconds * daysDifference;
 
-      // Adjust week number for January 1st-3rd being part of the previous year's week
-      if (weekNumber < 1) {
-        // Get January 1st of the year
-        var january1 = new Date(year, 0, 1);
+    // Calculate the timestamp for the start of the NEXT week
+    const nextWeekTimeStamp = currentWeekStart + oneWeekInMilliseconds;
 
-        // Calculate the difference in milliseconds between January 1st and January 4th
-        var januaryDifference = january4 - january1;
+    // Check if the current time is after the start of the next week
+    if (this._getTimeStamp() >= nextWeekTimeStamp) {
+      this._newWeek();
+    } else {
+      console.log("No new week needed yet.");
+    }
+  }
 
-        // Calculate the week number for the previous year
-        var prevYearWeekNumber = Math.ceil(
-          januaryDifference / (7 * 24 * 60 * 60 * 1000)
-        );
-
-        // Adjust week number
-        weekNumber = prevYearWeekNumber;
+  _checkForNewWeek4(weekTimeStamp, weekStartDay) {
+    // Helper function to get the index of a value in an array
+    const getIndexByValue = (array, value) => {
+      for (let i = 0; i < array.length; i++) {
+        if (array[i] === value) {
+          return i;
+        }
       }
+      return -1;
+    };
 
-      return weekNumber;
+    // Get the index of the user's chosen start day
+    const weekDaySopossedToStart = getIndexByValue(
+      this.#weekDaysSp,
+      weekStartDay
+    );
+
+    // Constants for time calculations
+    const oneWeekInMilliseconds = 604800000;
+    const oneDayInMilliseconds = 86400000;
+
+    // Get the day of the week for the last recorded timestamp
+    const dateLastWeek = new Date(weekTimeStamp);
+    const weekDayLastWeek = dateLastWeek.getDay();
+
+    // Calculate the number of days to subtract to get to the start of the current week
+    let daysDifference = weekDaySopossedToStart - weekDayLastWeek;
+    if (daysDifference <= 0) {
+      daysDifference += 7; // Accounts for crossing the week boundary
     }
 
-    // Function to call when a new week needs to be created
-    function newWeek() {
-      console.log("Creating a new week...");
-      // Your new week logic here
+    // Calculate the timestamp for the start of the current week
+    const currentWeekStart =
+      weekTimeStamp - oneDayInMilliseconds * daysDifference;
+
+    // Calculate the timestamp for the start of the NEXT week
+    const nextWeekTimeStamp = currentWeekStart + oneWeekInMilliseconds;
+
+    // Check if the current time is after the start of the next week
+    if (this._getTimeStamp() >= nextWeekTimeStamp) {
+      this._newWeek();
+    } else {
+      console.log("no new week needed");
+    }
+  }
+
+  _checkForNewWee5(weekTimeStamp, weekStartDay) {
+    // Helper function to get the index of a value in an array
+    const getIndexByValue = (array, value) => {
+      for (let i = 0; i < array.length; i++) {
+        if (array[i] === value) {
+          return i;
+        }
+      }
+      return -1;
+    };
+
+    // Get the index of the user's chosen start day
+    const weekDaySopossedToStart = getIndexByValue(
+      this.#weekDaysSp,
+      weekStartDay
+    );
+
+    // Constants for time calculations
+    const oneWeekInMilliseconds = 604800000;
+    const oneDayInMilliseconds = 86400000;
+
+    // Get the day of the week for the last recorded timestamp
+    const dateLastWeek = new Date(weekTimeStamp);
+    const weekDayLastWeek = dateLastWeek.getDay();
+
+    // Calculate the number of days to subtract to get to the start of the current week
+    let daysDifference = weekDaySopossedToStart - weekDayLastWeek;
+    if (daysDifference <= 0) {
+      daysDifference += 7; // Accounts for crossing the week boundary
     }
 
-    // Example usage
-    var weekStartDay = -6; // Wednesday (0 = Sunday, 1 = Monday, ..., 6 = Saturday)
-    checkForNewWeek(weekTimeStamp, weekStartDay);
+    // Correctly calculate the timestamp for the start of the current week
+    // by using the weekDaySopossedToStart
+    const currentWeekStart = new Date(weekTimeStamp);
+    currentWeekStart.setDate(currentWeekStart.getDate() - daysDifference);
+
+    // Calculate the timestamp for the start of the NEXT week
+    const nextWeekTimeStamp =
+      currentWeekStart.getTime() + oneWeekInMilliseconds;
+
+    // Check if the current time is after the start of the next week
+    if (this._getTimeStamp() >= nextWeekTimeStamp) {
+      this._newWeek();
+    } else {
+      console.log("no new week needed");
+    }
+  }
+
+  _checkForNewWeek6(weekStartDay) {
+    // Helper function to get the index of a value in an array
+    const getIndexByValue = (array, value) => {
+      for (let i = 0; i < array.length; i++) {
+        if (array[i] === value) {
+          return i;
+        }
+      }
+      return -1;
+    };
+
+    // Get the index of the user's chosen start day
+    const weekDaySopossedToStart = getIndexByValue(
+      this.#weekDaysSp,
+      weekStartDay
+    );
+
+    // Constants for time calculations
+    const oneWeekInMilliseconds = 604800000;
+    const oneDayInMilliseconds = 86400000;
+
+    // Get the current date and time
+    const currentDate = new Date();
+    const currentDay = currentDate.getDay();
+
+    // Calculate the number of days to subtract to get to the start of the current week
+    let daysDifference = weekDaySopossedToStart - currentDay;
+    if (daysDifference <= 0) {
+      daysDifference += 7; // Accounts for crossing the week boundary
+    }
+
+    // Calculate the timestamp for the start of the current week
+    const currentWeekStart = new Date(currentDate);
+    currentWeekStart.setDate(currentWeekStart.getDate() - daysDifference);
+
+    // Calculate the timestamp for the start of the NEXT week
+    const nextWeekTimeStamp =
+      currentWeekStart.getTime() + oneWeekInMilliseconds;
+
+    // Check if the current time is after the start of the next week
+    if (currentDate.getTime() >= nextWeekTimeStamp) {
+      this._newWeek();
+    } else {
+      console.log("no new week needed");
+    }
+  }
+
+  _checkForNewWeek(weekTimeStamp, weekStartDay) {
+    const weekStartDays = [
+      "domingo",
+      "lunes",
+      "martes",
+      "miércoles",
+      "jueves",
+      "viernes",
+      "sábado",
+    ];
+
+    // Convert the weekTimeStamp to a Date object
+    const lastWeekDate = new Date(weekTimeStamp);
+
+    // Get the current date
+    const currentDate = new Date();
+
+    // Get the day index of the weekStartDay
+    const targetDay = weekStartDays.indexOf(weekStartDay.toLowerCase());
+    if (targetDay === -1) {
+      throw new Error("Invalid weekStartDay");
+    }
+
+    // Calculate the start date of the last known week based on weekStartDay
+    let lastWeekStartDate = new Date(lastWeekDate);
+    while (lastWeekStartDate.getDay() !== targetDay) {
+      lastWeekStartDate.setDate(lastWeekStartDate.getDate() - 1);
+    }
+
+    // Calculate the next week start date based on the weekStartDay
+    const nextWeekStartDate = new Date(lastWeekStartDate);
+    nextWeekStartDate.setDate(nextWeekStartDate.getDate() + 7);
+
+    // If the current date is after or equal to the next week start date, a new week should be created
+    if (currentDate >= nextWeekStartDate) {
+      this._newWeek();
+    }
   }
 
   _punchIn(punch) {
@@ -3485,6 +3513,94 @@ class App {
     }
   }
 
+  async _deleteWeek(weekIdLocal) {
+    const name = this.#curMemberInfo.name;
+    let curDataLocal;
+    if (this.#curData.level === this.#adminLevel) {
+      curDataLocal = this.#curAccountData;
+    } else {
+      curDataLocal = this.#curData;
+    }
+
+    try {
+      const password = await this._displayPrompt(
+        "confirm",
+        "Cancelar",
+        "Eliminar semana",
+        "Eliminar semana",
+        `Este paso no se puede deshacer. Perderás esta semana de ${
+          this.#curMemberInfo.name
+        }.`
+      );
+
+      // Proceed with your function using the userInput if needed
+
+      // Create a new batch
+      let batch = writeBatch(db);
+
+      // Delete the document
+      const weekDocRef = doc(
+        db,
+        `accounts/${curDataLocal.teamCode}/weeks`,
+        weekIdLocal
+      );
+      batch.delete(weekDocRef);
+
+      // Read the weeks
+      const weeks = await this._readWeeks();
+      this.#weekDisplayNumberMinus = undefined;
+      const updatedWeeks = weeks.filter((week) => week.weekId !== weekIdLocal);
+
+      let id;
+      if (updatedWeeks.length > 0) {
+        id = updatedWeeks[updatedWeeks.length - 1].weekId;
+      } else {
+        id = "";
+      }
+
+      // Update the data
+      const teamDocRef = doc(
+        db,
+        `accounts/${curDataLocal.teamCode}/team`,
+        this.#curMemberInfo.memberId
+      );
+      batch.update(teamDocRef, {
+        curWeekId: id,
+        lastModified: this._getTimeStamp(),
+      });
+
+      // Update the numberOfWeeks field
+      batch.update(teamDocRef, {
+        numberOfWeeks: increment(-1),
+      });
+
+      // Commit the batch
+      await batch.commit();
+
+      // Get the member document
+      const q = query(
+        collection(db, `accounts/${curDataLocal.teamCode}/team`),
+        where("memberId", "==", this.#curMemberInfo.memberId)
+      );
+      const docSnap = await getDocs(q);
+      docSnap.forEach((doc) => {
+        const val = doc.data();
+        this.#curMemberInfo = val;
+      });
+
+      // Additional operations
+      this._displayTimeSheet("ng", true);
+      this._disdSuccessErrorMessage(`${weekIdLocal} fue eliminado`, "ex", 1000);
+    } catch (error) {
+      if (error === "cancel") {
+        console.log("User cancelled");
+        // Abort your function
+      } else {
+        console.error("Error:", error);
+      }
+    }
+  }
+
   async _displayTimeSheet(srhide, load, week, weekNum) {
     let srHide;
 
@@ -3623,12 +3739,14 @@ class App {
           collection(db, `accounts/${this.#curMemberInfo.teamCode}/weeks`),
           where("weekId", "==", this.#curMemberInfo.curWeekId)
         );
+        console.log(this.#curMemberInfo.curWeekId);
         console.log(q);
         const docSnap = await getDocs(q);
         const data = [];
         docSnap.forEach((doc) => {
           data.push(doc.data());
         });
+        console.log(data);
         return data;
       };
 
@@ -3639,6 +3757,7 @@ class App {
             this.#curWeekArrayOrg = [];
             this._weekSelectBtnDimmer("ahead");
             weekForUse = await searchWeek();
+            console.log(weekForUse);
             lastWeekLocal = true;
             console.log("here now");
             console.log(lastWeekLocal);
@@ -3673,7 +3792,7 @@ class App {
         return;
       }
       console.log("nothing stoped here because no new week was created");
-
+      console.log(weekForUse);
       logHours(weekForUse[0].days);
       sr11TimeSheetName.textContent = this.#curMemberInfo.name;
 
@@ -3712,17 +3831,7 @@ class App {
 
         sr11WeekPayPerHour.textContent = `$ ${weekForUse[0].salary}`;
       }
-      // TODO: all good overhead. need to fix downward
 
-      //
-
-      //
-
-      //
-
-      //
-
-      ///
       clearInterval(this.clockInterval);
       sr11punchInClockSeconds.textContent = "00";
       sr11punchInClockMinutes.textContent = "00";
@@ -3936,6 +4045,7 @@ class App {
     } else {
       curDataLocal = this.#curData;
     }
+    let notDis = false;
 
     console.log(this.#curMemberInfo.memberId);
 
@@ -4091,6 +4201,7 @@ class App {
                 "er",
                 4000
               );
+              notDis = true;
             }
           }
           if (entryhour > timehour && time !== "0:00") {
@@ -4099,6 +4210,7 @@ class App {
               "er",
               4000
             );
+            notDis = true;
           }
         }
       }
@@ -4165,6 +4277,7 @@ class App {
                 4000
               );
               console.log(1);
+              notDis = true;
             }
           }
           if (entryhour < timehour && time !== "0:00") {
@@ -4174,20 +4287,28 @@ class App {
               4000
             );
             console.log(3);
+            notDis = true;
           }
         }
       }
       console.log("arr", this.#curWeek.days);
-
-      if (this.#weekDisplayNumberMinus) {
-        this._displayTimeSheet(
-          "ng",
-          false,
-          this.#curWeekArrayOrg[this.#weekDisplayNumberMinus],
-          this.#weekDisplayNumberMinus
-        );
-      } else {
-        this._displayTimeSheet("ng", true);
+      console.log(this.#weekDisplayNumberMinus);
+      if (notDis !== true) {
+        if (
+          this.#weekDisplayNumberMinus ||
+          this.#weekDisplayNumberMinus === 0
+        ) {
+          this._displayTimeSheet(
+            "ng",
+            false,
+            this.#curWeekArrayOrg[this.#weekDisplayNumberMinus],
+            this.#weekDisplayNumberMinus
+          );
+          console.log("here");
+        } else {
+          console.log("here");
+          this._displayTimeSheet("ng", true);
+        }
       }
     }
   }
@@ -4709,6 +4830,7 @@ class App {
             `${this.#curMemberInfo.memberId}`,
             {
               curWeekId: this.#curUseId,
+              lastModified: this._getTimeStamp(),
             }
           );
           const appInfo = doc(
@@ -7028,14 +7150,23 @@ class App {
     btnsr17LeaveTeam.addEventListener("click", (e) => {
       this._leaveTeam();
     });
+    btnsr11PopUpMenuLeaveTeam.addEventListener("click", (e) => {
+      this._leaveTeam();
+    });
     btnJoinNowSr15.addEventListener("click", (e) => {
       this._joinAsMember(undefined, "none", "none", "none", "sr15");
     });
     btnsr11NewTimeTable.addEventListener("click", (e) => {
       this._newWeek();
     });
+    btnsr11DelteTimeTable.addEventListener("click", (e) => {
+      this._deleteWeek(this.#curWeek.weekId);
+    });
 
     btnsr17NewWeek.addEventListener("click", (e) => {
+      this._newWeekForCurUser();
+    });
+    btnsr11PopUpMenuNewWeek.addEventListener("click", (e) => {
       this._newWeekForCurUser();
     });
     btnsr24Back.addEventListener("click", (e) => {
@@ -7571,6 +7702,46 @@ class App {
         sr16SwiAssis.dataset.on = "false";
         sr16SwiAssisText.textContent = "miembro";
       }
+    });
+
+    //
+
+    //
+
+    //
+    // try pop-up menu
+
+    document.addEventListener("DOMContentLoaded", () => {
+      const menuButton = document.getElementById("sr11-pop-up-menuButton");
+      const menu = document.getElementById("sr11-pop-up-menu");
+
+      menuButton.addEventListener("click", (event) => {
+        const rect = menuButton.getBoundingClientRect(); // Get the position of the button
+        setTimeout(() => {
+          const rectMenu = menu.getBoundingClientRect();
+          const width = 0;
+          // const width = rectMenu.width / 2;
+
+          menu.style.top = rect.bottom + "px";
+          menu.style.left = rect.left - width + "px";
+        }, 0);
+        menu.classList.toggle("hidden");
+        event.stopPropagation(); // Prevent the event from bubbling up and closing the menu immediately
+        if (this.#curData.level === "miembro") {
+          btnsr11PopUpMenuLeaveTeam.style.display = "flex";
+          btnsr11PopUpMenuNewWeek.style.display = "none";
+        } else {
+          btnsr11PopUpMenuLeaveTeam.style.display = "none";
+          btnsr11PopUpMenuNewWeek.style.display = "flex";
+        }
+      });
+
+      // Close the menu when clicking outside of it
+      document.addEventListener("click", function (event) {
+        if (!menu.contains(event.target) && event.target !== menuButton) {
+          menu.classList.add("hidden");
+        }
+      });
     });
   }
 }
