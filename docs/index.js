@@ -3069,7 +3069,14 @@ class App {
     }
   }
 
-  _checkForNewWeek(weekTimeStamp, weekStartDay) {
+  _checkForNewWeek(weekTimeStamp, weekStartDayIn) {
+    let weekStartDay;
+    if (weekStartDayIn) {
+      weekStartDay = weekStartDayIn;
+    } else {
+      weekStartDay = "lunes";
+    }
+    console.log(weekStartDay);
     const weekStartDays = [
       "domingo",
       "lunes",
