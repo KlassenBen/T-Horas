@@ -1323,28 +1323,67 @@
                 <li>
                   <button
                     id="sr11-pop-up-menu--delete-time-table"
-                    class="in-pop-up-menu-red"
+                    class="btn-in-pop-up-menu"
                     style="display: flex"
                   >
-                    Eliminar esta semana
+                    <svg
+                      class="svg-padding-right"
+                      xmlns="http://www.w3.org/2000/svg"
+                      width="24"
+                      height="27"
+                      viewBox="0 0 24 27"
+                      fill="none"
+                    >
+                      <path
+                        d="M7.5 0V1.5H0V4.5H1.5V24C1.5 24.7956 1.81607 25.5587 2.37868 26.1213C2.94129 26.6839 3.70435 27 4.5 27H19.5C20.2956 27 21.0587 26.6839 21.6213 26.1213C22.1839 25.5587 22.5 24.7956 22.5 24V4.5H24V1.5H16.5V0H7.5ZM4.5 4.5H19.5V24H4.5V4.5ZM7.5 7.5V21H10.5V7.5H7.5ZM13.5 7.5V21H16.5V7.5H13.5Z"
+                        fill="#FF0000"
+                      />
+                    </svg>
+                    <p class="in-pop-up-menu-red">Eliminar esta semana</p>
                   </button>
                 </li>
                 <li>
                   <button
                     id="sr11-pop-up-menu-new-week"
-                    class="in-pop-up-menu-green"
+                    class="btn-in-pop-up-menu"
                     style="display: none"
                   >
-                    Crear una nueva semana
+                    <svg
+                      class="svg-padding-right"
+                      xmlns="http://www.w3.org/2000/svg"
+                      width="29"
+                      height="27"
+                      viewBox="0 0 29 27"
+                      fill="none"
+                    >
+                      <path
+                        d="M21.3158 15.6316H24.1579V19.8947H28.4211V22.7368H24.1579V27H21.3158V22.7368H17.0526V19.8947H21.3158V15.6316ZM25.5789 11.3684V7.10526H2.84211V11.3684H25.5789ZM15.6316 14.2105V16.5979C14.7363 17.9479 14.2105 19.5679 14.2105 21.3158C14.2105 22.8647 14.6226 24.3284 15.3474 25.5789H2.84211C2.08833 25.5789 1.36543 25.2795 0.832433 24.7465C0.299435 24.2135 0 23.4906 0 22.7368V0L2.37316 2.37316L4.73211 0L7.10526 2.37316L9.47842 0L11.8374 2.37316L14.2105 0L16.5837 2.37316L18.9426 0L21.3158 2.37316L23.6889 0L26.0479 2.37316L28.4211 0V14.9211C26.9005 13.6137 24.9111 12.7895 22.7368 12.7895C20.9889 12.7895 19.3689 13.3153 18.0189 14.2105H15.6316ZM12.7895 22.7368V14.2105H2.84211V22.7368H12.7895Z"
+                        fill="#0EAA00"
+                      />
+                    </svg>
+                    <p class="in-pop-up-menu-green">Crear una nueva semana</p>
                   </button>
                 </li>
                 <li>
                   <button
                     id="sr11-pop-up-menu-leave-team"
-                    class="in-pop-up-menu-red"
+                    class="btn-in-pop-up-menu"
                     style="display: none"
                   >
-                    Dejar este equipo
+                    <svg
+                      class="svg-padding-right"
+                      xmlns="http://www.w3.org/2000/svg"
+                      width="30"
+                      height="27"
+                      viewBox="0 0 30 27"
+                      fill="none"
+                    >
+                      <path
+                        d="M22.5 6L20.385 8.115L24.255 12H9V15H24.255L20.385 18.87L22.5 21L30 13.5M3 3H15V0H3C1.35 0 0 1.35 0 3V24C0 25.65 1.35 27 3 27H15V24H3V3Z"
+                        fill="#FF0000"
+                      />
+                    </svg>
+                    <p class="in-pop-up-menu-red">Dejar este equipo</p>
                   </button>
                 </li>
               </ul>
@@ -3230,7 +3269,79 @@
       <!-- app footer -->
       <!-- TODO: coment in -->
       <div id="app-footer">
-        <p id="htmlf">© copyright 2024 M&WDesigns</p>
+        <div
+          id="f-conection-active-con"
+          class="f-conection-con"
+          style="display: none"
+        >
+          <svg
+            xmlns="http://www.w3.org/2000/svg"
+            width="13"
+            height="8"
+            viewBox="0 0 13 8"
+            fill="none"
+          >
+            <circle
+              cx="6.5"
+              cy="1"
+              r="6.5"
+              fill="url(#paint0_radial_809_2144)"
+            />
+            <defs>
+              <radialGradient
+                id="paint0_radial_809_2144"
+                cx="0"
+                cy="0"
+                r="1"
+                gradientUnits="userSpaceOnUse"
+                gradientTransform="translate(6.5 1) rotate(93.0128) scale(9.51315 9.51315)"
+              >
+                <stop stop-color="#10CB00" />
+                <stop offset="0.835" stop-color="#0DA100" />
+              </radialGradient>
+            </defs>
+          </svg>
+          <p class="f-conection-text">Conexión a Internet activa</p>
+        </div>
+        <div
+          id="f-conection-out-con"
+          class="f-conection-con"
+          style="display: none"
+        >
+          <svg
+            xmlns="http://www.w3.org/2000/svg"
+            width="13"
+            height="14"
+            viewBox="0 0 13 14"
+            fill="none"
+          >
+            <circle
+              cx="6.5"
+              cy="7"
+              r="6.5"
+              fill="url(#paint0_radial_809_2238)"
+            />
+            <defs>
+              <radialGradient
+                id="paint0_radial_809_2238"
+                cx="0"
+                cy="0"
+                r="1"
+                gradientUnits="userSpaceOnUse"
+                gradientTransform="translate(6.5 7) rotate(92.7263) scale(10.5119)"
+              >
+                <stop stop-color="#FF2626" />
+                <stop offset="0.345" stop-color="#ED0000" />
+                <stop offset="1" stop-color="#990000" />
+              </radialGradient>
+            </defs>
+          </svg>
+          <p class="f-conection-text">Sin conexión a Internet</p>
+        </div>
+        <p id="htmlf">
+          © copyright 2024 M&WDesigns
+          <span class="footer-version">Version 2.0.0</span>
+        </p>
       </div>
     </div>
   </body>

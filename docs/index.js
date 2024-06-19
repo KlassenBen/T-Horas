@@ -19,6 +19,8 @@ import {
   runTransaction,
   increment,
   writeBatch,
+  enableIndexedDbPersistence,
+  initializeFirestore,
 } from "https://www.gstatic.com/firebasejs/10.11.0/firebase-firestore.js";
 
 import {
@@ -29,6 +31,32 @@ import {
   uploadBytes,
 } from "https://www.gstatic.com/firebasejs/10.11.0/firebase-storage.js";
 
+//
+
+//
+
+//
+
+// const firebaseConfig = {
+// Your Firebase configuratio
+
+// const app = initializeApp(firebaseConfig);
+
+// Configure Firestore with cache settings
+// const db = initializeFirestore(app, {
+//   cache: {
+//     sizeBytes: 1048576 // Adjust cache size as needed (optional)
+//   }
+// });
+
+// Optional: Verify Firestore instance is correctly initialized
+// console.log('Firestore initialized with cache settings:', db);
+
+//
+
+//
+
+//
 const firebaseConfig = {
   apiKey: "AIzaSyA30VKmZDuM0Xv0z-CuG5o6C-4lU4Z-u64",
   authDomain: "auth-test-f961a.firebaseapp.com",
@@ -39,7 +67,28 @@ const firebaseConfig = {
   measurementId: "G-PLCKMJYMFB",
 };
 const firebaseApp = initializeApp(firebaseConfig);
-const db = getFirestore(firebaseApp);
+// const db = getFirestore(firebaseApp);
+const db = initializeFirestore(firebaseApp, {
+  cache: true,
+  // cache: {
+  //   sizeBytes: 1048576 // Adjust cache size as needed (optional)
+  // }
+});
+
+// Enable offline persistence
+enableIndexedDbPersistence(db).catch((err) => {
+  if (err.code == "failed-precondition") {
+    // Multiple tabs open, persistence can only be enabled in one tab at a a time.
+    console.error(
+      "Failed to enable offline persistence due to multiple tabs open."
+    );
+  } else if (err.code == "unimplemented") {
+    // The current browser does not support all of the features required to enable persistence
+    console.error("Offline persistence is not supported in this browser.");
+  }
+});
+
+// FireStore End
 
 // <-- Labels
 const hourSheetWeekNumber = document.querySelector(
@@ -111,6 +160,8 @@ const sr30StarsCon = document.querySelector(`#sr30-rate-con-4`);
 // Rating ends
 
 const header = document.querySelector("#app-header");
+const conectionOutCon = document.querySelector("#f-conection-out-con");
+const conectionActiveCon = document.querySelector("#f-conection-active-con");
 const stickyHeader = header.offsetTop;
 
 const appName = document.querySelector("#app-name");
@@ -424,6 +475,7 @@ class App {
   ];
 
   //cookies
+
   #cTeamCode;
   #cLevel;
   #cMemberId;
@@ -477,6 +529,9 @@ class App {
   };
   #idLenght = 16;
   #idTakeArrLenght = this.#alfaNumDitch.length - 1;
+
+  #appVersionNumber = "2.0.0";
+  #appVersionMessage = `Nos complace informarle que esta aplicación ahora admite el uso sin conexión. ¡Ya podrás guardar tus horas incluso cuando no tengas conexión a internet! Nuestras actualizaciones se instalan automáticamente en corto despues que sean disponibles.`;
 
   #daysArrForNewWeek = [
     {
@@ -604,7 +659,7 @@ class App {
   #currentScreen;
   constructor() {
     this._events();
-    this._registerSW();
+    this._registerMySw();
     this._init("sr1");
     this._setupCustomBackButtonBehavior();
     // this._tryMyFunction();
@@ -622,8 +677,6 @@ class App {
 
     // this._displaySpinner();
     // this._displayAlert("Comfirmado", "Esto ya es confirmado");
-
-    // TODO: ALSO NEED IN INIT, CHECK IF THE LOCAL STORED ACCOUNT STILL EXISTS IN THE CLOUD
     // this._removeFromLocal("curData");
     // this._tryOutCookies();
     // this._onSnapshot("accounts", "cn25uwg629tb9143");
@@ -632,6 +685,84 @@ class App {
     // this._transactionsTry();
     // const rearranged = this._rearrangeWeekDays("martes");
     // console.log(rearranged);
+    this._monitorNetwork();
+    this._newVersionInstalledAlert();
+  }
+
+  _newVersionInstalledAlert() {
+    const versionLocal = this._readCokie("appVersion");
+    console.log(versionLocal);
+    console.log(this.#appVersionNumber);
+    if (versionLocal !== this.#appVersionNumber) {
+      this._displayAlert(
+        "Nueva actualización",
+        `La version ${this.#appVersionNumber} ya está instalada. ${
+          this.#appVersionMessage
+        }`
+      );
+      this._setCookie("appVersion", this.#appVersionNumber, 63072000000);
+    } else {
+      console.log("no cokie for app");
+      return;
+    }
+  }
+
+  _monitorNetwork() {
+    // Function to check the network status
+    function updateNetworkStatus() {
+      if (navigator.onLine) {
+        console.log("You are online");
+        // conectionActiveCon.style.display = "flex";
+        conectionOutCon.style.display = "none";
+        // Handle online status
+      } else {
+        console.log("You are offline");
+        conectionOutCon.style.display = "flex";
+        // conectionActiveCon.style.display = "none";
+        // Handle offline status
+      }
+    }
+
+    // Add event listeners for online and offline status changes
+    window.addEventListener("online", updateNetworkStatus);
+    window.addEventListener("offline", updateNetworkStatus);
+
+    // Initial check
+    updateNetworkStatus();
+  }
+
+  _registerMySw() {
+    if ("serviceWorker" in navigator) {
+      window.addEventListener("load", () => {
+        navigator.serviceWorker
+          .register("./sw.js")
+          .then((registration) => {
+            console.log(
+              "Service Worker registered with scope:",
+              registration.scope
+            );
+
+            // Listen for updates to the Service Worker
+            registration.onupdatefound = () => {
+              const installingWorker = registration.installing;
+              installingWorker.onstatechange = () => {
+                if (installingWorker.state === "installed") {
+                  if (navigator.serviceWorker.controller) {
+                    // New update available
+                    console.log("New content is available; please refresh.");
+                  } else {
+                    // Content is cached for offline use
+                    console.log("Content is cached for offline use.");
+                  }
+                }
+              };
+            };
+          })
+          .catch((error) => {
+            console.error("Service Worker registration failed:", error);
+          });
+      });
+    }
   }
 
   async _updateCurWeekWithWeekStart() {
@@ -827,18 +958,6 @@ class App {
     this._deleteCookie("memberId");
     this._deleteCookie("level");
     // this._readCokie("teamCode");
-  }
-
-  async _registerSW() {
-    if ("serviceWorker" in navigator) {
-      try {
-        await navigator.serviceWorker.register("./sw.js");
-        console.log("registered");
-      } catch (e) {
-        console.log("SW registration failed");
-      }
-    } else {
-    }
   }
 
   _setCookie(cName, cValue, cMaxAge) {
@@ -1074,154 +1193,153 @@ class App {
     // this._setCookie("memberId", val.memberId, 15552000000);
     // this._setCookie("teamCode", val.teamCode, 15552000000);
 
-    if (navigator.onLine) {
-      const CTeamCode = this._readCokie("teamCode");
-      let CLevel = this._readCokie("level");
-      const CMemberID = this._readCokie("memberId");
+    // if (navigator.onLine) {
+    const CTeamCode = this._readCokie("teamCode");
+    let CLevel = this._readCokie("level");
+    const CMemberID = this._readCokie("memberId");
 
-      console.log(CTeamCode, CLevel, CMemberID);
+    console.log(CTeamCode, CLevel, CMemberID);
 
-      const step1 = async () => {
-        const admin = async () => {
-          if (CLevel === "admin" || CLevel === "top admin") {
-            console.log("taken");
-            const q = query(
-              collection(db, `accounts`),
-              where("teamCode", "==", CTeamCode)
-            );
-            const docSnap = await getDocs(q);
-            docSnap.forEach(async (doc) => {
-              // Marking the forEach callback as async
-              const val = doc.data();
+    const step1 = async () => {
+      const admin = async () => {
+        if (CLevel === "admin" || CLevel === "top admin") {
+          console.log("taken");
+          const q = query(
+            collection(db, `accounts`),
+            where("teamCode", "==", CTeamCode)
+          );
+          const docSnap = await getDocs(q);
+          docSnap.forEach(async (doc) => {
+            // Marking the forEach callback as async
+            const val = doc.data();
+            this._setCookie("level", val.level, 15552000000);
+            this._setCookie("teamCode", val.teamCode, 15552000000);
+            this._saveToLocal("curData", val);
+            this._setLastSeen(`accounts`, val.teamCode);
+          });
+        }
+      };
+      const member = async () => {
+        if (CLevel === "miembro") {
+          console.log("taken");
+          const q = query(
+            collection(db, `accounts/${CTeamCode}/team`),
+            where("memberId", "==", CMemberID)
+          );
+          const docSnap = await getDocs(q);
+          docSnap.forEach(async (doc) => {
+            // Marking the forEach callback as async
+            const val = doc.data();
+            if (val.level === "asistente") {
+              console.log("taken");
+              CLevel = "admin";
+              await admin(); // Waiting for admin to finish before proceeding
+            } else {
+              console.log("taken");
               this._setCookie("level", val.level, 15552000000);
+              this._setCookie("memberId", val.memberId, 15552000000);
               this._setCookie("teamCode", val.teamCode, 15552000000);
               this._saveToLocal("curData", val);
+              console.log(val);
               this._setLastSeen(`accounts`, val.teamCode);
-            });
-          }
-        };
-        const member = async () => {
-          if (CLevel === "miembro") {
-            console.log("taken");
-            const q = query(
-              collection(db, `accounts/${CTeamCode}/team`),
-              where("memberId", "==", CMemberID)
-            );
-            const docSnap = await getDocs(q);
-            docSnap.forEach(async (doc) => {
-              // Marking the forEach callback as async
-              const val = doc.data();
-              if (val.level === "asistente") {
-                console.log("taken");
-                CLevel = "admin";
-                await admin(); // Waiting for admin to finish before proceeding
-              } else {
-                console.log("taken");
-                this._setCookie("level", val.level, 15552000000);
-                this._setCookie("memberId", val.memberId, 15552000000);
-                this._setCookie("teamCode", val.teamCode, 15552000000);
-                this._saveToLocal("curData", val);
-                console.log(val);
-                this._setLastSeen(`accounts`, val.teamCode);
-              }
-            });
-          }
-        };
-        const assistant = () => {
-          if (CLevel === "asistente") {
-            admin();
-          }
-        };
-
-        if (CTeamCode !== "" && CTeamCode !== undefined) {
-          if (CLevel !== "" && CLevel !== undefined) {
-            await member();
-            assistant();
-            admin();
-          }
+            }
+          });
+        }
+      };
+      const assistant = () => {
+        if (CLevel === "asistente") {
+          admin();
         }
       };
 
-      await step1(); // Wait for step1 to finish before moving on
+      if (CTeamCode !== "" && CTeamCode !== undefined) {
+        if (CLevel !== "" && CLevel !== undefined) {
+          await member();
+          assistant();
+          admin();
+        }
+      }
+    };
 
-      this._setSupportInfo();
-      // this._setExplainVideo();
-      this.#curData = this._getFromLocal("curData");
-      this._srGetStartedDispChoose("sr1", srHide, "left");
+    await step1(); // Wait for step1 to finish before moving on
 
-      console.log("Your App is initializing");
+    this._setSupportInfo();
+    // this._setExplainVideo();
+    this.#curData = this._getFromLocal("curData");
+    this._srGetStartedDispChoose("sr1", srHide, "left");
 
-      console.log(this.#cTeamCode, this.#cLevel, this.#cMemberId);
+    console.log("Your App is initializing");
 
-      this.#curData = this._getFromLocal("curData");
+    console.log(this.#cTeamCode, this.#cLevel, this.#cMemberId);
 
-      // setTimeout(() => {
-      if (this.#curData !== undefined) {
-        // TODO: if user is logedIn, all validations come under here
-        console.log("Your App has initialized");
+    this.#curData = this._getFromLocal("curData");
 
-        if (CLevel === "admin") {
-          console.log("this one was called");
-          this._onSnapshot("accounts", this.#curData.teamCode);
-          if (this.#curData.teamName.length < 1) {
-            this._srGetStartedDispChoose("sr5", "sr1", "right");
-            this._hideSpinner();
-          } else {
-            this._displayMembers("sr1");
-            this._accountProCheck();
-            btnBackTbSr11.style.display = "flex";
-            this._onSnapshotCollectoion();
-          }
-        } else if (CLevel === "asistente") {
-          // TODO: FOR NOW THE SAME AS ADMIN
-          this._onSnapshot("accounts", this.#curData.teamCode);
+    // setTimeout(() => {
+    if (this.#curData !== undefined) {
+      // TODO: if user is logedIn, all validations come under here
+      console.log("Your App has initialized");
+
+      if (CLevel === "admin") {
+        console.log("this one was called");
+        this._onSnapshot("accounts", this.#curData.teamCode);
+        if (this.#curData.teamName.length < 1) {
+          this._srGetStartedDispChoose("sr5", "sr1", "right");
+          this._hideSpinner();
+        } else {
           this._displayMembers("sr1");
           this._accountProCheck();
           btnBackTbSr11.style.display = "flex";
           this._onSnapshotCollectoion();
-        } else if (CLevel === "miembro") {
-          console.log("member now");
-          this._displayMemberOnly("sr1");
-        } else {
-          const q = query(
-            collection(db, "appSettings"),
-            where("settings", "==", "admin_mode")
-          );
-          getDocs(q).then((docSnap) => {
-            docSnap.forEach((doc) => {
-              const val = doc.data();
-              this.#adminLevel = val.appAdmin;
-              if (CLevel === val.appAdmin) {
-                this._onSnapshot("accounts", this.#curData.teamCode);
-                console.log("admin is top");
-                this.#curAccountData = this.#curData;
-                this._displayMembers("sr1");
-                this._accountProCheck();
-                this._onSnapshotCollectoion();
-                sr20AppAdmin.style.display = "block";
-                sr20AppAdminNorm.style.display = "block";
-                btnBackTbSr11.style.display = "flex";
-              }
-            });
-          });
         }
-
-        this._checkForRating();
-        // this._registerSW();
+      } else if (CLevel === "asistente") {
+        // TODO: FOR NOW THE SAME AS ADMIN
+        this._onSnapshot("accounts", this.#curData.teamCode);
+        this._displayMembers("sr1");
+        this._accountProCheck();
+        btnBackTbSr11.style.display = "flex";
+        this._onSnapshotCollectoion();
+      } else if (CLevel === "miembro") {
+        console.log("member now");
+        this._displayMemberOnly("sr1");
       } else {
-        console.log("Log in or create an account");
-        // this._srGetStartedDispChoose("sr1", "sr22", "left");
-        setTimeout(this._hideSpinner, 100);
+        const q = query(
+          collection(db, "appSettings"),
+          where("settings", "==", "admin_mode")
+        );
+        getDocs(q).then((docSnap) => {
+          docSnap.forEach((doc) => {
+            const val = doc.data();
+            this.#adminLevel = val.appAdmin;
+            if (CLevel === val.appAdmin) {
+              this._onSnapshot("accounts", this.#curData.teamCode);
+              console.log("admin is top");
+              this.#curAccountData = this.#curData;
+              this._displayMembers("sr1");
+              this._accountProCheck();
+              this._onSnapshotCollectoion();
+              sr20AppAdmin.style.display = "block";
+              sr20AppAdminNorm.style.display = "block";
+              btnBackTbSr11.style.display = "flex";
+            }
+          });
+        });
       }
-      // }, 100);
-      this._visitsToApp();
+
+      this._checkForRating();
     } else {
-      this._displaySpinner();
-      setTimeout(() => {
-        this._hideSpinner();
-        this._srGetStartedDispChoose("sr31", "sr1", "right");
-      }, 5000);
+      console.log("Log in or create an account");
+      // this._srGetStartedDispChoose("sr1", "sr22", "left");
+      setTimeout(this._hideSpinner, 100);
     }
+    // }, 100);
+    this._visitsToApp();
+    // } else {
+    // this._displaySpinner();
+    // setTimeout(() => {
+    // this._hideSpinner();
+    // this._srGetStartedDispChoose("sr31", "sr1", "right");
+    // }, 5000);
+    // }
   }
 
   _displayPrompt(type, btnCancel, btnConfirm, header, text) {
@@ -1745,23 +1863,6 @@ class App {
     }
   }
 
-  // _query() {
-  //   const q = query(collection(db, "accounts/iPhwge99VPFMSYMPkvxF/weeks"));
-  //   let users = [];
-  //   const tr = async function () {
-  //     let id;
-  //     await getDocs(q).then((docSnap) => {
-  //       docSnap.forEach((doc) => {
-  //         users.push({ ...doc.data() });
-  //       });
-  //       console.log("All data: ", users);
-  //       // id = users[0].id;
-  //       id = users;
-  //     });
-  //     return id;
-  //   };
-  //   return tr();
-  // }
   _getUserWekksQuery(path, var1, equal, var2) {
     const q = query(
       // "accounts/iPhwge99VPFMSYMPkvxF/weeks"
@@ -1923,19 +2024,6 @@ class App {
 
     return users;
   }
-
-  // _readData(path, id) {
-  //   let data;
-  //   return getDoc(collection(db, path, id)).then((docSnap) => {
-  //     if (docSnap.exists()) {
-  //       data = docSnap.data();
-  //       console.log(docSnap.data());
-  //       return data;
-  //     } else {
-  //       return "";
-  //     }
-  //   });
-  // }
 
   _readData(path, id) {
     return new Promise((resolve, reject) => {
@@ -2575,12 +2663,20 @@ class App {
       }
     }
 
-    this._displayTimeSheet(
-      "ng",
-      false,
-      this.#curWeekArrayOrg[this.#weekDisplayNumberMinus],
-      this.#weekDisplayNumberMinus
-    );
+    console.log(this.#curWeekArrayOrg);
+
+    if (this.#curWeekArrayOrg.length !== 0) {
+      console.log("The array is not empty");
+      this._displayTimeSheet(
+        "ng",
+        false,
+        this.#curWeekArrayOrg[this.#weekDisplayNumberMinus],
+        this.#weekDisplayNumberMinus
+      );
+    } else {
+      console.log("The array is empty");
+      return;
+    }
   }
 
   _calculateTimeBetween(timeIn, timeOut) {
@@ -2665,6 +2761,7 @@ class App {
         "Fuera de conexión.",
         "No pudimos cargar tus semanas anteriores porque no tienes conexión a internet. Revisa tu conexión e intenta de nuevo."
       );
+      this._hideSpinner();
       return []; // Return an empty array if offline
     }
   }
@@ -3222,282 +3319,6 @@ class App {
       amPM;
     return formattedDate;
   }
-
-  //   const htmlForUse = `<div id="sr11-daily-hours-monday" class="daily-hours-con">
-  //   <p id="sr11-daily-hours-monday-day" class="daily-hours-day">
-  //     Lu
-  //   </p>
-  //   <div
-  //     id="sr11-daily-hours-monday-con"
-  //     class="daily-hours-con-2"
-  //   >
-  //     <p
-  //       id="sr11-daily-hours-monday-start"
-  //       class="daily-hours-start"
-  //       data-do="open-time-picker"
-  //       data-day="monday"
-  //       data-type="day"
-  //       data-stnd="start"
-  //     >
-  //       0:00
-  //     </p>
-  //     <div id="sr11-daily-hours-sunday-end-con">
-  //       <p
-  //         id="sr11-daily-hours-monday-end"
-  //         class="daily-hours-end"
-  //         data-do="open-time-picker"
-  //         data-day="monday"
-  //         data-type="day"
-  //         data-stnd="end"
-  //       >
-  //         0:00
-  //       </p>
-  //     </div>
-  //   </div>
-  //   <p
-  //     id="sr11-daily-hours-monday-time-total"
-  //     class="daily-hours-total"
-  //   >
-  //     0:00
-  //   </p>
-  // </div>
-
-  // <div id="sr11-daily-hours-tuesday" class="daily-hours-con">
-  //   <p id="sr11-daily-hours-tuesday-day" class="daily-hours-day">
-  //     Ma
-  //   </p>
-  //   <div
-  //     id="sr11-daily-hours-tuesday-con"
-  //     class="daily-hours-con-2"
-  //   >
-  //     <p
-  //       id="sr11-daily-hours-tuesday-start"
-  //       class="daily-hours-start"
-  //       data-do="open-time-picker"
-  //       data-day="tuesday"
-  //       data-type="day"
-  //       data-stnd="start"
-  //     >
-  //       0:00
-  //     </p>
-  //     <div id="sr11-daily-hours-sunday-end-con">
-  //       <p
-  //         id="sr11-daily-hours-tuesday-end"
-  //         class="daily-hours-end"
-  //         data-do="open-time-picker"
-  //         data-day="tuesday"
-  //         data-type="day"
-  //         data-stnd="end"
-  //       >
-  //         0:00
-  //       </p>
-  //     </div>
-  //   </div>
-  //   <p
-  //     id="sr11-daily-hours-tuesday-time-total"
-  //     class="daily-hours-total"
-  //   >
-  //     0:00
-  //   </p>
-  // </div>
-
-  // <div id="sr11-daily-hours-wednesday" class="daily-hours-con">
-  //   <p
-  //     id="sr11-daily-hours-wednesday-day"
-  //     class="daily-hours-day"
-  //   >
-  //     Mi
-  //   </p>
-  //   <div
-  //     id="sr11-daily-hours-wednesday-con"
-  //     class="daily-hours-con-2"
-  //   >
-  //     <p
-  //       id="sr11-daily-hours-wednesday-start"
-  //       class="daily-hours-start"
-  //       data-do="open-time-picker"
-  //       data-day="wednesday"
-  //       data-type="day"
-  //       data-stnd="start"
-  //     >
-  //       0:00
-  //     </p>
-  //     <div id="sr11-daily-hours-sunday-end-con">
-  //       <p
-  //         id="sr11-daily-hours-wednesday-end"
-  //         class="daily-hours-end"
-  //         data-do="open-time-picker"
-  //         data-day="wednesday"
-  //         data-type="day"
-  //         data-stnd="end"
-  //       >
-  //         0:00
-  //       </p>
-  //     </div>
-  //   </div>
-  //   <p
-  //     id="sr11-daily-hours-wednesday-time-total"
-  //     class="daily-hours-total"
-  //   >
-  //     0:00
-  //   </p>
-  // </div>
-
-  // <div id="sr11-daily-hours-thursday" class="daily-hours-con">
-  //   <p id="sr11-daily-hours-thursday-day" class="daily-hours-day">
-  //     Ju
-  //   </p>
-  //   <div
-  //     id="sr11-daily-hours-thursday-con"
-  //     class="daily-hours-con-2"
-  //   >
-  //     <p
-  //       id="sr11-daily-hours-thursday-start"
-  //       class="daily-hours-start"
-  //       data-do="open-time-picker"
-  //       data-day="thursday"
-  //       data-type="day"
-  //       data-stnd="start"
-  //     >
-  //       0:00
-  //     </p>
-  //     <div id="sr11-daily-hours-sunday-end-con">
-  //       <p
-  //         id="sr11-daily-hours-thursday-end"
-  //         class="daily-hours-end"
-  //         data-do="open-time-picker"
-  //         data-day="thursday"
-  //         data-type="day"
-  //         data-stnd="end"
-  //       >
-  //         0:00
-  //       </p>
-  //     </div>
-  //   </div>
-  //   <p
-  //     id="sr11-daily-hours-thursday-time-total"
-  //     class="daily-hours-total"
-  //   >
-  //     0:00
-  //   </p>
-  // </div>
-
-  // <div id="sr11-daily-hours-friday" class="daily-hours-con">
-  //   <p id="sr11-daily-hours-friday-day" class="daily-hours-day">
-  //     Vi
-  //   </p>
-  //   <div
-  //     id="sr11-daily-hours-friday-con"
-  //     class="daily-hours-con-2"
-  //   >
-  //     <p
-  //       id="sr11-daily-hours-friday-start"
-  //       class="daily-hours-start"
-  //       data-do="open-time-picker"
-  //       data-day="friday"
-  //       data-type="day"
-  //       data-stnd="start"
-  //     >
-  //       0:00
-  //     </p>
-  //     <div id="sr11-daily-hours-sunday-end-con">
-  //       <p
-  //         id="sr11-daily-hours-friday-end"
-  //         class="daily-hours-end"
-  //         data-do="open-time-picker"
-  //         data-day="friday"
-  //         data-type="day"
-  //         data-stnd="end"
-  //       >
-  //         0:00
-  //       </p>
-  //     </div>
-  //   </div>
-  //   <p
-  //     id="sr11-daily-hours-friday-time-total"
-  //     class="daily-hours-total"
-  //   >
-  //     0:00
-  //   </p>
-  // </div>
-
-  // <div id="sr11-daily-hours-saturday" class="daily-hours-con">
-  //   <p id="sr11-daily-hours-saturday-day" class="daily-hours-day">
-  //     Sa
-  //   </p>
-  //   <div
-  //     id="sr11-daily-hours-saturday-con"
-  //     class="daily-hours-con-2"
-  //   >
-  //     <p
-  //       id="sr11-daily-hours-saturday-start"
-  //       class="daily-hours-start"
-  //       data-do="open-time-picker"
-  //       data-day="saturday"
-  //       data-type="day"
-  //       data-stnd="start"
-  //     >
-  //       0:00
-  //     </p>
-  //     <div id="sr11-daily-hours-sunday-end-con">
-  //       <p
-  //         id="sr11-daily-hours-saturday-end"
-  //         class="daily-hours-end"
-  //         data-do="open-time-picker"
-  //         data-day="saturday"
-  //         data-type="day"
-  //         data-stnd="end"
-  //       >
-  //         0:00
-  //       </p>
-  //     </div>
-  //   </div>
-  //   <p
-  //     id="sr11-daily-hours-saturday-time-total"
-  //     class="daily-hours-total"
-  //   >
-  //     0:00
-  //   </p>
-  // </div>
-
-  // <div id="sr11-daily-hours-sunday" class="daily-hours-con">
-  //   <p id="sr11-daily-hours-sunday-day" class="daily-hours-day">
-  //     Do
-  //   </p>
-  //   <div
-  //     id="sr11-daily-hours-sunday-con"
-  //     class="daily-hours-con-2"
-  //   >
-  //     <p
-  //       id="sr11-daily-hours-sunday-start"
-  //       class="daily-hours-start"
-  //       data-do="open-time-picker"
-  //       data-day="sunday"
-  //       data-type="day"
-  //       data-stnd="start"
-  //     >
-  //       0:00
-  //     </p>
-  //     <div id="sr11-daily-hours-sunday-end-con">
-  //       <p
-  //         id="sr11-daily-hours-sunday-end"
-  //         class="daily-hours-end"
-  //         data-do="open-time-picker"
-  //         data-day="sunday"
-  //         data-type="day"
-  //         data-stnd="end"
-  //       >
-  //         0:00
-  //       </p>
-  //     </div>
-  //   </div>
-  //   <p
-  //     id="sr11-daily-hours-sunday-time-total"
-  //     class="daily-hours-total"
-  //   >
-  //     0:00
-  //   </p>
-  // </div>`;
 
   _punchInActDisp(InOut) {
     if (InOut === "in") {
@@ -4349,34 +4170,12 @@ class App {
       });
   }
 
-  _displayMembers(srHide) {
+  _displayMembers2(srHide) {
+    this._displaySpinner();
+    // this._srGetStartedDispChoose("sr7", srHide, "left");
     console.log(srHide);
-    // const storage = getStorage();
-    // const imageFolderRef = ref(storage, "team_images");
-
-    // const displImg = function (name) {
-    //   const sparkyRef = ref(storage, `team_images/${name}`);
-    //   getDownloadURL(sparkyRef)
-    //     .then((url) => {
-    //       const xhr = new XMLHttpRequest();
-    //       xhr.responseType = "blob";
-    //       xhr.onload = (event) => {
-    //         const blob = xhr.response;
-    //       };
-    //       xhr.open("GET", url);
-    //       xhr.send();
-    //       // const img = document.querySelector("#myimg");
-    //       // img.src = url;
-    //       headerTeamImg.src = url;
-    //     })
-    //     .catch((error) => {
-    //       console.log(error);
-    //     });
-    // };
 
     let curDataLocal;
-    this._displaySpinner();
-    // this._srGetStartedDispChoose("sr22", srHide, "right");
     const conMemberDisplay = document.querySelector("#sr7-mem-con");
     this.#curData = this._getFromLocal("curData");
 
@@ -4671,13 +4470,617 @@ class App {
       console.log(orgMemArr);
     });
 
-    // then((val) => {
-
-    // console.log(content[0]);
-
     this._srGetStartedDispChoose("sr7", srHide, "left");
     this._hideSpinner();
+    console.error("spinner is hidden");
   }
+
+  //
+
+  //
+  _displayMembers3(srHide) {
+    this._displaySpinner();
+    this._srGetStartedDispChoose("sr7", srHide, "left");
+    let curDataLocal;
+    const conMemberDisplay = document.querySelector("#sr7-mem-con");
+    this.#curData = this._getFromLocal("curData");
+
+    if (this.#curData.level === this.#adminLevel) {
+      console.log("top admin here");
+      curDataLocal = this.#curAccountData;
+    } else {
+      curDataLocal = this.#curData;
+    }
+    if (curDataLocal.pro === "pro") {
+      btnsr7GoPro.style.display = "none";
+    }
+    // console.log("curacc", this.#curAccountData);
+    // console.log("curda", this.#curData);
+    // console.log("", curDataLocal);
+
+    try {
+      const q = query(collection(db, `accounts/${curDataLocal.teamCode}/team`));
+      getDocs(q).then((docSnap) => {
+        this._deleteAllChildren("sr7-mem-con");
+        sr7.dataset.when = this._getTimeStamp();
+
+        if (docSnap.empty === true) {
+          const HTML = `<div id="no-member-message-con">
+          <p id="no-member-message-header">Tus miembros aparecerán aqui</p>
+          <p id="no-member-message-text">
+          Aún no tienes miembros en tu equipo. Empieza con <br />
+          <span data-linkbtn="new-member">Agregar nuevo trabajador</span>.
+          </p>
+          </div>`;
+          conMemberDisplay.insertAdjacentHTML("beforeend", HTML);
+        } else {
+          const HTML = `<div id="new-member-message-con">
+        <p id="new-member-message-text">
+        Usa el botón  <br /> <span data-linkbtn="new-member">Agregar nuevo trabajador</span>  <br /> para añadir miembros a tu equipo
+        </p>
+        </div>`;
+          conMemberDisplay.insertAdjacentHTML("beforeend", HTML);
+        }
+
+        if (this.#curData.level === this.#adminLevel) {
+          this._displayTeamImg(this.#curAccountData.teamImg);
+          headerTeamName.textContent = this.#curAccountData.teamName;
+        } else {
+          this._displayTeamImg(this.#curData.teamImg);
+          headerTeamName.textContent = this.#curData.teamName;
+        }
+
+        let randomMemArr = [];
+        let orgMemArr = [];
+        docSnap.forEach((doc) => {
+          randomMemArr.push(doc.data());
+        });
+
+        orgMemArr = randomMemArr.sort((a, b) => {
+          return a.lastModified - b.lastModified;
+        });
+        orgMemArr.forEach((val) => {
+          let btnPermision = ``;
+          let salary;
+          let totalPay;
+          let totalTime;
+
+          // TODO: starts granting or denying permision Already designed in figma
+
+          if (val.writePermisionRequest === "pending") {
+            btnPermision = `          
+          <div class="sr11-rePer-con">
+          <p class="sr11-rePer-con-text">
+            ${val.name} pide permiso para hacer cambios en sus horas. ¿Que deseas hacer?
+          </p>
+          <div class="sr11-rePer-btn-con">
+            <button
+              class="sr11-btn-deny"
+              data-where="permision-deny"
+              data-memberId="${val.memberId}"
+            >
+              Negar
+            </button>
+            <button
+              class="sr11-btn-grant"
+              data-where="permision-grant"
+              data-memberId="${val.memberId}"
+            >
+              Conceder por 5 min
+            </button>
+          </div>
+        </div>
+          `;
+          }
+
+          const dispNow = function () {
+            const HTML = `
+          <div
+          data-where="open"
+          data-memberId="${val.memberId}"
+          id="sr7-mem-con-2"
+          class="member-con-2"
+        >
+          <div
+            data-where="open"
+            data-memberId="${val.memberId}"
+            id="sr7-mem-info-con"
+            class="member-info-con"
+          >
+            <div
+              data-where="open"
+              data-memberId="${val.memberId}"
+              id="sr7-mem-info-con-2"
+              class="member-info-con-2"
+            >
+              <p
+                data-where="open"
+                data-memberId="${val.memberId}"
+                id="sr7-mem-name"
+                class="member-name"
+              >
+                ${val.name}
+              </p>
+    
+              <div
+                data-where="open"
+                data-memberId="${val.memberId}"
+                id="sr7-mem-info-con-3"
+                class="member-info-con-3"
+              >
+                <p
+                  data-where="open"
+                  data-memberId="${val.memberId}"
+                  id="sr7-mem-level"
+                  class="member-level"
+                >
+                  ${val.level}
+                </p>
+              </div>
+            </div>
+    
+            <button
+              class="sr23-btn-vedit"
+              data-where="info"
+              id="sr7-btn-meminfo"
+              class="btn-member-info"
+              data-memberId="${val.memberId}"
+            >
+              Info
+            </button>
+          </div>
+    
+          <div
+            data-where="open"
+            data-memberId="${val.memberId}"
+            id="sr7-mem-week-data-con"
+            class="member-week-data-con"
+          >
+            <div
+              data-where="open"
+              data-memberId="${val.memberId}"
+              id="sr7-mem-week-data-con-2"
+              class="member-week-data-con-2"
+            >
+              <p
+                data-where="open"
+                data-memberId="${val.memberId}"
+                id="sr7-mem-week-number"
+                class="member-week-number"
+              >
+                Información de la última semana
+              </p>
+            </div>
+            <div
+              data-where="open"
+              data-memberId="${val.memberId}"
+              id="sr7-mem-week-data-con-3"
+              class="member-week-data-con-3"
+            >
+              <div
+                data-where="open"
+                data-memberId="${val.memberId}"
+                id="sr7-mem-data-time"
+                class="member-data-time"
+              >
+                <p
+                  data-where="open"
+                  data-memberId="${val.memberId}"
+                  id="sr7-mem-data-time-text"
+                  class="member-data-time-text"
+                >
+                  Horas
+                </p>
+                <p
+                  data-where="open"
+                  data-memberId="${val.memberId}"
+                  id="sr7-mem-data-time-time"
+                  class="member-data-time-time"
+                >
+                  ${totalTime}
+                </p>
+              </div>
+    
+              <div
+                data-where="open"
+                data-memberId="${val.memberId}"
+                id="sr7-mem-data-pay"
+                class="member-data-pay"
+              >
+                <p
+                  data-where="open"
+                  data-memberId="${val.memberId}"
+                  id="sr7-mem-data-pay-text"
+                  class="member-data-pay-text"
+                >
+                  Salario
+                </p>
+                <p
+                  data
+                  -where="open"
+                  data-memberId="${val.memberId}"
+                  id="sr7-mem-data-pay-pay"
+                  class="member-data-pay-pay"
+                >
+                  ${salary}
+                </p>
+              </div>
+    
+              <div
+                data-where="open"
+                data-memberId="${val.memberId}"
+                id="sr7-mem-data-total-pay"
+                class="member-data-total-pay"
+              >
+                <p
+                  data-where="open"
+                  data-memberId="${val.memberId}"
+                  id="sr7-mem-data-total-pay-text"
+                  class="member-data-total-pay-text"
+                >
+                  Pago
+                </p>
+                <p
+                  data-where="open"
+                  data-memberId="${val.memberId}"
+                  id="sr7-mem-data-total-pay-pay"
+                  class="member-data-total-pay-pay"
+                >
+                  ${totalPay}
+                </p>
+              </div>
+            </div>
+          </div>
+          ${btnPermision}
+        </div>
+          `;
+
+            conMemberDisplay.insertAdjacentHTML("afterBegin", HTML);
+          };
+
+          const q = query(
+            collection(db, `accounts/${curDataLocal.teamCode}/weeks`),
+            where("weekId", "==", val.curWeekId)
+          );
+          console.log(q);
+          getDocs(q).then((docSnap) => {
+            if (this.#curData.pro === "false") {
+              salary = "$ --";
+              totalPay = "$ ----";
+              totalTime = "-:--";
+              dispNow();
+            } else {
+              if (!docSnap.empty) {
+                docSnap.forEach((doc) => {
+                  const val2 = doc.data();
+                  salary = `$ ${val2.salary}`;
+                  if (val2.totalTime === "" || val2.totalPay === "") {
+                    totalPay = "$ 0000";
+                    totalTime = "0:00";
+                  } else {
+                    salary = `$ ${val2.salary}`;
+                    totalPay = `$ ${val2.totalPay}`;
+                    totalTime = val2.totalTime;
+                  }
+                });
+                dispNow();
+              } else {
+                salary = "$ 00";
+                totalPay = "$ 0000";
+                totalTime = "0:00";
+                dispNow();
+              }
+            }
+          });
+        });
+
+        console.log(orgMemArr);
+      });
+    } catch (err) {
+      console.error(err);
+    } finally {
+      this._hideSpinner();
+    }
+  }
+  //
+
+  //
+
+  //
+
+  //
+
+  async _displayMembers(srHide) {
+    this._displaySpinner("Espera... Estamos cargando tus trabajadores");
+    this._srGetStartedDispChoose("sr7", srHide, "left");
+    let curDataLocal;
+    const conMemberDisplay = document.querySelector("#sr7-mem-con");
+    this.#curData = this._getFromLocal("curData");
+
+    if (this.#curData.level === this.#adminLevel) {
+      console.log("top admin here");
+      curDataLocal = this.#curAccountData;
+    } else {
+      curDataLocal = this.#curData;
+    }
+    if (curDataLocal.pro === "pro") {
+      btnsr7GoPro.style.display = "none";
+    }
+
+    try {
+      const q = query(collection(db, `accounts/${curDataLocal.teamCode}/team`));
+      const docSnap = await getDocs(q);
+      this._deleteAllChildren("sr7-mem-con");
+      sr7.dataset.when = this._getTimeStamp();
+
+      if (docSnap.empty) {
+        const HTML = `<div id="no-member-message-con">
+          <p id="no-member-message-header">Tus miembros aparecerán aqui</p>
+          <p id="no-member-message-text">
+          Aún no tienes miembros en tu equipo. Empieza con <br />
+          <span data-linkbtn="new-member">Agregar nuevo trabajador</span>.
+          </p>
+          </div>`;
+        conMemberDisplay.insertAdjacentHTML("beforeend", HTML);
+      } else {
+        const HTML = `<div id="new-member-message-con">
+        <p id="new-member-message-text">
+        Usa el botón  <br /> <span data-linkbtn="new-member">Agregar nuevo trabajador</span>  <br /> para añadir miembros a tu equipo
+        </p>
+        </div>`;
+        conMemberDisplay.insertAdjacentHTML("beforeend", HTML);
+      }
+
+      if (this.#curData.level === this.#adminLevel) {
+        this._displayTeamImg(this.#curAccountData.teamImg);
+        headerTeamName.textContent = this.#curAccountData.teamName;
+      } else {
+        this._displayTeamImg(this.#curData.teamImg);
+        headerTeamName.textContent = this.#curData.teamName;
+      }
+
+      let randomMemArr = [];
+      docSnap.forEach((doc) => {
+        randomMemArr.push(doc.data());
+      });
+
+      let orgMemArr = randomMemArr.sort(
+        (a, b) => a.lastModified - b.lastModified
+      );
+
+      for (let val of orgMemArr) {
+        let btnPermision = ``;
+        let salary;
+        let totalPay;
+        let totalTime;
+
+        if (val.writePermisionRequest === "pending") {
+          btnPermision = `          
+          <div class="sr11-rePer-con">
+          <p class="sr11-rePer-con-text">
+            ${val.name} pide permiso para hacer cambios en sus horas. ¿Que deseas hacer?
+          </p>
+          <div class="sr11-rePer-btn-con">
+            <button
+              class="sr11-btn-deny"
+              data-where="permision-deny"
+              data-memberId="${val.memberId}"
+            >
+              Negar
+            </button>
+            <button
+              class="sr11-btn-grant"
+              data-where="permision-grant"
+              data-memberId="${val.memberId}"
+            >
+              Conceder por 5 min
+            </button>
+          </div>
+        </div>`;
+        }
+
+        const dispNow = () => {
+          const HTML = `
+          <div
+          data-where="open"
+          data-memberId="${val.memberId}"
+          id="sr7-mem-con-2"
+          class="member-con-2"
+        >
+          <div
+            data-where="open"
+            data-memberId="${val.memberId}"
+            id="sr7-mem-info-con"
+            class="member-info-con"
+          >
+            <div
+              data-where="open"
+              data-memberId="${val.memberId}"
+              id="sr7-mem-info-con-2"
+              class="member-info-con-2"
+            >
+              <p
+                data-where="open"
+                data-memberId="${val.memberId}"
+                id="sr7-mem-name"
+                class="member-name"
+              >
+                ${val.name}
+              </p>
+    
+              <div
+                data-where="open"
+                data-memberId="${val.memberId}"
+                id="sr7-mem-info-con-3"
+                class="member-info-con-3"
+              >
+                <p
+                  data-where="open"
+                  data-memberId="${val.memberId}"
+                  id="sr7-mem-level"
+                  class="member-level"
+                >
+                  ${val.level}
+                </p>
+              </div>
+            </div>
+    
+            <button
+              class="sr23-btn-vedit"
+              data-where="info"
+              id="sr7-btn-meminfo"
+              class="btn-member-info"
+              data-memberId="${val.memberId}"
+            >
+              Info
+            </button>
+          </div>
+    
+          <div
+            data-where="open"
+            data-memberId="${val.memberId}"
+            id="sr7-mem-week-data-con"
+            class="member-week-data-con"
+          >
+            <div
+              data-where="open"
+              data-memberId="${val.memberId}"
+              id="sr7-mem-week-data-con-2"
+              class="member-week-data-con-2"
+            >
+              <p
+                data-where="open"
+                data-memberId="${val.memberId}"
+                id="sr7-mem-week-number"
+                class="member-week-number"
+              >
+                Información de la última semana
+              </p>
+            </div>
+            <div
+              data-where="open"
+              data-memberId="${val.memberId}"
+              id="sr7-mem-week-data-con-3"
+              class="member-week-data-con-3"
+            >
+              <div
+                data-where="open"
+                data-memberId="${val.memberId}"
+                id="sr7-mem-data-time"
+                class="member-data-time"
+              >
+                <p
+                  data-where="open"
+                  data-memberId="${val.memberId}"
+                  id="sr7-mem-data-time-text"
+                  class="member-data-time-text"
+                >
+                  Horas
+                </p>
+                <p
+                  data-where="open"
+                  data-memberId="${val.memberId}"
+                  id="sr7-mem-data-time-time"
+                  class="member-data-time-time"
+                >
+                  ${totalTime}
+                </p>
+              </div>
+    
+              <div
+                data-where="open"
+                data-memberId="${val.memberId}"
+                id="sr7-mem-data-pay"
+                class="member-data-pay"
+              >
+                <p
+                  data-where="open"
+                  data-memberId="${val.memberId}"
+                  id="sr7-mem-data-pay-text"
+                  class="member-data-pay-text"
+                >
+                  Salario
+                </p>
+                <p
+                  data
+                  -where="open"
+                  data-memberId="${val.memberId}"
+                  id="sr7-mem-data-pay-pay"
+                  class="member-data-pay-pay"
+                >
+                  ${salary}
+                </p>
+              </div>
+    
+              <div
+                data-where="open"
+                data-memberId="${val.memberId}"
+                id="sr7-mem-data-total-pay"
+                class="member-data-total-pay"
+              >
+                <p
+                  data-where="open"
+                  data-memberId="${val.memberId}"
+                  id="sr7-mem-data-total-pay-text"
+                  class="member-data-total-pay-text"
+                >
+                  Pago
+                </p>
+                <p
+                  data-where="open"
+                  data-memberId="${val.memberId}"
+                  id="sr7-mem-data-total-pay-pay"
+                  class="member-data-total-pay-pay"
+                >
+                  ${totalPay}
+                </p>
+              </div>
+            </div>
+          </div>
+          ${btnPermision}
+        </div>
+          `;
+          conMemberDisplay.insertAdjacentHTML("afterBegin", HTML);
+        };
+
+        const q = query(
+          collection(db, `accounts/${curDataLocal.teamCode}/weeks`),
+          where("weekId", "==", val.curWeekId)
+        );
+        const weekDocSnap = await getDocs(q);
+        if (this.#curData.pro === "false") {
+          salary = "$ --";
+          totalPay = "$ ----";
+          totalTime = "-:--";
+          dispNow();
+        } else {
+          if (!weekDocSnap.empty) {
+            weekDocSnap.forEach((doc) => {
+              const val2 = doc.data();
+              salary = `$ ${val2.salary}`;
+              totalPay = val2.totalPay === "" ? "$ 0000" : `$ ${val2.totalPay}`;
+              totalTime = val2.totalTime === "" ? "0:00" : val2.totalTime;
+            });
+          } else {
+            salary = "$ 00";
+            totalPay = "$ 0000";
+            totalTime = "0:00";
+          }
+          dispNow();
+        }
+      }
+    } catch (err) {
+      console.error(err);
+    } finally {
+      this._hideSpinner();
+    }
+  }
+
+  //
+
+  //
+
+  //
 
   _createMemberStep2() {
     this.#curData = this._getFromLocal("curData");
@@ -5706,7 +6109,7 @@ class App {
         this._deleteCookie("memberId");
         this._deleteCookie("level");
         this._removeFromLocal("curData");
-        this._init("sr17");
+        this._init(this.#currentScreen);
       } else {
         this._disdSuccessErrorMessage(`Contraseña incorecta`, "er", 3000);
       }
@@ -7729,8 +8132,8 @@ class App {
           const width = 0;
           // const width = rectMenu.width / 2;
 
-          menu.style.top = rect.bottom + "px";
-          menu.style.left = rect.left - width + "px";
+          // menu.style.top = rect.bottom + "px";
+          // menu.style.left = rect.left - width + "px";
         }, 0);
         menu.classList.toggle("hidden");
         event.stopPropagation(); // Prevent the event from bubbling up and closing the menu immediately

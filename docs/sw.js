@@ -1,49 +1,64 @@
-const cacheName = "THoras";
+const cacheName = "thoras-v2.0.0";
 const staticAssets = [
-  " ./index.html",
+  "./index.html",
   "./index.css",
   "./index.js",
   "./manifest.webmanifest",
   "./images",
 ];
-self.addEventListener("install", async (e) => {
-  const cache = await caches.open(cacheName);
-  await cache.addAll(staticAssets);
-  return self.skipWaiting();
+
+self.addEventListener("install", (event) => {
+  event.waitUntil(
+    caches
+      .open(cacheName)
+      .then((cache) => {
+        return cache.addAll(staticAssets);
+      })
+      .then(() => {
+        self.skipWaiting(); // Immediately activate the new service worker after installing
+      })
+      .catch((error) => {
+        console.error("Failed to cache assets during install:", error);
+      })
+  );
 });
 
-self.addEventListener("activate", (e) => {
-  self.clients.claim();
+self.addEventListener("activate", (event) => {
+  event.waitUntil(
+    caches
+      .keys()
+      .then((keys) => {
+        return Promise.all(
+          keys.map((key) => {
+            if (key !== cacheName) {
+              return caches.delete(key); // Delete old caches
+            }
+          })
+        );
+      })
+      .then(() => {
+        return self.clients.claim(); // Take control of all open clients
+      })
+      .catch((error) => {
+        console.error("Failed to activate new service worker:", error);
+      })
+  );
 });
 
-self.addEventListener("fetch", async (e) => {
-  const req = e.request;
-  if (req.url.includes("google") || req.url.includes("rapidapi")) {
-  } else {
-    const url = new URL(req.url);
-    if (url.origin === location.origin) {
-      // e.respondWith(cacheFirst(req));
-      e.respondWith(networkAndCache(req));
-    } else {
-      e.respondWith(networkAndCache(req));
-    }
+self.addEventListener("fetch", (event) => {
+  const { request } = event;
+  if (request.url.includes("firestore.googleapis.com")) {
+    return; // Bypass caching for Firestore requests
   }
+  event.respondWith(
+    caches
+      .match(request)
+      .then((cachedResponse) => {
+        return cachedResponse || fetch(request);
+      })
+      .catch((error) => {
+        console.error("Failed to fetch resource:", error);
+        return fetch(request);
+      })
+  );
 });
-
-async function cacheFirst(req) {
-  const cache = await caches.open(cacheName);
-  const cached = await cache.match(req);
-  return cached || fetch(req);
-}
-
-async function networkAndCache(req) {
-  const cache = await caches.open(cacheName);
-  try {
-    const fresh = await fetch(req);
-    await cache.put(req, fresh.clone());
-    return fresh;
-  } catch (e) {
-    const cached = await cache.match(req);
-    return cached;
-  }
-}
