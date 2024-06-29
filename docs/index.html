@@ -807,90 +807,37 @@
         <!-- Other seccion of screens start here-->
         <!-- sr7 -->
         <div id="sr7" class="sr-none" data-when="1716521072483">
-          <div id="sr7-tb" class="tb">
-            <div class="tb-cont-con">
-              <svg
-                id="sr7-btn-settings"
-                xmlns="http://www.w3.org/2000/svg"
-                width="32"
-                height="34"
-                viewBox="0 0 32 34"
-                fill="none"
-              >
-                <path
-                  d="M0 0.551147H32V6.0341H0V0.551147ZM0 14.2585H32V19.7415H0V14.2585ZM0 27.9659H32V33.4488H0V27.9659Z"
-                  fill="#0085FF"
-                />
-              </svg>
-              <!-- <button id="sr7-btn-install-app">Install App</button> -->
+          <div id="sr7-tb-and-progress-bar-con">
+            <div id="sr7-tb" class="tb">
+              <div class="tb-cont-con">
+                <svg
+                  id="sr7-btn-settings"
+                  xmlns="http://www.w3.org/2000/svg"
+                  width="32"
+                  height="34"
+                  viewBox="0 0 32 34"
+                  fill="none"
+                >
+                  <path
+                    d="M0 0.551147H32V6.0341H0V0.551147ZM0 14.2585H32V19.7415H0V14.2585ZM0 27.9659H32V33.4488H0V27.9659Z"
+                    fill="#0085FF"
+                  />
+                </svg>
+                <!-- <button id="sr7-btn-install-app">Install App</button> -->
+              </div>
+              <button id="sr7-go-pro">Premium</button>
             </div>
-            <button id="sr7-go-pro">Premium</button>
-          </div>
-          <div id="sr7-loader-con">
-            <svg
-              xmlns="http://www.w3.org/2000/svg"
-              width="50"
-              height="50"
-              viewBox="0 0 100 100"
-              fill="none"
-            >
-              <circle
-                cx="50"
-                cy="50"
-                r="45"
-                stroke="#0085ff"
-                stroke-width="10"
-                stroke-dasharray="113.097"
-                stroke-dashoffset="0"
-              >
-                <animateTransform
-                  attributeName="transform"
-                  attributeType="XML"
-                  type="rotate"
-                  from="0 50 50"
-                  to="360 50 50"
-                  dur="1s"
-                  repeatCount="indefinite"
-                />
-              </circle>
-            </svg>
-            <!-- <svg
-              width="100%"
-              height="15"
-              viewBox="0 0 200 15"
-              xmlns="http://www.w3.org/2000/svg"
-            >
-
-              <rect width="100%" height="5" fill="#0085ff" />
-
-              <rect width="100%" height="5" fill="url(#grad)">
-                <animate
-                  attributeName="x"
-                  from="-200"
-                  to="200"
-                  dur="2s"
-                  repeatCount="indefinite"
-                />
-              </rect>
-
-              <defs>
-                <linearGradient id="grad" x1="0%" y1="0%" x2="100%" y2="0%">
-                  <stop
-                    offset="0%"
-                    style="stop-color: #e0e0e0; stop-opacity: 1"
-                  />
-                  <stop
-                    offset="50%"
-                    style="stop-color: #f0f0f0; stop-opacity: 1"
-                  />
-                  <stop
-                    offset="100%"
-                    style="stop-color: #e0e0e0; stop-opacity: 1"
-                  />
-                </linearGradient>
-              </defs>
-            </svg> -->
-            <p class="member-week-number">Estamos cargando tus trabajadores</p>
+            <div id="sr7-loader-con" style="display: none">
+              <div id="sr7-progress-con">
+                <div id="sr7-progress-bar">
+                  <div id="progress-bar-loader" style="display: none"></div>
+                </div>
+              </div>
+              <p class="member-week-number">
+                Estamos cargando tus trabajadores
+                <span id="sr7-member-week-number-percent"></span>
+              </p>
+            </div>
           </div>
           <p class="sr-header-2">Tus trabajadores aparecen aqui</p>
 

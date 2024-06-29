@@ -516,6 +516,8 @@ class App {
   #appSupportInfo;
   #appExplainVideos = [];
   clockInterval;
+  moveLoaderInterval;
+  // moveLoaderInterval;
 
   #der = {
     teamCode: "rtyhgfdr567",
@@ -661,6 +663,7 @@ class App {
 
   #previousScreen;
   #currentScreen;
+
   constructor() {
     this._events();
     this._registerMySw();
@@ -3172,8 +3175,6 @@ class App {
         }.`
       );
 
-      // Proceed with your function using the userInput if needed
-
       // Create a new batch
       let batch = writeBatch(db);
 
@@ -3981,301 +3982,69 @@ class App {
       });
   }
 
-  async _displayMembers2(srHide) {
-    sr7LoaderCon.style.display = "flex";
-    this._hideSpinner();
-    // this._displaySpinner("Espera... Estamos cargando tus trabajadores");
-    this._srGetStartedDispChoose("sr7", srHide, "left");
-    let curDataLocal;
-    const conMemberDisplay = document.querySelector("#sr7-mem-con");
-    this.#curData = this._getFromLocal("curData");
+  _setProgressBar(
+    parentElement,
+    percentElement,
+    setElement,
+    percentNum,
+    ofNum
+  ) {
+    const progressBar = document.getElementById(`${setElement}`);
+    const showPercentElement = document.getElementById(`${percentElement}`);
+    const parentElementCon = document.getElementById(`${parentElement}`);
+    this.moveLoaderInterval;
+    if (percentNum < 1) clearInterval(this.moveLoaderInterval);
+    const moveLoader = (setElement) => {
+      console.log("called loadermover");
+      let left = 0;
+      const loaderParent = document.querySelector(`#${setElement}`);
+      const loader = loaderParent.querySelector("#progress-bar-loader");
+      loader.style.display = "flex";
 
-    if (this.#curData.level === this.#adminLevel) {
-      console.log("top admin here");
-      curDataLocal = this.#curAccountData;
-    } else {
-      curDataLocal = this.#curData;
-    }
-    if (curDataLocal.pro === "pro") {
-      btnsr7GoPro.style.display = "none";
-    }
-
-    try {
-      const q = query(collection(db, `accounts/${curDataLocal.teamCode}/team`));
-      const docSnap = await getDocs(q);
-      this._deleteAllChildren("sr7-mem-con");
-      sr7.dataset.when = this._getTimeStamp();
-
-      if (docSnap.empty) {
-        const HTML = `<div id="no-member-message-con">
-          <p id="no-member-message-header">Tus miembros aparecerán aqui</p>
-          <p id="no-member-message-text">
-          Aún no tienes miembros en tu equipo. Empieza con <br />
-          <span data-linkbtn="new-member">Agregar nuevo trabajador</span>.
-          </p>
-          </div>`;
-        conMemberDisplay.insertAdjacentHTML("beforeend", HTML);
-      } else {
-        const HTML = `<div id="new-member-message-con">
-        <p id="new-member-message-text">
-        Usa el botón  <br /> <span data-linkbtn="new-member">Agregar nuevo trabajador</span>  <br /> para añadir miembros a tu equipo
-        </p>
-        </div>`;
-        conMemberDisplay.insertAdjacentHTML("beforeend", HTML);
-      }
-
-      if (this.#curData.level === this.#adminLevel) {
-        this._displayTeamImg(this.#curAccountData.teamImg);
-        headerTeamName.textContent = this.#curAccountData.teamName;
-      } else {
-        this._displayTeamImg(this.#curData.teamImg);
-        headerTeamName.textContent = this.#curData.teamName;
-      }
-
-      let randomMemArr = [];
-      docSnap.forEach((doc) => {
-        randomMemArr.push(doc.data());
-      });
-
-      let orgMemArr = randomMemArr.sort(
-        (a, b) => a.lastModified - b.lastModified
-      );
-
-      for (let val of orgMemArr) {
-        let btnPermision = ``;
-        let salary;
-        let totalPay;
-        let totalTime;
-
-        if (val.writePermisionRequest === "pending") {
-          btnPermision = `          
-          <div class="sr11-rePer-con">
-          <p class="sr11-rePer-con-text">
-            ${val.name} pide permiso para hacer cambios en sus horas. ¿Que deseas hacer?
-          </p>
-          <div class="sr11-rePer-btn-con">
-            <button
-              class="sr11-btn-deny"
-              data-where="permision-deny"
-              data-memberId="${val.memberId}"
-            >
-              Negar
-            </button>
-            <button
-              class="sr11-btn-grant"
-              data-where="permision-grant"
-              data-memberId="${val.memberId}"
-            >
-              Conceder por 5 min
-            </button>
-          </div>
-        </div>`;
+      this.moveLoaderInterval = setInterval(() => {
+        loader.style.left = left + "%";
+        if (left > 100) {
+          left = 0;
         }
+        left += 1;
+      }, 10);
+    };
 
-        const dispNow = () => {
-          const HTML = `
-          <div
-          data-where="open"
-          data-memberId="${val.memberId}"
-          id="sr7-mem-con-2"
-          class="member-con-2"
-        >
-          <div
-            data-where="open"
-            data-memberId="${val.memberId}"
-            id="sr7-mem-info-con"
-            class="member-info-con"
-          >
-            <div
-              data-where="open"
-              data-memberId="${val.memberId}"
-              id="sr7-mem-info-con-2"
-              class="member-info-con-2"
-            >
-              <p
-                data-where="open"
-                data-memberId="${val.memberId}"
-                id="sr7-mem-name"
-                class="member-name"
-              >
-                ${val.name}
-              </p>
-    
-              <div
-                data-where="open"
-                data-memberId="${val.memberId}"
-                id="sr7-mem-info-con-3"
-                class="member-info-con-3"
-              >
-                <p
-                  data-where="open"
-                  data-memberId="${val.memberId}"
-                  id="sr7-mem-level"
-                  class="member-level"
-                >
-                  ${val.level}
-                </p>
-              </div>
-            </div>
-    
-            <button
-              class="sr23-btn-vedit"
-              data-where="info"
-              id="sr7-btn-meminfo"
-              class="btn-member-info"
-              data-memberId="${val.memberId}"
-            >
-              Info
-            </button>
-          </div>
-    
-          <div
-            data-where="open"
-            data-memberId="${val.memberId}"
-            id="sr7-mem-week-data-con"
-            class="member-week-data-con"
-          >
-            <div
-              data-where="open"
-              data-memberId="${val.memberId}"
-              id="sr7-mem-week-data-con-2"
-              class="member-week-data-con-2"
-            >
-              <p
-                data-where="open"
-                data-memberId="${val.memberId}"
-                id="sr7-mem-week-number"
-                class="member-week-number"
-              >
-                Información de la última semana
-              </p>
-            </div>
-            <div
-              data-where="open"
-              data-memberId="${val.memberId}"
-              id="sr7-mem-week-data-con-3"
-              class="member-week-data-con-3"
-            >
-              <div
-                data-where="open"
-                data-memberId="${val.memberId}"
-                id="sr7-mem-data-time"
-                class="member-data-time"
-              >
-                <p
-                  data-where="open"
-                  data-memberId="${val.memberId}"
-                  id="sr7-mem-data-time-text"
-                  class="member-data-time-text"
-                >
-                  Horas
-                </p>
-                <p
-                  data-where="open"
-                  data-memberId="${val.memberId}"
-                  id="sr7-mem-data-time-time"
-                  class="member-data-time-time"
-                >
-                  ${totalTime}
-                </p>
-              </div>
-    
-              <div
-                data-where="open"
-                data-memberId="${val.memberId}"
-                id="sr7-mem-data-pay"
-                class="member-data-pay"
-              >
-                <p
-                  data-where="open"
-                  data-memberId="${val.memberId}"
-                  id="sr7-mem-data-pay-text"
-                  class="member-data-pay-text"
-                >
-                  Salario
-                </p>
-                <p
-                  data
-                  -where="open"
-                  data-memberId="${val.memberId}"
-                  id="sr7-mem-data-pay-pay"
-                  class="member-data-pay-pay"
-                >
-                  ${salary}
-                </p>
-              </div>
-    
-              <div
-                data-where="open"
-                data-memberId="${val.memberId}"
-                id="sr7-mem-data-total-pay"
-                class="member-data-total-pay"
-              >
-                <p
-                  data-where="open"
-                  data-memberId="${val.memberId}"
-                  id="sr7-mem-data-total-pay-text"
-                  class="member-data-total-pay-text"
-                >
-                  Pago
-                </p>
-                <p
-                  data-where="open"
-                  data-memberId="${val.memberId}"
-                  id="sr7-mem-data-total-pay-pay"
-                  class="member-data-total-pay-pay"
-                >
-                  ${totalPay}
-                </p>
-              </div>
-            </div>
-          </div>
-          ${btnPermision}
-        </div>
-          `;
-          conMemberDisplay.insertAdjacentHTML("afterBegin", HTML);
-        };
+    parentElementCon.style.display = "flex";
+    let percent = Math.floor((percentNum / ofNum) * 100);
+    progressBar.style.width = percent + "%";
 
-        const q = query(
-          collection(db, `accounts/${curDataLocal.teamCode}/weeks`),
-          where("weekId", "==", val.curWeekId)
-        );
-        const weekDocSnap = await getDocs(q);
-        if (this.#curData.pro === "false") {
-          salary = "$ --";
-          totalPay = "$ ----";
-          totalTime = "-:--";
-          dispNow();
-        } else {
-          if (!weekDocSnap.empty) {
-            weekDocSnap.forEach((doc) => {
-              const val2 = doc.data();
-              salary = `$ ${val2.salary}`;
-              totalPay = val2.totalPay === "" ? "$ 0000" : `$ ${val2.totalPay}`;
-              totalTime = val2.totalTime === "" ? "0:00" : val2.totalTime;
-            });
-          } else {
-            salary = "$ 00";
-            totalPay = "$ 0000";
-            totalTime = "0:00";
-          }
-          dispNow();
-          console.log();
-        }
-      }
-    } catch (err) {
-      console.error(err);
-    } finally {
-      this._hideSpinner();
-      this.justOpenedApp = false;
-      sr7LoaderCon.style.display = "none";
+    if (percentNum === 1) {
+      clearInterval(this.moveLoaderInterval);
+      progressBar.style.background = "#0085ff";
+      moveLoader(setElement);
     }
+    if (percentNum === 0) {
+      progressBar.style.width = 100 + "%";
+      progressBar.style.background = "#fff";
+      percent = 0;
+      moveLoader(setElement);
+    }
+
+    if (percent >= 100) {
+      clearInterval(this.moveLoaderInterval);
+      setTimeout(() => {
+        progressBar.style.width = 0 + "%";
+        parentElementCon.style.display = "none";
+      }, 200);
+    }
+    showPercentElement.textContent = percent + "%";
   }
 
   async _displayMembers(srHide) {
-    sr7LoaderCon.style.display = "flex";
+    this._setProgressBar(
+      "sr7-loader-con",
+      "sr7-member-week-number-percent",
+      "sr7-progress-bar",
+      0
+    );
+    let curMemberNum = 0;
     this._hideSpinner();
-    // this._displaySpinner("Espera... Estamos cargando tus trabajadores");
     this._srGetStartedDispChoose("sr7", srHide, "left");
     let curDataLocal;
     const conMemberDisplay = document.querySelector("#sr7-mem-con");
@@ -4332,9 +4101,11 @@ class App {
         (a, b) => a.lastModified - b.lastModified
       );
 
-      let markup = ``;
+      let markup = [];
       const renderMarkupMembers = function () {
-        conMemberDisplay.insertAdjacentHTML("afterBegin", markup);
+        markup.forEach((member) => {
+          conMemberDisplay.insertAdjacentHTML("afterbegin", member);
+        });
       };
 
       for (let val of orgMemArr) {
@@ -4369,7 +4140,7 @@ class App {
         }
 
         const dispNow = () => {
-          markup += `
+          markup.push(`
           <div
           data-where="open"
           data-memberId="${val.memberId}"
@@ -4528,10 +4299,8 @@ class App {
           </div>
           ${btnPermision}
         </div>
-          `;
-          //   conMemberDisplay.insertAdjacentHTML("afterBegin", HTML);
+          `);
         };
-
         const q = query(
           collection(db, `accounts/${curDataLocal.teamCode}/weeks`),
           where("weekId", "==", val.curWeekId)
@@ -4555,9 +4324,16 @@ class App {
             totalPay = "$ 0000";
             totalTime = "0:00";
           }
-          console.log("time");
+          curMemberNum += 1;
+          this._setProgressBar(
+            "sr7-loader-con",
+            "sr7-member-week-number-percent",
+            "sr7-progress-bar",
+            curMemberNum,
+            curDataLocal.numberOfMembers
+          );
+
           dispNow();
-          console.log();
         }
       }
       renderMarkupMembers();
@@ -4567,7 +4343,6 @@ class App {
     } finally {
       this._hideSpinner();
       this.justOpenedApp = false;
-      sr7LoaderCon.style.display = "none";
     }
   }
 
@@ -4629,6 +4404,7 @@ class App {
       console.error("no pay");
     }
   }
+
   async _newWeekForCurUser() {
     try {
       const userInput = await this._displayPrompt(
@@ -4662,7 +4438,7 @@ class App {
     }
   }
 
-  _newWeek(curid) {
+  async _newWeek(curid) {
     if (navigator.onLine) {
       this.#curData = this._getFromLocal("curData");
       this._idGenerator(this.#idLenght, this.#idTakeArrLenght);
@@ -4689,80 +4465,90 @@ class App {
         memberId = this.#curMemberInfo.memberId;
         console.log("member here", this.#curMemberInfo.memberId);
       }
-      const intv = setInterval(() => {
-        if (this.#curUseId !== undefined) {
-          clearInterval(intv);
-          console.log("done already");
-          this._uploadData(
-            `accounts/${curDataLocal.teamCode}/weeks`,
-            this.#curUseId,
-            {
-              weekId: this.#curUseId,
-              weekStart: weekStartlocal,
-              name: this.#curMemberInfo.name,
-              memberId: memberId,
-              salary: this.#curMemberInfo.salary,
-              extraHours: curDataLocal.extraHours, //fals,
-              extraHoursRequiredPer: curDataLocal.extraHoursRequiredPer, //wee,
-              extraHoursRequired: curDataLocal.extraHoursRequired,
-              totalTime: "",
-              totalNormalTime: "",
-              totalExtraTime: "",
-              totalMaqTime: "",
-              totalNormalPay: "",
-              totalExtraPay: "",
-              totalMaqPay: "",
-              totalPay: "",
-              weekMadeTimeStamp: this._getTimeStamp(),
-              memberPayed: "false",
-              adminPayed: "false",
-              payed: "false",
-              days: this._rearrangeWeekDays(
-                this.#daysArrForNewWeek,
-                weekStartlocal
-              ),
-            }
-          );
 
-          this._updateData(
-            `accounts/${curDataLocal.teamCode}/team`,
-            `${this.#curMemberInfo.memberId}`,
-            {
-              curWeekId: this.#curUseId,
-              lastModified: this._getTimeStamp(),
-            }
-          );
-          const appInfo = doc(
-            db,
-            `accounts/${this.#curMemberInfo.teamCode}/team`,
-            this.#curMemberInfo.memberId
-          );
-          updateDoc(appInfo, {
-            numberOfWeeks: increment(1),
-          });
-          // this._readWeeks("sr11");
+      const makeThisWeek = async () => {
+        const batch = writeBatch(db);
 
-          const q = query(
-            collection(db, `accounts/${curDataLocal.teamCode}/team`),
-            where("memberId", "==", this.#curMemberInfo.memberId)
-          );
-          getDocs(q).then((docSnap) => {
-            docSnap.forEach((doc) => {
-              const val = doc.data();
-              this.#curMemberInfo = val;
-              console.log(this.#curMemberInfo);
-              this._displayTimeSheet("ng", true);
-            });
-          });
-          this._disdSuccessErrorMessage(
-            "Éxito. Una nueva semana ha comenzado.",
-            "ex",
-            3000
-          );
-        } else {
-          console.log("still not");
-        }
-      }, 1000);
+        // Collection reference for the members
+        const weeksCollectionRef = collection(
+          db,
+          `accounts/${curDataLocal.teamCode}/weeks`
+        );
+
+        // Generate a new document reference with an auto-generated ID
+        const weekDocRef = doc(weeksCollectionRef);
+        const weekId = weekDocRef.id; // Get the auto-generated ID
+        console.log(weekId);
+        // this.#curMemberId = weekId;
+
+        const curTimeStamp = this._getTimeStamp();
+
+        // Set data for the member document including the auto-generated ID
+        batch.set(weekDocRef, {
+          weekId: weekId,
+          weekStart: weekStartlocal,
+          name: this.#curMemberInfo.name,
+          memberId: memberId,
+          salary: this.#curMemberInfo.salary,
+          extraHours: curDataLocal.extraHours, //fals,
+          extraHoursRequiredPer: curDataLocal.extraHoursRequiredPer, //wee,
+          extraHoursRequired: curDataLocal.extraHoursRequired,
+          totalTime: "",
+          totalNormalTime: "",
+          totalExtraTime: "",
+          totalMaqTime: "",
+          totalNormalPay: "",
+          totalExtraPay: "",
+          totalMaqPay: "",
+          totalPay: "",
+          weekMadeTimeStamp: curTimeStamp,
+          memberPayed: "false",
+          adminPayed: "false",
+          payed: "false",
+          days: this._rearrangeWeekDays(
+            this.#daysArrForNewWeek,
+            weekStartlocal
+          ),
+        });
+
+        // Document reference for the member
+        const memberDocRef = doc(
+          db,
+          `accounts/${this.#curMemberInfo.teamCode}/team`,
+          this.#curMemberInfo.memberId
+        );
+
+        // Update data for the member document
+        batch.update(memberDocRef, {
+          numberOfWeeks: increment(1),
+          curWeekId: weekId,
+          lastModified: curTimeStamp,
+        });
+
+        // Commit the batch
+        await batch.commit();
+      };
+      await makeThisWeek();
+
+      this._readWeeks("sr11");
+
+      const q = query(
+        collection(db, `accounts/${curDataLocal.teamCode}/team`),
+        where("memberId", "==", this.#curMemberInfo.memberId)
+      );
+      getDocs(q).then((docSnap) => {
+        docSnap.forEach((doc) => {
+          const val = doc.data();
+          this.#curMemberInfo = val;
+          console.log(this.#curMemberInfo);
+          this._displayTimeSheet("ng", true);
+        });
+      });
+      this._disdSuccessErrorMessage(
+        "Éxito. Una nueva semana ha comenzado.",
+        "ex",
+        3000
+      );
     } else {
       this._disdSuccessErrorMessage(
         "No pudimos comenzar una nueva semana. Parece que no tienes conexión a internet.",
@@ -4772,7 +4558,7 @@ class App {
     }
   }
 
-  _createMemberStep1() {
+  async _createMemberStep1() {
     if (navigator.onLine) {
       console.log("online this time");
 
@@ -4808,7 +4594,7 @@ class App {
           collection(db, `accounts/${curDataLocal.teamCode}/team`),
           where("name", "==", inpMemberName.value)
         );
-        getDocs(q).then((docSnap) => {
+        getDocs(q).then(async (docSnap) => {
           if (docSnap.empty === true) {
             if (
               inpMemberName.value.length > 2 &&
@@ -4816,76 +4602,91 @@ class App {
             ) {
               if (inpPassword.value.length > 5) {
                 if (inpPassword.value === inpVerPassword.value) {
-                  // this._srGetStartedDispChoose("sr22", "sr8", "right");
                   this._displaySpinner(
                     `Estamos prosesando la información de ${inpMemberName.value}. Porfavor espera un momento.`
                   );
-                  this._idGenerator(this.#idLenght, this.#idTakeArrLenght);
-                  const intv = setInterval(() => {
-                    if (this.#curUseId !== undefined) {
-                      clearInterval(intv);
-                      console.log("done already");
-                      this.#curMemberId = this.#curUseId;
-                      this._uploadData(
-                        `accounts/${curDataLocal.teamCode}/team`,
-                        this.#curUseId,
-                        {
-                          name: inpMemberName.value,
-                          memberId: this.#curUseId,
-                          teamCode: curDataLocal.teamCode,
-                          password: inpPassword.value,
-                          salary: curDataLocal.salary,
-                          totalHoras: "",
-                          totalPay: "",
-                          level: "miembro", //assistant
-                          lastModified: "",
-                          lastModified: this._getTimeStamp(),
-                          memberCreatedTimeStamp: this._getTimeStamp(),
-                          writePermision: "true", //false
-                          punchInPermision: "true", //false
-                          extraHours: curDataLocal.extraHours, //false
-                          extraHoursRequiredPer:
-                            curDataLocal.extraHoursRequiredPer, //week
-                          extraHoursRequired: curDataLocal.extraHoursRequired,
-                          mode: curDataLocal.mode, //maquinaria
-                          totalTime: "",
-                          curWeekTotalTime: "",
-                          totalNormalTime: "",
-                          curWeekTotalNormalTime: "",
-                          totalExtraTime: "",
-                          curWeekTotalExtraTime: "",
-                          totalMaqTime: "",
-                          curWeekTotalMaqTime: "",
-                          totalNormalPay: "",
-                          curWeekTotalNormalPay: "",
-                          totalExtraPay: "",
-                          curWeekTotalExtraPay: "",
-                          totalMaqPay: "",
-                          curWeekTotalMaqPay: "",
-                          totalPay: "",
-                          curWeekTotalPay: "",
-                          curWeekId: "",
-                          writePermisionRequest: "done",
-                          writeTimePermisionEnd: this._getTimeStamp(),
-                          writeTimePermisionStart: this._getTimeStamp(),
-                          category: "Todos", // ...more., seperate mulitple caytegorry with "/"
-                        }
-                      );
-                      inpVerPasswordErrMess.style.display = "none";
 
-                      // TODO: function to continue creating an account ghoes here it waits till the id is available
-                      // this._displayMembers("sr22");
+                  const makeThisMember = async () => {
+                    const batch = writeBatch(db);
 
-                      inpPayPerHour.addEventListener("focus", () => {
-                        inpPayPerHour.value = "";
-                      });
+                    // Collection reference for the members
+                    const membersCollectionRef = collection(
+                      db,
+                      `accounts/${curDataLocal.teamCode}/team`
+                    );
 
-                      this._srGetStartedDispChoose("sr9", "sr8", "left");
-                      this._hideSpinner();
-                    } else {
-                      console.log("still not");
-                    }
-                  }, 1000);
+                    // Generate a new document reference with an auto-generated ID
+                    const memberDocRef = doc(membersCollectionRef);
+                    const memberId = memberDocRef.id; // Get the auto-generated ID
+                    this.#curMemberId = memberId;
+
+                    const curTimeStamp = this._getTimeStamp();
+
+                    // Set data for the member document including the auto-generated ID
+                    batch.set(memberDocRef, {
+                      name: inpMemberName.value,
+                      memberId: memberId, // Include the auto-generated ID
+                      teamCode: curDataLocal.teamCode,
+                      password: inpPassword.value,
+                      salary: curDataLocal.salary,
+                      totalHoras: "",
+                      totalPay: "",
+                      level: "miembro", //assistant
+                      lastModified: curTimeStamp,
+                      memberCreatedTimeStamp: curTimeStamp,
+                      writePermision: "true", //false
+                      punchInPermision: "true", //false
+                      extraHours: curDataLocal.extraHours, //false
+                      extraHoursRequiredPer: curDataLocal.extraHoursRequiredPer, //week
+                      extraHoursRequired: curDataLocal.extraHoursRequired,
+                      mode: curDataLocal.mode, //maquinaria
+                      totalTime: "",
+                      curWeekTotalTime: "",
+                      totalNormalTime: "",
+                      curWeekTotalNormalTime: "",
+                      totalExtraTime: "",
+                      curWeekTotalExtraTime: "",
+                      totalMaqTime: "",
+                      curWeekTotalMaqTime: "",
+                      totalNormalPay: "",
+                      curWeekTotalNormalPay: "",
+                      totalExtraPay: "",
+                      curWeekTotalExtraPay: "",
+                      totalMaqPay: "",
+                      curWeekTotalMaqPay: "",
+                      totalPay: "",
+                      curWeekTotalPay: "",
+                      curWeekId: "",
+                      writePermisionRequest: "done",
+                      writeTimePermisionEnd: curTimeStamp,
+                      writeTimePermisionStart: curTimeStamp,
+                      category: "Todos", // ...more., separate multiple category with "/"
+                    });
+
+                    // Document reference for the team
+                    const teamDocRef = doc(
+                      db,
+                      `accounts`,
+                      curDataLocal.teamCode
+                    );
+
+                    // Update data for the team document
+                    batch.update(teamDocRef, {
+                      numberOfMembers: increment(1),
+                    });
+
+                    // Commit the batch
+                    await batch.commit();
+                  };
+                  await makeThisMember();
+                  inpVerPasswordErrMess.style.display = "none";
+
+                  inpPayPerHour.addEventListener("focus", () => {
+                    inpPayPerHour.value = "";
+                  });
+
+                  this._srGetStartedDispChoose("sr9", "sr8", "left");
+                  this._hideSpinner();
                 } else {
                   console.error("no match passwords");
                   inpVerPasswordErrMess.style.display = "block";
@@ -5556,19 +5357,44 @@ class App {
       // Proceed with your function using the userInput if needed
 
       if (this.#curMemberInfo.password === password) {
-        deleteDoc(
-          doc(
+        const deleteMemberData = () => {
+          const batch = writeBatch(db);
+
+          // Document reference for the member to be deleted
+          const memberDocRef = doc(
             db,
             `accounts/${curDataLocal.teamCode}/team`,
             this.#curMemberInfo.memberId
-          )
-        );
-        this._displayMembers("sr16");
-        this._disdSuccessErrorMessage(
-          `${name} eliminado fue de tu equipo`,
-          "ex",
-          3000
-        );
+          );
+
+          // Add the delete operation to the batch
+          batch.delete(memberDocRef);
+
+          // Document reference for the team
+          const teamDocRef = doc(db, `accounts`, curDataLocal.teamCode);
+
+          // Add the update operation to the batch
+          batch.update(teamDocRef, {
+            numberOfMembers: increment(-1), // Decrement the number of members by 1
+          });
+
+          // Commit the batch
+          batch
+            .commit()
+            .then(() => {
+              this._displayMembers("sr16");
+              this._disdSuccessErrorMessage(
+                `${name} eliminado fue de tu equipo`,
+                "ex",
+                3000
+              );
+            })
+            .catch((error) => {
+              throw new Error(error);
+            });
+        };
+
+        deleteMemberData();
       } else {
         this._disdSuccessErrorMessage(`Contraseña incorecta`, "er", 3000);
       }
