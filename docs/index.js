@@ -103,6 +103,7 @@ const sr20AppAdmin = document.querySelector("#sr20-cho-app-admin");
 const sr20AppAdminP = document.querySelector("#sr20-cho-app-admin p");
 const sr20AppAdminNorm = document.querySelector("#sr20-cho-app-admin-norm");
 const sr23btnMenu = document.querySelector("#sr23-btn-menu");
+const footerVersion = document.querySelector(".footer-version");
 
 // <-- switches
 const sr9SwiHours = document.querySelector("#sr9-swi-write--hours");
@@ -531,8 +532,9 @@ class App {
   #idLenght = 16;
   #idTakeArrLenght = this.#alfaNumDitch.length - 1;
 
-  #appVersionNumber = "2.0.1";
-  #appVersionMessage = `Nos complace informarle que esta aplicación ahora admite el uso sin conexión. ¡Ya podrás guardar tus horas incluso cuando no tengas conexión a internet! Nuestras actualizaciones se instalan automáticamente en corto despues que sean disponibles.`;
+  #appVersionNumber = "2.0.3";
+  #appVersionMessage = `En esta versión, hemos realizado algunas correcciones. Hemos detectado un pequeño problema con nuestro generador automático de semanas y lo hemos solucionado. También hemos arreglado otros pequeños errores.`;
+  // #appVersionMessage = `Nos complace informarle que esta aplicación ahora admite el uso sin conexión. ¡Ya podrás guardar tus horas incluso cuando no tengas conexión a internet! Nuestras actualizaciones se instalan automáticamente en corto despues que sean disponibles.`;
 
   justOpenedApp = true;
   #daysArrForNewWeek = [
@@ -664,6 +666,9 @@ class App {
     this._registerMySw();
     this._init("sr1");
     this._setupCustomBackButtonBehavior();
+    this._monitorNetwork();
+    this._newVersionInstalledAlert();
+    this._setVersionInFooter();
     // this._tryMyFunction();
 
     // this._displayPrompt(
@@ -687,8 +692,11 @@ class App {
     // this._transactionsTry();
     // const rearranged = this._rearrangeWeekDays("martes");
     // console.log(rearranged);
-    this._monitorNetwork();
-    this._newVersionInstalledAlert();
+  }
+
+  _setVersionInFooter() {
+    const curVersion = `Version ${this.#appVersionNumber}`;
+    footerVersion.textContent = curVersion;
   }
 
   _newVersionInstalledAlert() {
@@ -2874,301 +2882,7 @@ class App {
     }
   }
 
-  // TODO: Auto week creator
-  _checkForNewWeek2(weekTimeStamp, weekStartDay) {
-    console.log(weekTimeStamp);
-    const getIndexByValue = (array, value) => {
-      for (var i = 0; i < array.length; i++) {
-        if (array[i] === value) {
-          console.log(i);
-          return i; // Return the index if value is found
-        }
-      }
-      return -1; // Return -1 if value is not found in the array
-    };
-    let weekTimeStampForUse;
-    let millisecondsToSubtract;
-
-    const weekDaySopossedToStart = getIndexByValue(
-      this.#weekDaysSp,
-      weekStartDay
-    );
-
-    console.log(weekStartDay);
-
-    const oneWeekInMilliseconds = 604800000;
-    const oneDayInMilliseconds = 86400000;
-
-    const dateNow = new Date();
-    // const hoursForNextWeek = dateNow.getHours();
-    // const minutesForNextWeek = dateNow.getMinutes();
-    // const secondsForNextWeek = dateNow.getSeconds();
-
-    const dateLastWeek = new Date(weekTimeStamp);
-    const weekDayLastWeek = dateLastWeek.getDay();
-
-    console.log(weekDayLastWeek);
-    console.log(weekDaySopossedToStart);
-
-    let numberForTimes = 1;
-
-    // TODO: here's trouble
-
-    console.log(weekDayLastWeek, weekDaySopossedToStart);
-    if (weekDayLastWeek >= weekDaySopossedToStart) {
-      numberForTimes = weekDaySopossedToStart - weekDayLastWeek;
-      weekTimeStampForUse =
-        weekTimeStamp - oneDayInMilliseconds * numberForTimes;
-      console.error("here");
-    } else if (weekDayLastWeek < weekDaySopossedToStart) {
-      const tillEndDays = 6 - weekDaySopossedToStart;
-      numberForTimes = weekDayLastWeek + tillEndDays;
-      weekTimeStampForUse =
-        weekTimeStamp - oneDayInMilliseconds * numberForTimes;
-    } else {
-      console.error("here");
-      weekTimeStampForUse = weekTimeStamp - oneWeekInMilliseconds;
-    }
-
-    const dateForNextWeek = new Date(weekTimeStampForUse);
-    const hoursForNextWeek = dateForNextWeek.getHours();
-    const minutesForNextWeek = dateForNextWeek.getMinutes();
-    const secondsForNextWeek = dateForNextWeek.getSeconds();
-
-    console.log(hoursForNextWeek);
-    console.log(minutesForNextWeek);
-    console.log(secondsForNextWeek);
-
-    const calculateMilliseconds = (hours, minutes, seconds) => {
-      return hours * 60 * 60 * 1000 + minutes * 60 * 1000 + seconds * 1000;
-    };
-    millisecondsToSubtract = calculateMilliseconds(
-      hoursForNextWeek,
-      minutesForNextWeek,
-      secondsForNextWeek
-    );
-
-    // TODO: NEW from GPT
-    // Calculate the timestamp of the start of the next week
-    const nextWeekTimeStamp =
-      weekTimeStampForUse + (oneWeekInMilliseconds - millisecondsToSubtract);
-
-    console.log(this._getTimeFromTimeStamp(weekTimeStampForUse));
-    console.log(this._getTimeFromTimeStamp(nextWeekTimeStamp));
-
-    console.log(oneWeekInMilliseconds - millisecondsToSubtract);
-
-    // Check if the current time is after the start of the next week
-    console.log(this._getTimeStamp());
-    console.log(nextWeekTimeStamp);
-    if (this._getTimeStamp() >= nextWeekTimeStamp) {
-      this._newWeek();
-    } else {
-      console.log("no new week needed");
-    }
-  }
-
-  _checkForNewWeek3(weekTimeStamp, weekStartDay) {
-    // Helper function to get the index of a value in an array
-    const getIndexByValue = (array, value) => {
-      for (let i = 0; i < array.length; i++) {
-        if (array[i] === value) {
-          return i;
-        }
-      }
-      return -1;
-    };
-
-    // Ensure weekStartDay is valid
-    // const this.#weekDaysSp = [
-    //   "Sunday",
-    //   "Monday",
-    //   "Tuesday",
-    //   "Wednesday",
-    //   "Thursday",
-    //   "Friday",
-    //   "Saturday",
-    // ];
-    if (!this.#weekDaysSp.includes(weekStartDay)) {
-      console.error(`Invalid week start day: ${weekStartDay}`);
-      return;
-    }
-
-    // Get the index of the user's chosen start day
-    const weekDaySopossedToStart = getIndexByValue(
-      this.#weekDaysSp,
-      weekStartDay
-    );
-
-    // Constants for time calculations
-    const oneWeekInMilliseconds = 604800000;
-    const oneDayInMilliseconds = 86400000;
-
-    // Get the day of the week for the last recorded timestamp
-    const dateLastWeek = new Date(weekTimeStamp);
-    const weekDayLastWeek = dateLastWeek.getDay();
-
-    // Calculate the number of days to subtract to get to the start of the current week
-    let daysDifference = weekDaySopossedToStart - weekDayLastWeek;
-    if (daysDifference <= 0) {
-      daysDifference += 7; // Accounts for crossing the week boundary
-    }
-
-    // Calculate the timestamp for the start of the current week
-    const currentWeekStart =
-      weekTimeStamp - oneDayInMilliseconds * daysDifference;
-
-    // Calculate the timestamp for the start of the NEXT week
-    const nextWeekTimeStamp = currentWeekStart + oneWeekInMilliseconds;
-
-    // Check if the current time is after the start of the next week
-    if (this._getTimeStamp() >= nextWeekTimeStamp) {
-      this._newWeek();
-    } else {
-      console.log("No new week needed yet.");
-    }
-  }
-
-  _checkForNewWeek4(weekTimeStamp, weekStartDay) {
-    // Helper function to get the index of a value in an array
-    const getIndexByValue = (array, value) => {
-      for (let i = 0; i < array.length; i++) {
-        if (array[i] === value) {
-          return i;
-        }
-      }
-      return -1;
-    };
-
-    // Get the index of the user's chosen start day
-    const weekDaySopossedToStart = getIndexByValue(
-      this.#weekDaysSp,
-      weekStartDay
-    );
-
-    // Constants for time calculations
-    const oneWeekInMilliseconds = 604800000;
-    const oneDayInMilliseconds = 86400000;
-
-    // Get the day of the week for the last recorded timestamp
-    const dateLastWeek = new Date(weekTimeStamp);
-    const weekDayLastWeek = dateLastWeek.getDay();
-
-    // Calculate the number of days to subtract to get to the start of the current week
-    let daysDifference = weekDaySopossedToStart - weekDayLastWeek;
-    if (daysDifference <= 0) {
-      daysDifference += 7; // Accounts for crossing the week boundary
-    }
-
-    // Calculate the timestamp for the start of the current week
-    const currentWeekStart =
-      weekTimeStamp - oneDayInMilliseconds * daysDifference;
-
-    // Calculate the timestamp for the start of the NEXT week
-    const nextWeekTimeStamp = currentWeekStart + oneWeekInMilliseconds;
-
-    // Check if the current time is after the start of the next week
-    if (this._getTimeStamp() >= nextWeekTimeStamp) {
-      this._newWeek();
-    } else {
-      console.log("no new week needed");
-    }
-  }
-
-  _checkForNewWee5(weekTimeStamp, weekStartDay) {
-    // Helper function to get the index of a value in an array
-    const getIndexByValue = (array, value) => {
-      for (let i = 0; i < array.length; i++) {
-        if (array[i] === value) {
-          return i;
-        }
-      }
-      return -1;
-    };
-
-    // Get the index of the user's chosen start day
-    const weekDaySopossedToStart = getIndexByValue(
-      this.#weekDaysSp,
-      weekStartDay
-    );
-
-    // Constants for time calculations
-    const oneWeekInMilliseconds = 604800000;
-    const oneDayInMilliseconds = 86400000;
-
-    // Get the day of the week for the last recorded timestamp
-    const dateLastWeek = new Date(weekTimeStamp);
-    const weekDayLastWeek = dateLastWeek.getDay();
-
-    // Calculate the number of days to subtract to get to the start of the current week
-    let daysDifference = weekDaySopossedToStart - weekDayLastWeek;
-    if (daysDifference <= 0) {
-      daysDifference += 7; // Accounts for crossing the week boundary
-    }
-
-    // Correctly calculate the timestamp for the start of the current week
-    // by using the weekDaySopossedToStart
-    const currentWeekStart = new Date(weekTimeStamp);
-    currentWeekStart.setDate(currentWeekStart.getDate() - daysDifference);
-
-    // Calculate the timestamp for the start of the NEXT week
-    const nextWeekTimeStamp =
-      currentWeekStart.getTime() + oneWeekInMilliseconds;
-
-    // Check if the current time is after the start of the next week
-    if (this._getTimeStamp() >= nextWeekTimeStamp) {
-      this._newWeek();
-    } else {
-      console.log("no new week needed");
-    }
-  }
-
-  _checkForNewWeek6(weekStartDay) {
-    // Helper function to get the index of a value in an array
-    const getIndexByValue = (array, value) => {
-      for (let i = 0; i < array.length; i++) {
-        if (array[i] === value) {
-          return i;
-        }
-      }
-      return -1;
-    };
-
-    // Get the index of the user's chosen start day
-    const weekDaySopossedToStart = getIndexByValue(
-      this.#weekDaysSp,
-      weekStartDay
-    );
-
-    // Constants for time calculations
-    const oneWeekInMilliseconds = 604800000;
-    const oneDayInMilliseconds = 86400000;
-
-    // Get the current date and time
-    const currentDate = new Date();
-    const currentDay = currentDate.getDay();
-
-    // Calculate the number of days to subtract to get to the start of the current week
-    let daysDifference = weekDaySopossedToStart - currentDay;
-    if (daysDifference <= 0) {
-      daysDifference += 7; // Accounts for crossing the week boundary
-    }
-
-    // Calculate the timestamp for the start of the current week
-    const currentWeekStart = new Date(currentDate);
-    currentWeekStart.setDate(currentWeekStart.getDate() - daysDifference);
-
-    // Calculate the timestamp for the start of the NEXT week
-    const nextWeekTimeStamp =
-      currentWeekStart.getTime() + oneWeekInMilliseconds;
-
-    // Check if the current time is after the start of the next week
-    if (currentDate.getTime() >= nextWeekTimeStamp) {
-      this._newWeek();
-    } else {
-      console.log("no new week needed");
-    }
-  }
+  // TODO: Auto week creator. ON TRIAL
 
   _checkForNewWeek(weekTimeStamp, weekStartDayIn) {
     let weekStartDay;
@@ -3194,6 +2908,23 @@ class App {
     // Get the current date
     const currentDate = new Date();
 
+    function getMillisecondsPassedToday() {
+      // Get the current date and time
+      const now = new Date();
+
+      // Create a new date object for the start of today (midnight)
+      const startOfDay = new Date(
+        now.getFullYear(),
+        now.getMonth(),
+        now.getDate()
+      );
+
+      // Calculate the difference in milliseconds
+      const millisecondsPassedToday = now - startOfDay;
+
+      return millisecondsPassedToday;
+    }
+
     // Get the day index of the weekStartDay
     const targetDay = weekStartDays.indexOf(weekStartDay.toLowerCase());
     if (targetDay === -1) {
@@ -3210,8 +2941,21 @@ class App {
     const nextWeekStartDate = new Date(lastWeekStartDate);
     nextWeekStartDate.setDate(nextWeekStartDate.getDate() + 7);
 
+    const nextWeekStartTimestamp = nextWeekStartDate.getTime();
+
+    const currentTimestamp = currentDate.getTime();
+    const nextWeekTimestamp =
+      nextWeekStartTimestamp - getMillisecondsPassedToday();
     // If the current date is after or equal to the next week start date, a new week should be created
-    if (currentDate >= nextWeekStartDate) {
+
+    console.log(currentDate, nextWeekStartDate);
+    console.log(currentTimestamp, nextWeekStartTimestamp);
+    console.log(currentTimestamp, nextWeekTimestamp);
+
+    // if (currentDate >= nextWeekStartDate) {
+    //   this._newWeek();
+    // }
+    if (currentTimestamp >= nextWeekTimestamp) {
       this._newWeek();
     }
   }
@@ -3259,7 +3003,7 @@ class App {
     }
   }
 
-  _getTimeFromTimeStamp(timestamp) {
+  _getTimeFromTimeStamp2(timestamp) {
     var daysOfWeek = [
       "Domingo",
       "Lunes",
@@ -3316,6 +3060,69 @@ class App {
       year +
       "," +
       " " +
+      formattedHours +
+      ":" +
+      formattedMinutes +
+      " " +
+      amPM;
+    return formattedDate;
+  }
+
+  _getTimeFromTimeStamp(timestamp) {
+    var daysOfWeek = [
+      "Domingo",
+      "Lunes",
+      "Martes",
+      "Miércoles",
+      "Jueves",
+      "Viernes",
+      "Sábado",
+    ];
+    var months = [
+      "Enero",
+      "Febrero",
+      "Marzo",
+      "Abril",
+      "Mayo",
+      "Junio",
+      "Julio",
+      "Agosto",
+      "Septiembre",
+      "Octubre",
+      "Noviembre",
+      "Diciembre",
+    ];
+
+    // Create a new Date object using the timestamp
+    var date = new Date(timestamp);
+
+    // Extract the day of the week, day, month, year, hours, and minutes
+    var dayOfWeek = daysOfWeek[date.getDay()];
+    var day = date.getDate();
+    var month = months[date.getMonth()];
+    var year = date.getFullYear();
+    var hours = date.getHours();
+    var minutes = date.getMinutes();
+
+    // Format hours (12-hour format) and add AM/PM indicator
+    var amPM = hours >= 12 ? "PM" : "AM";
+    hours = hours % 12;
+    hours = hours ? hours : 12; // Handle midnight (0 hours) as 12
+    var formattedHours = hours < 10 ? "0" + hours : hours;
+
+    // Format minutes
+    var formattedMinutes = minutes < 10 ? "0" + minutes : minutes;
+
+    // Format the date string
+    var formattedDate =
+      dayOfWeek +
+      ", " +
+      day +
+      " de " +
+      month +
+      " " +
+      year +
+      ", " +
       formattedHours +
       ":" +
       formattedMinutes +
@@ -4174,7 +3981,7 @@ class App {
       });
   }
 
-  async _displayMembers(srHide) {
+  async _displayMembers2(srHide) {
     sr7LoaderCon.style.display = "flex";
     this._hideSpinner();
     // this._displaySpinner("Espera... Estamos cargando tus trabajadores");
@@ -4456,6 +4263,305 @@ class App {
           console.log();
         }
       }
+    } catch (err) {
+      console.error(err);
+    } finally {
+      this._hideSpinner();
+      this.justOpenedApp = false;
+      sr7LoaderCon.style.display = "none";
+    }
+  }
+
+  async _displayMembers(srHide) {
+    sr7LoaderCon.style.display = "flex";
+    this._hideSpinner();
+    // this._displaySpinner("Espera... Estamos cargando tus trabajadores");
+    this._srGetStartedDispChoose("sr7", srHide, "left");
+    let curDataLocal;
+    const conMemberDisplay = document.querySelector("#sr7-mem-con");
+    this.#curData = this._getFromLocal("curData");
+
+    if (this.#curData.level === this.#adminLevel) {
+      console.log("top admin here");
+      curDataLocal = this.#curAccountData;
+    } else {
+      curDataLocal = this.#curData;
+    }
+    if (curDataLocal.pro === "pro") {
+      btnsr7GoPro.style.display = "none";
+    }
+
+    try {
+      const q = query(collection(db, `accounts/${curDataLocal.teamCode}/team`));
+      const docSnap = await getDocs(q);
+      this._deleteAllChildren("sr7-mem-con");
+      sr7.dataset.when = this._getTimeStamp();
+
+      if (docSnap.empty) {
+        const HTML = `<div id="no-member-message-con">
+          <p id="no-member-message-header">Tus miembros aparecerán aqui</p>
+          <p id="no-member-message-text">
+          Aún no tienes miembros en tu equipo. Empieza con <br />
+          <span data-linkbtn="new-member">Agregar nuevo trabajador</span>.
+          </p>
+          </div>`;
+        conMemberDisplay.insertAdjacentHTML("beforeend", HTML);
+      } else {
+        const HTML = `<div id="new-member-message-con">
+        <p id="new-member-message-text">
+        Usa el botón  <br /> <span data-linkbtn="new-member">Agregar nuevo trabajador</span>  <br /> para añadir miembros a tu equipo
+        </p>
+        </div>`;
+        conMemberDisplay.insertAdjacentHTML("beforeend", HTML);
+      }
+
+      if (this.#curData.level === this.#adminLevel) {
+        this._displayTeamImg(this.#curAccountData.teamImg);
+        headerTeamName.textContent = this.#curAccountData.teamName;
+      } else {
+        this._displayTeamImg(this.#curData.teamImg);
+        headerTeamName.textContent = this.#curData.teamName;
+      }
+
+      let randomMemArr = [];
+      docSnap.forEach((doc) => {
+        randomMemArr.push(doc.data());
+      });
+
+      let orgMemArr = randomMemArr.sort(
+        (a, b) => a.lastModified - b.lastModified
+      );
+
+      let markup = ``;
+      const renderMarkupMembers = function () {
+        conMemberDisplay.insertAdjacentHTML("afterBegin", markup);
+      };
+
+      for (let val of orgMemArr) {
+        let btnPermision = ``;
+        let salary;
+        let totalPay;
+        let totalTime;
+
+        if (val.writePermisionRequest === "pending") {
+          btnPermision = `          
+          <div class="sr11-rePer-con">
+          <p class="sr11-rePer-con-text">
+            ${val.name} pide permiso para hacer cambios en sus horas. ¿Que deseas hacer?
+          </p>
+          <div class="sr11-rePer-btn-con">
+            <button
+              class="sr11-btn-deny"
+              data-where="permision-deny"
+              data-memberId="${val.memberId}"
+            >
+              Negar
+            </button>
+            <button
+              class="sr11-btn-grant"
+              data-where="permision-grant"
+              data-memberId="${val.memberId}"
+            >
+              Conceder por 5 min
+            </button>
+          </div>
+        </div>`;
+        }
+
+        const dispNow = () => {
+          markup += `
+          <div
+          data-where="open"
+          data-memberId="${val.memberId}"
+          id="sr7-mem-con-2"
+          class="member-con-2"
+        >
+          <div
+            data-where="open"
+            data-memberId="${val.memberId}"
+            id="sr7-mem-info-con"
+            class="member-info-con"
+          >
+            <div
+              data-where="open"
+              data-memberId="${val.memberId}"
+              id="sr7-mem-info-con-2"
+              class="member-info-con-2"
+            >
+              <p
+                data-where="open"
+                data-memberId="${val.memberId}"
+                id="sr7-mem-name"
+                class="member-name"
+              >
+                ${val.name}
+              </p>
+    
+              <div
+                data-where="open"
+                data-memberId="${val.memberId}"
+                id="sr7-mem-info-con-3"
+                class="member-info-con-3"
+              >
+                <p
+                  data-where="open"
+                  data-memberId="${val.memberId}"
+                  id="sr7-mem-level"
+                  class="member-level"
+                >
+                  ${val.level}
+                </p>
+              </div>
+            </div>
+    
+            <button
+              class="sr23-btn-vedit"
+              data-where="info"
+              id="sr7-btn-meminfo"
+              class="btn-member-info"
+              data-memberId="${val.memberId}"
+            >
+              Info
+            </button>
+          </div>
+    
+          <div
+            data-where="open"
+            data-memberId="${val.memberId}"
+            id="sr7-mem-week-data-con"
+            class="member-week-data-con"
+          >
+            <div
+              data-where="open"
+              data-memberId="${val.memberId}"
+              id="sr7-mem-week-data-con-2"
+              class="member-week-data-con-2"
+            >
+              <p
+                data-where="open"
+                data-memberId="${val.memberId}"
+                id="sr7-mem-week-number"
+                class="member-week-number"
+              >
+                Información de la última semana
+              </p>
+            </div>
+            <div
+              data-where="open"
+              data-memberId="${val.memberId}"
+              id="sr7-mem-week-data-con-3"
+              class="member-week-data-con-3"
+            >
+              <div
+                data-where="open"
+                data-memberId="${val.memberId}"
+                id="sr7-mem-data-time"
+                class="member-data-time"
+              >
+                <p
+                  data-where="open"
+                  data-memberId="${val.memberId}"
+                  id="sr7-mem-data-time-text"
+                  class="member-data-time-text"
+                >
+                  Horas
+                </p>
+                <p
+                  data-where="open"
+                  data-memberId="${val.memberId}"
+                  id="sr7-mem-data-time-time"
+                  class="member-data-time-time"
+                >
+                  ${totalTime}
+                </p>
+              </div>
+    
+              <div
+                data-where="open"
+                data-memberId="${val.memberId}"
+                id="sr7-mem-data-pay"
+                class="member-data-pay"
+              >
+                <p
+                  data-where="open"
+                  data-memberId="${val.memberId}"
+                  id="sr7-mem-data-pay-text"
+                  class="member-data-pay-text"
+                >
+                  Salario
+                </p>
+                <p
+                  data
+                  -where="open"
+                  data-memberId="${val.memberId}"
+                  id="sr7-mem-data-pay-pay"
+                  class="member-data-pay-pay"
+                >
+                  ${salary}
+                </p>
+              </div>
+    
+              <div
+                data-where="open"
+                data-memberId="${val.memberId}"
+                id="sr7-mem-data-total-pay"
+                class="member-data-total-pay"
+              >
+                <p
+                  data-where="open"
+                  data-memberId="${val.memberId}"
+                  id="sr7-mem-data-total-pay-text"
+                  class="member-data-total-pay-text"
+                >
+                  Pago
+                </p>
+                <p
+                  data-where="open"
+                  data-memberId="${val.memberId}"
+                  id="sr7-mem-data-total-pay-pay"
+                  class="member-data-total-pay-pay"
+                >
+                  ${totalPay}
+                </p>
+              </div>
+            </div>
+          </div>
+          ${btnPermision}
+        </div>
+          `;
+          //   conMemberDisplay.insertAdjacentHTML("afterBegin", HTML);
+        };
+
+        const q = query(
+          collection(db, `accounts/${curDataLocal.teamCode}/weeks`),
+          where("weekId", "==", val.curWeekId)
+        );
+        const weekDocSnap = await getDocs(q);
+        if (this.#curData.pro === "false") {
+          salary = "$ --";
+          totalPay = "$ ----";
+          totalTime = "-:--";
+          dispNow();
+        } else {
+          if (!weekDocSnap.empty) {
+            weekDocSnap.forEach((doc) => {
+              const val2 = doc.data();
+              salary = `$ ${val2.salary}`;
+              totalPay = val2.totalPay === "" ? "$ 0000" : `$ ${val2.totalPay}`;
+              totalTime = val2.totalTime === "" ? "0:00" : val2.totalTime;
+            });
+          } else {
+            salary = "$ 00";
+            totalPay = "$ 0000";
+            totalTime = "0:00";
+          }
+          console.log("time");
+          dispNow();
+          console.log();
+        }
+      }
+      renderMarkupMembers();
+      console.log("done");
     } catch (err) {
       console.error(err);
     } finally {
