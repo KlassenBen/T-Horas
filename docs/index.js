@@ -541,7 +541,7 @@ class App {
   #idLenght = 16;
   #idTakeArrLenght = this.#alfaNumDitch.length - 1;
 
-  #appVersionNumber = "2.0.4";
+  #appVersionNumber = "2.0.5";
   #appVersionMessage = `Estamos trabajando para mejorar tu experiencia. Esta actualización incluye corrección de errores. Pedimos disculpas por las actualizaciones frecuentes.`;
   // #appVersionMessage = `Nos complace informarle que esta aplicación ahora admite el uso sin conexión. ¡Ya podrás guardar tus horas incluso cuando no tengas conexión a internet! Nuestras actualizaciones se instalan automáticamente en corto despues que sean disponibles.`;
 
