@@ -4273,32 +4273,17 @@ p {
   line-height: normal;
 }
 
-/* #error-success-message {
-  width: 300px;
-  position: absolute;
-  top: -200px;
-  left: auto;
-  transition: 500ms;
-  display: flex;
-  justify-content: center;
-  align-items: center;
-} */
-
-/* #error-success-message {
-  width: 300px;
-  position: absolute;
-  top: -200px;
-  left: 50%;
-  transform: translateX(-50%);
-  transition: 500ms;
-  display: flex;
-  justify-content: center;
-  align-items: center;
-  background-color: rgba(0, 0, 0, 0.7);
-  color: white;
-  padding: 10px;
-  border-radius: 5px;
-} */
+#error-success-action-text {
+  color: rgb(54, 53, 53);
+  text-align: center;
+  font-family: Inter;
+  font-size: 12px;
+  font-style: normal;
+  font-weight: 500;
+  line-height: normal;
+  align-self: stretch;
+  letter-spacing: 0.2px;
+}
 
 #error-success-message {
   width: 300px;
@@ -4309,7 +4294,11 @@ p {
   transition: 500ms;
   display: flex;
   justify-content: center;
-  align-items: center;
+  /* align-items: center; */
+
+  flex-direction: column;
+  align-items: flex-start;
+  gap: 12px;
 }
 .sr12-contbxs-con {
   display: flex;

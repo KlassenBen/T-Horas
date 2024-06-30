@@ -339,6 +339,12 @@ const sr26btnSetAdminLevel = document.querySelector(
 const sr27btnAskWritePermisio = document.querySelector(
   "#sr27-btn-ask-permision"
 );
+const errorAndSuccsessMessageContainer = document.querySelector(
+  "#error-success-message"
+);
+const errorAndSuccsessMessageContainerActionText = document.querySelector(
+  "#error-success-action-text"
+);
 // const srtInstallApp = document.querySelector("#sr7-btn-install-app");
 const sr4ResendOTP = document.querySelector("#sr4-btn-resend-code");
 const sr11ChangeSalary = document.querySelector("#sr11-btn-change-salary");
@@ -517,6 +523,7 @@ class App {
   #appExplainVideos = [];
   clockInterval;
   moveLoaderInterval;
+  timeOutForErrSucMess;
   // moveLoaderInterval;
 
   #der = {
@@ -2190,18 +2197,17 @@ class App {
   // <--------- End Email -----------> //
 
   _disdSuccessErrorMessage(text, se, msTime) {
-    const mesCon = document.querySelector("#error-success-message");
+    const mesCon = errorAndSuccsessMessageContainer;
     const mesText = document.querySelector("#error-success-message-text");
+    const actionText = errorAndSuccsessMessageContainerActionText;
 
-    const disp = function () {
+    const disp = () => {
+      mesCon.dataset.action = "stop-it";
       mesText.textContent = text;
-      // mesCon.style.transform = `translateY(300px)`;
-      // mesCon.style.transform = `translateX(-50%)`;
+      actionText.textContent = "Toca para sostener";
       mesCon.style.transform = `translate(-50%, 300px)`;
 
-      setTimeout(() => {
-        // mesCon.style.transform = `translateY(0px)`;
-        // mesCon.style.transform = `translateX(-50%)`;
+      this.timeOutForErrSucMess = setTimeout(() => {
         mesCon.style.transform = `translate(-50%, 0px)`;
       }, msTime);
     };
@@ -2220,7 +2226,90 @@ class App {
       mesText.classList.add("error-mess-text");
       disp();
     }
+
+    // mesCon.addEventListener("click", function (event) {
+    //   // Check if the click happened within mesCon or its children
+    //   if (event.target.closest("#error-success-message")) {
+    //     console.log(mesCon.dataset.action);
+
+    //     // Toggle based on current dataset action
+    //     if (mesCon.dataset.action === "stop-it") {
+    //       clearTimeout(timeOutForErrSucMess);
+    //       actionText.textContent = "Toca para ocultar";
+    //       mesCon.dataset.action = "hide-it";
+    //     } else {
+    //       mesCon.style.transform = `translate(-50%, 0px)`;
+    //       mesCon.dataset.action = "stop-it";
+    //     }
+    //   }
+    // });
   }
+
+  //
+
+  //
+
+  _disdSuccessErrorMessage2(text, se, msTime) {
+    const mesCon = document.querySelector("#error-success-message");
+    const mesText = document.querySelector("#error-success-message-text");
+    const actionText = document.querySelector("#error-success-action-text");
+    let timeOutForErrSucMess;
+
+    // Function to display message and toggle actions
+    const disp = () => {
+      // Set initial state
+      mesCon.dataset.action = "stop-it";
+      mesText.textContent = text;
+      actionText.textContent = "Toca para sostener";
+      mesCon.style.transform = `translate(-50%, 300px)`; // Initial position
+
+      // Set timeout to hide message after msTime
+      timeOutForErrSucMess = setTimeout(() => {
+        mesCon.style.transform = `translate(-50%, 0px)`;
+      }, msTime);
+    };
+
+    // Event listener for click on mesCon or its children
+    mesCon.addEventListener("click", function (event) {
+      if (event.target.closest("#error-success-message")) {
+        // Toggle actions based on current dataset.action
+        if (mesCon.dataset.action === "stop-it") {
+          // Perform actions for "stop-it"
+          clearTimeout(timeOutForErrSucMess); // Clear previous timeout if exists
+          mesCon.style.transform = `translate(-50%, 0px)`;
+          mesCon.dataset.action = "hide-it";
+          actionText.textContent = "Toca para ocultar";
+        } else if (mesCon.dataset.action === "hide-it") {
+          // Perform actions for "hide-it"
+          mesCon.style.transform = `translate(-50%, 300px)`;
+          timeOutForErrSucMess = setTimeout(() => {
+            mesCon.style.transform = `translate(-50%, 0px)`;
+          }, msTime);
+          mesCon.dataset.action = "stop-it";
+          actionText.textContent = "Toca para sostener";
+        }
+      }
+    });
+
+    // Initialize based on 'se' parameter (for 'ex' or 'er')
+    if (se === "ex") {
+      mesCon.classList.remove("error-mess");
+      mesText.classList.remove("error-mess-text");
+      mesCon.classList.add("success-mess");
+      mesText.classList.add("success-mess-text");
+      disp(); // Display success message
+    } else if (se === "er") {
+      mesCon.classList.remove("success-mess");
+      mesText.classList.remove("success-mess-text");
+      mesCon.classList.add("error-mess");
+      mesText.classList.add("error-mess-text");
+      disp(); // Display error message
+    }
+  }
+
+  //
+
+  //
 
   // TODO: srHide only works if = to sr active
   _srGetStartedDispChoose(srDisp, srHide, whereTo) {
@@ -7467,6 +7556,23 @@ class App {
           menu.classList.add("hidden");
         }
       });
+    });
+
+    errorAndSuccsessMessageContainer.addEventListener("click", (event) => {
+      // Check if the click happened within mesCon or its children
+      if (event.target.closest("#error-success-message")) {
+        console.log(errorAndSuccsessMessageContainer.dataset.action);
+        // Toggle based on current dataset action
+        if (errorAndSuccsessMessageContainer.dataset.action === "stop-it") {
+          clearTimeout(this.timeOutForErrSucMess);
+          errorAndSuccsessMessageContainerActionText.textContent =
+            "Toca para ocultar";
+          errorAndSuccsessMessageContainer.dataset.action = "hide-it";
+        } else {
+          errorAndSuccsessMessageContainer.style.transform = `translate(-50%, 0px)`;
+          errorAndSuccsessMessageContainer.dataset.action = "stop-it";
+        }
+      }
     });
   }
 }
