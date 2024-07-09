@@ -541,8 +541,8 @@ class App {
   #idLenght = 16;
   #idTakeArrLenght = this.#alfaNumDitch.length - 1;
 
-  #appVersionNumber = "2.0.5";
-  #appVersionMessage = `Estamos trabajando para mejorar tu experiencia. Esta actualización incluye corrección de errores. Pedimos disculpas por las actualizaciones frecuentes.`;
+  #appVersionNumber = "2.0.6";
+  #appVersionMessage = `Estamos trabajando para mejorar tu experiencia. Esta actualización incluye corrección de errores. ¡Sigue disfrutando tu app!`;
   // #appVersionMessage = `Nos complace informarle que esta aplicación ahora admite el uso sin conexión. ¡Ya podrás guardar tus horas incluso cuando no tengas conexión a internet! Nuestras actualizaciones se instalan automáticamente en corto despues que sean disponibles.`;
 
   justOpenedApp = true;
@@ -1199,6 +1199,23 @@ class App {
     };
   }
 
+  _userVersionUpdate(level) {
+    if (level === "admin") {
+      this._updateData("accounts", this.#curData.teamCode, {
+        curAppVersion: this.#appVersionNumber,
+      });
+    }
+    if (level === "member") {
+      this._updateData(
+        `accounts/${this.#curData.teamCode}/team`,
+        this.#curData.memberId,
+        {
+          curAppVersion: this.#appVersionNumber,
+        }
+      );
+    }
+  }
+
   async _init(srHide) {
     // sr1.style.display = "flex";
     this._displaySpinner();
@@ -1241,7 +1258,6 @@ class App {
       };
       const member = async () => {
         if (CLevel === "miembro") {
-          console.log("taken");
           const q = query(
             collection(db, `accounts/${CTeamCode}/team`),
             where("memberId", "==", CMemberID)
@@ -1255,12 +1271,10 @@ class App {
               CLevel = "admin";
               await admin(); // Waiting for admin to finish before proceeding
             } else {
-              console.log("taken");
               this._setCookie("level", val.level, 15552000000);
               this._setCookie("memberId", val.memberId, 15552000000);
               this._setCookie("teamCode", val.teamCode, 15552000000);
               this._saveToLocal("curData", val);
-              console.log(val);
               this._setLastSeen(`accounts`, val.teamCode);
             }
           });
@@ -1288,8 +1302,6 @@ class App {
     this.#curData = this._getFromLocal("curData");
     this._srGetStartedDispChoose("sr1", srHide, "left");
 
-    console.log("Your App is initializing");
-
     console.log(this.#cTeamCode, this.#cLevel, this.#cMemberId);
 
     this.#curData = this._getFromLocal("curData");
@@ -1297,10 +1309,8 @@ class App {
     // setTimeout(() => {
     if (this.#curData !== undefined) {
       // TODO: if user is logedIn, all validations come under here
-      console.log("Your App has initialized");
 
       if (CLevel === "admin") {
-        console.log("this one was called");
         this._onSnapshot("accounts", this.#curData.teamCode);
         if (this.#curData.teamName.length < 1) {
           this._srGetStartedDispChoose("sr5", "sr1", "right");
@@ -1311,6 +1321,7 @@ class App {
           btnBackTbSr11.style.display = "flex";
           this._onSnapshotCollectoion();
         }
+        this._userVersionUpdate("admin");
       } else if (CLevel === "asistente") {
         // TODO: FOR NOW THE SAME AS ADMIN
         this._onSnapshot("accounts", this.#curData.teamCode);
@@ -1319,8 +1330,8 @@ class App {
         btnBackTbSr11.style.display = "flex";
         this._onSnapshotCollectoion();
       } else if (CLevel === "miembro") {
-        console.log("member now");
         this._displayMemberOnly("sr1");
+        this._userVersionUpdate("member");
       } else {
         const q = query(
           collection(db, "appSettings"),
@@ -1343,6 +1354,7 @@ class App {
             }
           });
         });
+        this._userVersionUpdate("admin");
       }
 
       this._checkForRating();
@@ -3016,6 +3028,24 @@ class App {
 
       return millisecondsPassedToday;
     }
+    function getMillisecondsPassedDayCreated(timestamp) {
+      // Create a date object from the provided timestamp
+      const date = new Date(timestamp);
+
+      // Create a new date object for the start of the day (midnight) of the provided timestamp
+      const startOfDay = new Date(
+        date.getFullYear(),
+        date.getMonth(),
+        date.getDate()
+      );
+
+      // Calculate the difference in milliseconds
+      const millisecondsPassedThatDay = date - startOfDay;
+
+      return millisecondsPassedThatDay;
+    }
+
+    console.log(getMillisecondsPassedDayCreated(weekTimeStamp));
 
     // Get the day index of the weekStartDay
     const targetDay = weekStartDays.indexOf(weekStartDay.toLowerCase());
@@ -3037,7 +3067,7 @@ class App {
 
     const currentTimestamp = currentDate.getTime();
     const nextWeekTimestamp =
-      nextWeekStartTimestamp - getMillisecondsPassedToday();
+      nextWeekStartTimestamp - getMillisecondsPassedDayCreated(weekTimeStamp);
     // If the current date is after or equal to the next week start date, a new week should be created
 
     console.log(currentDate, nextWeekStartDate);
@@ -3480,7 +3510,6 @@ class App {
       };
 
       const newWeekChecker = async () => {
-        console.log("here now");
         if (this.#curMemberInfo.curWeekId) {
           if (load === true) {
             this.#curWeekArrayOrg = [];
@@ -3488,8 +3517,6 @@ class App {
             weekForUse = await searchWeek();
             console.log(weekForUse);
             lastWeekLocal = true;
-            console.log("here now");
-            console.log(lastWeekLocal);
 
             return new Promise((resolve) => {
               resolve(
@@ -3502,12 +3529,8 @@ class App {
           } else {
             weekForUse = [week];
             lastWeekLocal = false;
-            console.log("here now");
-            console.log(lastWeekLocal);
           }
         } else {
-          console.log("here now");
-          console.log(lastWeekLocal);
           conditionStopAll = true;
           this._newWeek();
           return Promise.resolve();
@@ -3525,13 +3548,20 @@ class App {
       logHours(weekForUse[0].days);
       sr11TimeSheetName.textContent = this.#curMemberInfo.name;
 
-      if (this.#curMemberInfo.salary !== weekForUse[0].salary) {
+      console.error(lastWeekLocal);
+
+      if (
+        this.#curMemberInfo.salary !== weekForUse[0].salary &&
+        lastWeekLocal === true
+      ) {
+        console.log("just what i thoguht changed");
         if (this.#curData.pro !== "false") {
           sr11WeekTimeTotalTime.textContent = weekForUse[0].totalTime;
           sr11WeekPayTotal.textContent = `$ ${this._calculatePay(
             this.#curMemberInfo.salary,
             weekForUse[0].totalTime
           )}`;
+          console.log("just what i thoguht");
         } else {
           sr11WeekTimeTotalTime.textContent = "-:--";
           sr11WeekPayTotal.textContent = "$ ----";
@@ -3550,6 +3580,7 @@ class App {
           }
         );
       } else {
+        console.log("just what i thoguht not changed");
         if (this.#curData.pro !== "false") {
           sr11WeekTimeTotalTime.textContent = weekForUse[0].totalTime;
           sr11WeekPayTotal.textContent = `$ ${weekForUse[0].totalPay}`;
@@ -3559,6 +3590,7 @@ class App {
         }
 
         sr11WeekPayPerHour.textContent = `$ ${weekForUse[0].salary}`;
+        console.log(weekForUse[0].salary);
       }
 
       clearInterval(this.clockInterval);
