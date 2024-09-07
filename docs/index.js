@@ -31,7 +31,7 @@ import {
   uploadBytes,
 } from "https://www.gstatic.com/firebasejs/10.11.0/firebase-storage.js";
 
-import Email from "../docs/modules/email.js";
+// import Email from "../docs/modules/email.js";
 //
 
 //
@@ -542,7 +542,7 @@ class App {
   #idLenght = 16;
   #idTakeArrLenght = this.#alfaNumDitch.length - 1;
 
-  #appVersionNumber = "2.0.8";
+  #appVersionNumber = "2.0.9";
   #appVersionMessage = `Estamos trabajando para mejorar tu experiencia. Esta actualización incluye corrección de error. Próximamente tendremos nuevas funciones listas para ti. ¡Sigue disfrutando tu app!`;
   // #appVersionMessage = `Nos complace informarle que esta aplicación ahora admite el uso sin conexión. ¡Ya podrás guardar tus horas incluso cuando no tengas conexión a internet! Nuestras actualizaciones se instalan automáticamente en corto despues que sean disponibles.`;
 
@@ -4568,16 +4568,15 @@ class App {
       //   }. Team code: ${this.#curData.teamCode}`
       // );
 
-
       // TODO get the email fixed for creating an account
-      Email._sendEmail(
-        "thorastrack@gmail.com",
-        "thorastrack@gmail.com",
-        "Admin",
-        `A new week was created for ${this.#curMemberInfo.name}, in the team: ${
-          this.#curData.teamName
-        }. (Team code: ${this.#curData.teamCode}), by ${this.#curData.email}.`
-      );
+      // Email._sendEmail(
+      //   "thorastrack@gmail.com",
+      //   "thorastrack@gmail.com",
+      //   "Admin",
+      //   `A new week was created for ${this.#curMemberInfo.name}, in the team: ${
+      //     this.#curData.teamName
+      //   }. (Team code: ${this.#curData.teamCode}), by ${this.#curData.email}.`
+      // );
 
       sr17.classList.remove("sr");
       sr17.classList.add("sr-none");
@@ -4611,16 +4610,16 @@ class App {
         if (millisecondsBetweenLastWeekandNow > 300000) {
           newWeekPermited = true;
         } else {
-          Email._sendEmail(
-            "thorastrack@gmail.com",
-            "thorastrack@gmail.com",
-            "Admin",
-            `${this.#curMemberInfo.name}, (${
-              this.#curMemberInfo.memberId
-            }), in team: ${
-              this.#curMemberInfo.teamCode
-            } has been guarded against frequent auto-week-creation.`
-          );
+          // Email._sendEmail(
+          //   "thorastrack@gmail.com",
+          //   "thorastrack@gmail.com",
+          //   "Admin",
+          //   `${this.#curMemberInfo.name}, (${
+          //     this.#curMemberInfo.memberId
+          //   }), in team: ${
+          //     this.#curMemberInfo.teamCode
+          //   } has been guarded against frequent auto-week-creation.`
+          // );
           this._displayAlert(
             "⚠️ Mesaje de Error: NW624 ⚠️",
             "Este mensaje solo es para rastrear un error que ha aparecido algunas veces. No se preocupe. Ya hemos implementado una solucion para guardar encontra de este error. Solo le pedimos que tomas una captura de pantalla si le aparece este mesaje, y nos lo mandas. Asi podemos estar informados."

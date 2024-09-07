@@ -63,7 +63,7 @@
 //   );
 // });
 
-const cacheName = "thoras-v2.0.8";
+const cacheName = "thoras-v2.0.9";
 const staticAssets = [
   "./index.html",
   "./index.css",
