@@ -542,7 +542,7 @@ class App {
   #idLenght = 16;
   #idTakeArrLenght = this.#alfaNumDitch.length - 1;
 
-  #appVersionNumber = "2.0.7";
+  #appVersionNumber = "2.0.8";
   #appVersionMessage = `Estamos trabajando para mejorar tu experiencia. Esta actualización incluye corrección de error. Próximamente tendremos nuevas funciones listas para ti. ¡Sigue disfrutando tu app!`;
   // #appVersionMessage = `Nos complace informarle que esta aplicación ahora admite el uso sin conexión. ¡Ya podrás guardar tus horas incluso cuando no tengas conexión a internet! Nuestras actualizaciones se instalan automáticamente en corto despues que sean disponibles.`;
 
@@ -4559,14 +4559,26 @@ class App {
       this.#newWeekManualyCreated = true;
       this._newWeek();
 
-      this._sendEmailNormal(
+      // this._sendEmailNormal(
+      //   "thorastrack@gmail.com",
+      //   "thorastrack@gmail.com",
+      //   "THoras Tracker: New Week",
+      //   `A new week was created by ${this.#curData.email}. Team name: ${
+      //     this.#curData.teamName
+      //   }. Team code: ${this.#curData.teamCode}`
+      // );
+
+
+      // TODO get the email fixed for creating an account
+      Email._sendEmail(
         "thorastrack@gmail.com",
         "thorastrack@gmail.com",
-        "THoras Tracker: New Week",
-        `A new week was created by ${this.#curData.email}. Team name: ${
+        "Admin",
+        `A new week was created for ${this.#curMemberInfo.name}, in the team: ${
           this.#curData.teamName
-        }. Team code: ${this.#curData.teamCode}`
+        }. (Team code: ${this.#curData.teamCode}), by ${this.#curData.email}.`
       );
+
       sr17.classList.remove("sr");
       sr17.classList.add("sr-none");
       // Proceed with your function using the userInput if needed
