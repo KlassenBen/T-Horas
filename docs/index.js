@@ -31,6 +31,7 @@ import {
   uploadBytes,
 } from "https://www.gstatic.com/firebasejs/10.11.0/firebase-storage.js";
 
+import Email from "../docs/modules/email.js";
 //
 
 //
@@ -541,8 +542,8 @@ class App {
   #idLenght = 16;
   #idTakeArrLenght = this.#alfaNumDitch.length - 1;
 
-  #appVersionNumber = "2.0.6";
-  #appVersionMessage = `Estamos trabajando para mejorar tu experiencia. Esta actualización incluye corrección de errores. ¡Sigue disfrutando tu app!`;
+  #appVersionNumber = "2.0.7";
+  #appVersionMessage = `Estamos trabajando para mejorar tu experiencia. Esta actualización incluye corrección de error. Próximamente tendremos nuevas funciones listas para ti. ¡Sigue disfrutando tu app!`;
   // #appVersionMessage = `Nos complace informarle que esta aplicación ahora admite el uso sin conexión. ¡Ya podrás guardar tus horas incluso cuando no tengas conexión a internet! Nuestras actualizaciones se instalan automáticamente en corto despues que sean disponibles.`;
 
   justOpenedApp = true;
@@ -670,6 +671,9 @@ class App {
 
   #previousScreen;
   #currentScreen;
+  #newWeekManualyCreated;
+  #curWeekTimeStampForAproveNewWeek;
+  #lastWeekForAproveNewWeek;
 
   constructor() {
     this._events();
@@ -679,6 +683,13 @@ class App {
     this._monitorNetwork();
     this._newVersionInstalledAlert();
     this._setVersionInFooter();
+    // Email._sendEmail(
+    //   "benklassen19@icloud.com",
+    //   "thorastrack@gmail.com",
+    //   "Bernardo",
+    //   "Here's nothing for you"
+    // );
+    // this._newWeekAfterSeconds(10000);
     // this._tryMyFunction();
 
     // this._displayPrompt(
@@ -702,6 +713,11 @@ class App {
     // this._transactionsTry();
     // const rearranged = this._rearrangeWeekDays("martes");
     // console.log(rearranged);
+  }
+  _newWeekAfterSeconds(seconds) {
+    setTimeout(() => {
+      this._newWeek();
+    }, seconds);
   }
 
   _setVersionInFooter() {
@@ -3494,6 +3510,7 @@ class App {
       };
 
       const searchWeek = async () => {
+        console.log(this.#curMemberInfo.memberId);
         const q = query(
           collection(db, `accounts/${this.#curMemberInfo.teamCode}/weeks`),
           where("weekId", "==", this.#curMemberInfo.curWeekId)
@@ -3505,6 +3522,7 @@ class App {
         docSnap.forEach((doc) => {
           data.push(doc.data());
         });
+        this.#lastWeekForAproveNewWeek = data[0];
         console.log(data);
         return data;
       };
@@ -3516,6 +3534,8 @@ class App {
             this._weekSelectBtnDimmer("ahead");
             weekForUse = await searchWeek();
             console.log(weekForUse);
+            this.#curWeekTimeStampForAproveNewWeek =
+              weekForUse.weekMadeTimeStamp;
             lastWeekLocal = true;
 
             return new Promise((resolve) => {
@@ -4536,6 +4556,7 @@ class App {
         "Crear una nueva semana solo debería usarse si por alguna razón nuestro creador automático de nuevas semanas no te proporcionó una nueva semana."
       );
       console.log("User input:", userInput);
+      this.#newWeekManualyCreated = true;
       this._newWeek();
 
       this._sendEmailNormal(
@@ -4560,6 +4581,44 @@ class App {
   }
 
   async _newWeek(curid) {
+    console.log("called");
+    let newWeekPermited = false;
+    const newWeekGaurd = () => {
+      this.#newWeekManualyCreated;
+      if (this.#newWeekManualyCreated) {
+        newWeekPermited = true;
+      } else {
+        console.log(this.#curWeekTimeStampForAproveNewWeek);
+        console.log(this.#lastWeekForAproveNewWeek.weekMadeTimeStamp);
+        console.log(this._getTimeStamp());
+        let millisecondsBetweenLastWeekandNow =
+          this._getTimeStamp() -
+          this.#lastWeekForAproveNewWeek.weekMadeTimeStamp;
+
+        console.log(millisecondsBetweenLastWeekandNow);
+        if (millisecondsBetweenLastWeekandNow > 300000) {
+          newWeekPermited = true;
+        } else {
+          Email._sendEmail(
+            "thorastrack@gmail.com",
+            "thorastrack@gmail.com",
+            "Admin",
+            `${this.#curMemberInfo.name}, (${
+              this.#curMemberInfo.memberId
+            }), in team: ${
+              this.#curMemberInfo.teamCode
+            } has been guarded against frequent auto-week-creation.`
+          );
+          this._displayAlert(
+            "⚠️ Mesaje de Error: NW624 ⚠️",
+            "Este mensaje solo es para rastrear un error que ha aparecido algunas veces. No se preocupe. Ya hemos implementado una solucion para guardar encontra de este error. Solo le pedimos que tomas una captura de pantalla si le aparece este mesaje, y nos lo mandas. Asi podemos estar informados."
+          );
+        }
+      }
+    };
+    newWeekGaurd();
+    if (!newWeekPermited) return;
+
     if (navigator.onLine) {
       this.#curData = this._getFromLocal("curData");
       this._idGenerator(this.#idLenght, this.#idTakeArrLenght);
