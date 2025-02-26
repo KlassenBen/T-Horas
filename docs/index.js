@@ -133,6 +133,12 @@ const sr16SwiPunchIn3 = document.querySelector("#sr16-swi-punchin3");
 const sr16SwiPunchInText = document.querySelector(
   "#sr16-swi-punchin-switch-description-tx"
 );
+const sr16SwiOffline = document.querySelector("#sr16-swi-offline");
+const sr16SwiOffline2 = document.querySelector("#sr16-swi-offline2");
+const sr16SwiOffline3 = document.querySelector("#sr16-swi-offline3");
+const sr16SwiOfflineText = document.querySelector(
+  "#sr16-swi-offline-switch-description-tx"
+);
 const sr9SwiPunchIn = document.querySelector("#sr9-swi-punchin");
 const sr9SwiPunchIn2 = document.querySelector("#sr9-swi-punchin2");
 const sr9SwiPunchIn3 = document.querySelector("#sr9-swi-punchin3");
@@ -218,6 +224,7 @@ const sr11punchInClockSeconds = document.querySelector(
 const sr11punchInDay = document.querySelector("#sr11-punchin-day span");
 const sr11punchInConMain = document.querySelector("#sr11-punchin-cont-con");
 const sr11SettingsPunchInCon = document.querySelector("#sr16-swi-punchin-con");
+const sr11SettingsOfflineCon = document.querySelector("#sr16-swi-offline-con");
 const sr9CreateMemPunchInCon = document.querySelector("#sr9-swi-punchin-con");
 const sr1ImgCon = document.querySelector(".sr1-all-img-con");
 const sr1btnInstallApp = document.querySelector(
@@ -542,8 +549,8 @@ class App {
   #idLenght = 16;
   #idTakeArrLenght = this.#alfaNumDitch.length - 1;
 
-  #appVersionNumber = "2.0.9";
-  #appVersionMessage = `Estamos trabajando para mejorar tu experiencia. Esta actualización incluye corrección de error. Próximamente tendremos nuevas funciones listas para ti. ¡Sigue disfrutando tu app!`;
+  #appVersionNumber = "2.1.0";
+  #appVersionMessage = `Estamos trabajando para mejorar tu experiencia. Esta actualización incluye otra función en tu equipo. Próximamente lanzamos la nueva versión de esta aplicación. Mas intuitivo, y mucho mas funcionalidades. ¡Sigue disfrutando tu app!`;
   // #appVersionMessage = `Nos complace informarle que esta aplicación ahora admite el uso sin conexión. ¡Ya podrás guardar tus horas incluso cuando no tengas conexión a internet! Nuestras actualizaciones se instalan automáticamente en corto despues que sean disponibles.`;
 
   justOpenedApp = true;
@@ -3099,6 +3106,7 @@ class App {
   }
 
   _punchIn(punch) {
+    console.warn("Called this");
     const date = new Date();
     const dayInNumber = date.getDay();
 
@@ -5232,7 +5240,8 @@ class App {
     }
   }
 
-  _setSwiChangeMemberInfo(write, level, punchIn) {
+  _setSwiChangeMemberInfo(write, level, punchIn, offline) {
+    console.log(offline);
     //     sr16SwiPunchIn
     // sr16SwiPunchIn2
     // sr16SwiPunchIn3
@@ -5314,6 +5323,27 @@ class App {
       sr16SwiAssis3.classList.add("switch-text-off");
       sr16SwiAssis.dataset.on = "false";
       sr16SwiAssisText.textContent = "miembro";
+    }
+
+    if (offline === "true") {
+      sr16SwiOffline.classList.add("switch-on");
+      sr16SwiOffline.classList.remove("switch-off");
+      sr16SwiOffline2.classList.add("switch-inner-on");
+      sr16SwiOffline2.classList.remove("switch-inner-off");
+      sr16SwiOffline3.classList.add("switch-text-on");
+      sr16SwiOffline3.classList.remove("switch-text-off");
+      sr16SwiOffline.dataset.on = "true";
+      sr16SwiOfflineText.textContent = "permitido";
+    }
+    if (offline === "false") {
+      sr16SwiOffline.classList.remove("switch-on");
+      sr16SwiOffline.classList.add("switch-off");
+      sr16SwiOffline2.classList.remove("switch-inner-on");
+      sr16SwiOffline2.classList.add("switch-inner-off");
+      sr16SwiOffline3.classList.remove("switch-text-on");
+      sr16SwiOffline3.classList.add("switch-text-off");
+      sr16SwiOffline.dataset.on = "false";
+      sr16SwiOfflineText.textContent = "negado";
     }
   }
 
@@ -5413,10 +5443,13 @@ class App {
       weekDaysCheck = false;
     }
 
+    console.warn(this.#curMemberInfo);
+
     if (
       this.#curMemberInfo.salary === sr16InpMemberPay.value &&
       this.#curMemberInfo.writePermision === sr16SwiHours.dataset.on &&
       this.#curMemberInfo.punchInPermision === sr16SwiPunchIn.dataset.on &&
+      this.#curMemberInfo.offline === sr16SwiOffline.dataset.on &&
       this.#curMemberInfo.level === level &&
       weekDaysCheck === true
     ) {
@@ -5456,6 +5489,11 @@ class App {
           );
         }
         setTimeout(() => {
+          let offline = "true";
+
+          if (sr16SwiOffline.dataset.on) {
+            offline = sr16SwiOffline.dataset.on;
+          }
           this._updateData(
             `accounts/${curDataLocal.teamCode}/team`,
             this.#curMemberInfo.memberId,
@@ -5466,6 +5504,7 @@ class App {
               level: level,
               lastModified: this._getTimeStamp(),
               weekStart: selectWeekStart.value,
+              offline: offline,
             }
           );
           // this._displayMembers("sr16");
@@ -6317,7 +6356,7 @@ class App {
   _rateNow() {
     if (!navigator.onLine) {
       this._disdSuccessErrorMessage(
-        "Parece que no hay conección a internet. Vuelve a intentarlo mas tarde.",
+        "Parece que no hay conexión a internet. Vuelve a intentarlo mas tarde.",
         "er",
         4000
       );
@@ -6775,12 +6814,36 @@ class App {
     });
     sr11PunchInBtnIn.addEventListener("click", (e) => {
       if (e.target.dataset.active === "act") {
-        this._punchIn("in");
+        if (this.#curMemberInfo.offline === "true") {
+          this._punchIn("in");
+          return;
+        }
+
+        if (navigator.onLine) {
+          console.log("You are online.");
+          this._punchIn("in");
+        } else {
+          alert(
+            "Es requirido que tienes una conexión a internet para guardar la hora de entrada."
+          );
+        }
       }
     });
     sr11PunchInBtnOut.addEventListener("click", (e) => {
       if (e.target.dataset.active === "act") {
-        this._punchIn("out");
+        if (this.#curMemberInfo.offline === "true") {
+          this._punchIn("out");
+          return;
+        }
+
+        if (navigator.onLine) {
+          console.log("You are online.");
+          this._punchIn("out");
+        } else {
+          alert(
+            "Es requirido que tienes una conexión a internet para guardar la hora de salida."
+          );
+        }
       }
     });
     sr16InpMemberPay.addEventListener("focus", () => {
@@ -7194,10 +7257,15 @@ class App {
             sr16HeaderName.textContent = val.name;
             sr16InfoName.textContent = val.name;
             sr16QrDescriptionName.textContent = val.name;
+            let offline = "true";
+            if (val.offline && val.offline === "false") {
+              offline = "false";
+            }
             this._setSwiChangeMemberInfo(
               val.writePermision,
               val.level,
-              val.punchInPermision
+              val.punchInPermision,
+              offline
             );
             if (val.weekStart) {
               weekSelectLocal = val.weekStart;
@@ -7571,6 +7639,31 @@ class App {
     // sr16SwiPunchIn3
     // sr16SwiPunchInText
 
+    sr16SwiOffline.addEventListener("click", function (e) {
+      if (sr16SwiOffline.dataset.active === "act") {
+        const datanow = sr16SwiOffline.dataset.on;
+        if (datanow === "false") {
+          sr16SwiOffline.classList.add("switch-on");
+          sr16SwiOffline.classList.remove("switch-off");
+          sr16SwiOffline2.classList.add("switch-inner-on");
+          sr16SwiOffline2.classList.remove("switch-inner-off");
+          sr16SwiOffline3.classList.add("switch-text-on");
+          sr16SwiOffline3.classList.remove("switch-text-off");
+          sr16SwiOffline.dataset.on = "true";
+          sr16SwiOfflineText.textContent = "permitido";
+        }
+        if (datanow === "true") {
+          sr16SwiOffline.classList.remove("switch-on");
+          sr16SwiOffline.classList.add("switch-off");
+          sr16SwiOffline2.classList.remove("switch-inner-on");
+          sr16SwiOffline2.classList.add("switch-inner-off");
+          sr16SwiOffline3.classList.remove("switch-text-on");
+          sr16SwiOffline3.classList.add("switch-text-off");
+          sr16SwiOffline.dataset.on = "false";
+          sr16SwiOfflineText.textContent = "negado";
+        }
+      }
+    });
     sr16SwiPunchIn.addEventListener("click", function (e) {
       if (sr16SwiPunchIn.dataset.active === "act") {
         const datanow = sr16SwiPunchIn.dataset.on;
